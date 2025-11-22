@@ -19,12 +19,18 @@ export default defineConfig({
   server: {
     host: true, // Открывает доступ по сети
     port: 5173,
-    allowedHosts: [
-      'bublickrust.ru',
-      'www.bublickrust.ru',
-      '.bublickrust.ru',
-      '109.73.198.41',
-      'all'
-    ]
+    allowedHosts: ['bublickrust.ru', '109.73.198.41', 'all'],
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false
+      },
+      '/uploads': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false
+      }
+    }
   }
 })
