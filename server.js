@@ -92,7 +92,9 @@ app.use((err, req, res, next) => {
 });
 
 // API: Generic mock for other endpoints
-app.post('/api/*', (req, res) => {
+// Note: In Express 5 (or newer path-to-regexp), wildcard '*' must be unnamed or handled carefully.
+// Using a parameter like ':any*' is safer.
+app.post('/api/:path*', (req, res) => {
     console.log(`[API] Mock POST request to ${req.path}`);
     res.json({ success: true, message: 'Mock response' });
 });
