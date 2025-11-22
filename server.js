@@ -92,7 +92,7 @@ app.use((err, req, res, next) => {
 });
 
 // API: Generic mock for other endpoints
-app.post('/api/(.*)', (req, res) => {
+app.post('/api/*', (req, res) => {
     console.log(`[API] Mock POST request to ${req.path}`);
     res.json({ success: true, message: 'Mock response' });
 });
