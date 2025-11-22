@@ -92,12 +92,8 @@ app.use((err, req, res, next) => {
 });
 
 // API: Generic mock for other endpoints
-// Note: In Express 5 (or newer path-to-regexp), wildcard '*' must be unnamed or handled carefully.
-// Using a parameter like ':any*' is safer.
-app.post('/api/:path*', (req, res) => {
-    console.log(`[API] Mock POST request to ${req.path}`);
-    res.json({ success: true, message: 'Mock response' });
-});
+// Removing wildcard route temporarily to fix path-to-regexp issues in Express 5 environment
+// app.post('/api/:path*', (req, res) => { ... });
 
 // Catch-all: Serve index.html for React Router (SPA)
 app.get('*', (req, res) => {
