@@ -1,0 +1,2576 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <style>
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.6;
+      }
+    }
+
+    @keyframes rotate {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: -1000px 0;
+      }
+
+      100% {
+        background-position: 1000px 0;
+      }
+    }
+
+    @keyframes glow {
+
+      0%,
+      100% {
+        box-shadow: 0 0 40px rgba(255, 255, 255, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.05);
+      }
+
+      50% {
+        box-shadow: 0 0 60px rgba(255, 255, 255, 0.3), inset 0 0 30px rgba(255, 255, 255, 0.08);
+      }
+    }
+
+    @keyframes scaleIn {
+      from {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes stars {
+      0% {
+        transform: translateY(0);
+      }
+
+      100% {
+        transform: translateY(-2000px);
+      }
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    @keyframes neon-pulse {
+
+      0%,
+      100% {
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.8),
+          0 0 20px rgba(255, 255, 255, 0.4);
+      }
+
+      50% {
+        text-shadow: 0 0 20px rgba(255, 255, 255, 1),
+          0 0 30px rgba(255, 255, 255, 0.6);
+      }
+    }
+
+    @keyframes orbit {
+      0% {
+        transform: rotate(0deg) translateX(100px) rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg) translateX(100px) rotate(-360deg);
+      }
+    }
+
+    @keyframes float3d {
+
+      0%,
+      100% {
+        transform: translateY(0px) translateZ(0px) rotateX(0deg);
+      }
+
+      50% {
+        transform: translateY(-15px) translateZ(20px) rotateX(2deg);
+      }
+    }
+
+    @keyframes hologram {
+
+      0%,
+      100% {
+        opacity: 1;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.8),
+          0 0 20px rgba(255, 255, 255, 0.6),
+          0 0 30px rgba(255, 255, 255, 0.4);
+      }
+
+      50% {
+        opacity: 0.95;
+        text-shadow: 0 0 20px rgba(255, 255, 255, 1),
+          0 0 40px rgba(255, 255, 255, 0.8),
+          0 0 60px rgba(255, 255, 255, 0.6);
+      }
+    }
+
+    @keyframes particles {
+      0% {
+        transform: translateY(100vh) translateX(0) scale(0);
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 1;
+      }
+
+      90% {
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(-100vh) translateX(100px) scale(1);
+        opacity: 0;
+      }
+    }
+
+    @keyframes depth-pulse {
+
+      0%,
+      100% {
+        transform: translateZ(0px) scale(1);
+        box-shadow: 0 0 40px rgba(255, 255, 255, 0.2),
+          inset 0 0 20px rgba(255, 255, 255, 0.05);
+      }
+
+      50% {
+        transform: translateZ(10px) scale(1.01);
+        box-shadow: 0 0 60px rgba(255, 255, 255, 0.4),
+          0 20px 40px rgba(0, 0, 0, 0.3),
+          inset 0 0 30px rgba(255, 255, 255, 0.08);
+      }
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 12px;
+      background: #000000;
+      color: #FFFFFF;
+      font-size: 11px;
+      min-height: 100vh;
+      position: relative;
+      animation: fadeIn 0.5s ease-out;
+      overflow-x: hidden;
+      perspective: 1000px;
+      transform-style: preserve-3d;
+    }
+
+    /* Прозрачный скроллбар для body */
+    body::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    body::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      transition: background 0.2s ease;
+    }
+
+    body::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        radial-gradient(2px 2px at 20% 30%, white, transparent),
+        radial-gradient(2px 2px at 60% 70%, white, transparent),
+        radial-gradient(1px 1px at 50% 50%, white, transparent),
+        radial-gradient(1px 1px at 80% 10%, white, transparent),
+        radial-gradient(2px 2px at 90% 60%, white, transparent),
+        radial-gradient(1px 1px at 33% 80%, white, transparent),
+        radial-gradient(2px 2px at 15% 90%, white, transparent);
+      background-size: 200% 200%;
+      animation: stars 100s linear infinite;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.5;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 60%),
+        radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Плавающие частицы */
+    body::before {
+      animation: stars 100s linear infinite;
+    }
+
+    body>* {
+      position: relative;
+      z-index: 1;
+      transform-style: preserve-3d;
+    }
+
+    .header {
+      margin-bottom: 10px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      position: relative;
+      animation: slideIn 0.4s ease-out;
+    }
+
+    h1 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #FFFFFF;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: 0.3px;
+    }
+
+    .subtitle {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-left: 20px;
+      font-weight: 400;
+    }
+
+    .icon {
+      width: 16px;
+      height: 16px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .icon-animated {
+      animation: pulse 2s ease-in-out infinite;
+      filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
+    }
+
+    .icon-rotate {
+      animation: rotate 2s linear infinite;
+      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.7));
+    }
+
+    .icon {
+      filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));
+      transition: all 0.3s ease;
+    }
+
+    .button:hover .icon,
+    .tab:hover .icon {
+      filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.9));
+      transform: scale(1.1) translateZ(5px);
+    }
+
+    .section {
+      margin-bottom: 10px;
+      animation: fadeIn 0.4s ease-out;
+      animation-fill-mode: both;
+    }
+
+    .section:nth-child(2) {
+      animation-delay: 0.1s;
+    }
+
+    .section:nth-child(3) {
+      animation-delay: 0.2s;
+    }
+
+    .section:nth-child(4) {
+      animation-delay: 0.3s;
+    }
+
+    .section:nth-child(5) {
+      animation-delay: 0.4s;
+    }
+
+    .section:nth-child(6) {
+      animation-delay: 0.5s;
+    }
+
+    .section:nth-child(7) {
+      animation-delay: 0.6s;
+    }
+
+    .info-box {
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-left: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.4;
+      margin-bottom: 8px;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .info-box:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-left-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .info-box strong {
+      color: #FFFFFF;
+      display: block;
+      margin-bottom: 3px;
+      font-weight: 600;
+      font-size: 10px;
+    }
+
+    .status {
+      padding: 8px 10px;
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 8px;
+      min-height: 32px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      font-weight: 400;
+    }
+
+
+
+    .status.error {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.15);
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .status.success {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: #FFFFFF;
+    }
+
+    /* Progress Bar Styles */
+    .progress-container {
+      margin-top: 12px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      animation: scaleIn 0.3s ease-out;
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    #progress-text {
+      font-weight: 500;
+      color: #FFFFFF;
+    }
+
+    #progress-percent {
+      font-weight: 600;
+      color: #FFFFFF;
+      font-size: 11px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg,
+          rgba(255, 255, 255, 0.6) 0%,
+          rgba(255, 255, 255, 0.9) 50%,
+          rgba(255, 255, 255, 0.6) 100%);
+      background-size: 200% 100%;
+      border-radius: 10px;
+      transition: width 0.3s ease;
+      animation: shimmer 2s infinite linear;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5),
+        0 0 20px rgba(255, 255, 255, 0.3);
+      width: 0%;
+    }
+
+    .progress-stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+      font-size: 9px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    #progress-count {
+      font-weight: 500;
+    }
+
+    #progress-time {
+      font-style: italic;
+    }
+
+    .log-window {
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(20px) saturate(120%);
+      -webkit-backdrop-filter: blur(20px) saturate(120%);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 10px;
+      max-height: 150px;
+      overflow-y: auto;
+      font-family: 'SF Mono', 'Monaco', 'Menlo', 'Courier New', monospace;
+      font-size: 9px;
+      line-height: 1.5;
+      color: #FFFFFF;
+      margin-bottom: 10px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.1),
+        0 10px 35px rgba(0, 0, 0, 0.5),
+        inset 0 0 15px rgba(0, 0, 0, 0.6);
+      animation: scaleIn 0.4s ease-out;
+      transform-style: preserve-3d;
+    }
+
+    .log-window::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .log-window::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .log-window::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      transition: background 0.2s ease;
+    }
+
+    .log-window::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .log-entry {
+      margin-bottom: 6px;
+      word-wrap: break-word;
+      padding: 4px 6px;
+      animation: slideIn 0.3s ease-out;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-left: 2px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .log-entry:hover {
+      border-left-color: #FFFFFF;
+      background: rgba(255, 255, 255, 0.05);
+      padding-left: 12px;
+    }
+
+    .log-entry.success {
+      color: #FFFFFF;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.6);
+    }
+
+    .log-entry.error {
+      color: #CCCCCC;
+      text-shadow: 0 0 5px rgba(200, 200, 200, 0.6);
+    }
+
+    .log-entry.info {
+      color: #EEEEEE;
+      text-shadow: 0 0 5px rgba(238, 238, 238, 0.6);
+    }
+
+    .button {
+      width: 100%;
+      padding: 10px 16px;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      position: relative;
+    }
+
+    .button:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-1px);
+    }
+
+    .button:active {
+      transform: translateY(0);
+    }
+
+    .button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .button-secondary {
+      background: transparent;
+      border-color: rgba(255, 255, 255, 0.15);
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .button-secondary:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.25);
+      color: #FFFFFF;
+    }
+
+    .code-output {
+      display: none;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    .code-output.visible {
+      display: block;
+      animation: scaleIn 0.4s ease-out;
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Custom Radio Buttons with Checkmarks */
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .radio-label::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.5s;
+    }
+
+    .radio-label:hover::before {
+      left: 100%;
+    }
+
+    .radio-label:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateX(4px);
+    }
+
+    .radio-label input[type="radio"] {
+      display: none;
+    }
+
+    .radio-custom {
+      width: 24px;
+      height: 24px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.4);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      flex-shrink: 0;
+    }
+
+    .radio-custom .checkmark {
+      width: 16px;
+      height: 16px;
+      color: #FFFFFF;
+      opacity: 0;
+      transform: scale(0) rotate(-45deg);
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .radio-label input[type="radio"]:checked+.radio-custom {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: #FFFFFF;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.4),
+        inset 0 0 10px rgba(255, 255, 255, 0.2);
+      animation: radio-pulse 0.6s ease;
+    }
+
+    .radio-label input[type="radio"]:checked+.radio-custom .checkmark {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+      filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+    }
+
+    @keyframes radio-pulse {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 30px rgba(255, 255, 255, 0.6),
+          inset 0 0 15px rgba(255, 255, 255, 0.3);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .radio-text {
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.8);
+      transition: all 0.3s ease;
+    }
+
+    .radio-label:hover .radio-text {
+      color: #FFFFFF;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+    }
+
+    .radio-label input[type="radio"]:checked~.radio-text {
+      color: #FFFFFF;
+      font-weight: 600;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+    }
+
+    /* iOS Success Animation */
+    .success-circle-animation {
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .success-circle-bg {
+      stroke: #FFFFFF;
+      stroke-width: 2;
+      stroke-dasharray: 166;
+      stroke-dashoffset: 166;
+      stroke-linecap: round;
+      animation: success-circle-fill 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+      filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
+    }
+
+    .success-checkmark {
+      stroke: #FFFFFF;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 48;
+      stroke-dashoffset: 48;
+      animation: success-checkmark-draw 0.4s cubic-bezier(0.65, 0, 0.45, 1) 0.4s forwards;
+      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+    }
+
+    @keyframes success-circle-fill {
+      0% {
+        stroke-dashoffset: 166;
+        opacity: 0.3;
+      }
+
+      100% {
+        stroke-dashoffset: 0;
+        opacity: 1;
+      }
+    }
+
+    @keyframes success-checkmark-draw {
+      0% {
+        stroke-dashoffset: 48;
+        opacity: 0;
+      }
+
+      50% {
+        opacity: 1;
+      }
+
+      100% {
+        stroke-dashoffset: 0;
+        opacity: 1;
+      }
+    }
+
+    /* Тактильная обратная связь - легкая встряска с пульсацией */
+    @keyframes success-haptic {
+
+      0%,
+      100% {
+        transform: translateX(0) translateZ(0) scale(1);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.2),
+          0 10px 30px rgba(0, 0, 0, 0.3),
+          inset 0 0 10px rgba(255, 255, 255, 0.05);
+      }
+
+      10% {
+        transform: translateX(-3px) translateZ(5px) scale(1.03);
+        box-shadow: 0 0 30px rgba(255, 255, 255, 0.4),
+          0 15px 40px rgba(0, 0, 0, 0.4),
+          inset 0 0 15px rgba(255, 255, 255, 0.1);
+      }
+
+      20% {
+        transform: translateX(3px) translateZ(5px) scale(1.03);
+        box-shadow: 0 0 30px rgba(255, 255, 255, 0.4),
+          0 15px 40px rgba(0, 0, 0, 0.4),
+          inset 0 0 15px rgba(255, 255, 255, 0.1);
+      }
+
+      30% {
+        transform: translateX(-2px) translateZ(8px) scale(1.04);
+        box-shadow: 0 0 40px rgba(255, 255, 255, 0.5),
+          0 20px 50px rgba(0, 0, 0, 0.5),
+          inset 0 0 20px rgba(255, 255, 255, 0.15);
+      }
+
+      40% {
+        transform: translateX(2px) translateZ(8px) scale(1.04);
+        box-shadow: 0 0 40px rgba(255, 255, 255, 0.5),
+          0 20px 50px rgba(0, 0, 0, 0.5),
+          inset 0 0 20px rgba(255, 255, 255, 0.15);
+      }
+
+      50% {
+        transform: translateX(0) translateZ(10px) scale(1.06);
+        box-shadow: 0 0 50px rgba(255, 255, 255, 0.6),
+          0 25px 60px rgba(0, 0, 0, 0.6),
+          inset 0 0 25px rgba(255, 255, 255, 0.2);
+      }
+
+      60% {
+        transform: translateZ(5px) scale(1.03);
+        box-shadow: 0 0 35px rgba(255, 255, 255, 0.4),
+          0 18px 45px rgba(0, 0, 0, 0.4),
+          inset 0 0 15px rgba(255, 255, 255, 0.12);
+      }
+
+      80% {
+        transform: translateZ(2px) scale(1.01);
+        box-shadow: 0 0 25px rgba(255, 255, 255, 0.3),
+          0 12px 35px rgba(0, 0, 0, 0.35),
+          inset 0 0 12px rgba(255, 255, 255, 0.08);
+      }
+    }
+
+    .haptic-feedback {
+      animation: success-haptic 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+    }
+
+    .code-container {
+      position: relative;
+    }
+
+    .code-box {
+      display: none;
+      background: #1e1e1e;
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 20px;
+      max-height: 400px;
+      overflow-y: auto;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #d4d4d4;
+      white-space: pre;
+      word-break: normal;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5),
+        0 15px 40px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      animation: fadeIn 0.4s ease-out;
+      transform-style: preserve-3d;
+    }
+
+    /* VS Code Syntax Highlighting */
+    .code-box .keyword {
+      color: #569cd6;
+      font-weight: 500;
+    }
+
+    .code-box .string {
+      color: #ce9178;
+    }
+
+    .code-box .comment {
+      color: #6a9955;
+      font-style: italic;
+    }
+
+    .code-box .class-name {
+      color: #4ec9b0;
+    }
+
+    .code-box .function {
+      color: #dcdcaa;
+    }
+
+    .code-box .number {
+      color: #b5cea8;
+    }
+
+    .code-box .operator {
+      color: #d4d4d4;
+    }
+
+    .code-box .punctuation {
+      color: #d4d4d4;
+    }
+
+    .code-box .attribute {
+      color: #9cdcfe;
+    }
+
+    .code-box .tag {
+      color: #569cd6;
+    }
+
+    .code-box .namespace {
+      color: #4ec9b0;
+    }
+
+    .code-box .type {
+      color: #4ec9b0;
+    }
+
+    .code-box .variable {
+      color: #9cdcfe;
+    }
+
+    .code-box .property {
+      color: #9cdcfe;
+    }
+
+    .code-box .method {
+      color: #dcdcaa;
+    }
+
+    .code-box .line-number {
+      color: #858585;
+      user-select: none;
+      padding-right: 16px;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      margin-right: 16px;
+      display: inline-block;
+      min-width: 40px;
+      text-align: right;
+    }
+
+    .code-box.visible {
+      display: block;
+    }
+
+    .code-box::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .code-box::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .code-box::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      transition: background 0.2s ease;
+    }
+
+    .code-box::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      padding: 8px 14px;
+      width: auto;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      z-index: 10;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      box-shadow: none;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-1px);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .copy-btn:active {
+      transform: translateY(0);
+    }
+
+    .toggle-log-btn {
+      padding: 6px 12px;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .toggle-log-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-1px);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .log-window.collapsed {
+      display: none;
+    }
+
+    .token-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      font-family: 'SF Mono', 'Monaco', 'Menlo', 'Courier New', monospace;
+      font-size: 12px;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: #FFFFFF;
+      transition: all 0.2s ease;
+    }
+
+    .token-input:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.3);
+      background: rgba(0, 0, 0, 0.6);
+    }
+
+    .token-input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .token-hint {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 8px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .token-link {
+      color: #FFFFFF;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 2px 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      transition: all 0.2s ease;
+      display: inline-block;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .token-link:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+      text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    }
+
+    .token-link:active {
+      transform: translateY(0);
+    }
+
+    .icon-wrapper {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Поле ввода токена с кнопкой-глазком */
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .eye-btn {
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: #ffffff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .eye-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .eye-btn.active {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Табы навигации */
+    .tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 4px;
+      border-radius: 10px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .tab {
+      flex: 1;
+      padding: 10px 14px;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.5);
+      border: none;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .tab:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .tab.active {
+      background: rgba(255, 255, 255, 0.1);
+      color: #FFFFFF;
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header removed as requested -->
+
+  <!-- API Token Input -->
+  <div class="section">
+    <div class="section-title">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z"
+          stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        <path
+          d="M12 1V3M12 21V23M4.22 4.22L5.64 5.64M18.36 18.36L19.78 19.78M1 12H3M21 12H23M4.22 19.78L5.64 18.36M18.36 5.64L19.78 4.22"
+          stroke="white" stroke-width="2" stroke-linecap="round" />
+      </svg>
+      API Токен:
+    </div>
+    <div class="input-row">
+      <input type="password" id="api-token" class="token-input" placeholder="Вставьте ваш API токен" value=""
+        oninput="saveTokenToStorage()" />
+      <button class="eye-btn" id="toggle-token" type="button" aria-label="Показать токен" title="Показать токен">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+          style="width: 16px; height: 16px;">
+          <path id="eye-open" d="M1 12C3.5 7 7.8 4 12 4C16.2 4 20.5 7 23 12C20.5 17 16.2 20 12 20C7.8 20 3.5 17 1 12Z"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          <circle id="pupil" cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" />
+        </svg>
+      </button>
+    </div>
+    <div class="token-hint">
+      Токен сохраняется в плагине. Получите его на
+      <a href="https://bublickrust.ru/#api" target="_blank" class="token-link">bublickrust.ru</a>
+      в разделе API
+    </div>
+  </div>
+
+
+  <div class="section">
+    <div class="status" id="status">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="white" stroke-width="2" />
+        <path d="M12 6V12L16 14" stroke="white" stroke-width="2" stroke-linecap="round" />
+      </svg>
+      Ожидание... Выберите фрейм
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-container" id="progress-container" style="display: none;">
+      <div class="progress-info">
+        <span id="progress-text">Загрузка изображений...</span>
+        <span id="progress-percent">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-stats">
+        <span id="progress-count">0 / 0</span>
+        <span id="progress-time">Осталось: ~0с</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOG WINDOW -->
+  <div class="section">
+    <div class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+      <span style="display: flex; align-items: center; gap: 8px;">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+            stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Лог операций:
+      </span>
+      <button class="toggle-log-btn" onclick="toggleLogs()" id="toggle-log-btn">
+        <svg class="icon" id="toggle-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+          style="width: 14px; height: 14px;">
+          <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+        Показать
+      </button>
+    </div>
+    <div class="log-window collapsed" id="log-window">
+      <div class="log-entry info">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+          style="width: 14px; height: 14px;">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+          <path d="M12 16V12M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+        Готов к работе...
+      </div>
+    </div>
+  </div>
+
+  <!-- Assets mode - только для C# -->
+  <div class="section" id="asset-mode-section">
+    <div class="section-title">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 3L3 9V21H9V14H15V21H21V9L12 3Z" stroke="white" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" />
+      </svg>
+      Режим ассетов:
+    </div>
+    <div class="radio-group">
+      <label class="radio-label">
+        <input type="radio" name="asset-mode" value="urls" checked>
+        <span class="radio-custom">
+          <svg class="checkmark" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </span>
+        <span class="radio-text">Ссылки (URL)</span>
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="asset-mode" value="data">
+        <span class="radio-custom">
+          <svg class="checkmark" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </span>
+        <span class="radio-text">Data (локальные файлы)</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Anchor mode - только для C# -->
+  <div class="section" id="anchor-mode-section">
+    <div class="section-title">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="white" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" />
+        <path d="M2 17L12 22L22 17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M2 12L12 17L22 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      Режим генерации:
+    </div>
+    <div class="radio-group">
+      <label class="radio-label">
+        <input type="radio" name="anchor-mode" value="corners" checked>
+        <span class="radio-custom">
+          <svg class="checkmark" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </span>
+        <span class="radio-text">По углам (адаптивно)</span>
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="anchor-mode" value="center">
+        <span class="radio-custom">
+          <svg class="checkmark" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </span>
+        <span class="radio-text">От центра (центрировано)</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Навигация табов -->
+  <div class="section">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('csharp')" id="tab-csharp">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+        C# код
+      </button>
+      <button class="tab" onclick="switchTab('html')" id="tab-html">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        HTML
+      </button>
+      <button class="tab" onclick="switchTab('css')" id="tab-css">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7 8H17M7 12H17M7 16H12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+          <rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2" />
+        </svg>
+        CSS
+      </button>
+    </div>
+
+    <!-- Контент таба C# -->
+    <div class="tab-content active" id="content-csharp">
+      <button class="button" id="generate" onclick="generateCode()">
+        <svg class="icon" id="generate-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+          style="width: 16px; height: 16px;">
+          <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+        Генерировать C# код
+      </button>
+
+      <button class="button button-secondary" onclick="textToUppercase()" style="margin-top: 10px;">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+          style="width: 16px; height: 16px;">
+          <path d="M4 7V4H20V7M9 20H15M12 4V20" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+        Весь текст в CAPS
+      </button>
+
+      <button class="button button-secondary" onclick="alignTextToRectangles()" style="margin-top: 10px;">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+          style="width: 16px; height: 16px;">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" />
+          <path d="M7 8H17M7 12H17M7 16H14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+        Текст по размеру фона
+      </button>
+
+      <button class="button button-secondary" onclick="alignTextHeights()" style="margin-top: 10px;">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+          style="width: 16px; height: 16px;">
+          <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          <path d="M8 6V18M16 6V18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+        Выровнять тексты по высоте
+      </button>
+    </div>
+
+    <!-- Контент таба HTML -->
+    <div class="tab-content" id="content-html">
+      <button class="button" id="generate-html" onclick="generateHTML()">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+          style="width: 16px; height: 16px;">
+          <path
+            d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Генерировать HTML страницу
+      </button>
+    </div>
+
+    <!-- Контент таба CSS -->
+    <div class="tab-content" id="content-css">
+      <div class="info-box">
+        <strong>🎨 CSS с именами классов</strong>
+        Генерирует CSS код с уникальными именами классов для каждого элемента + HTML структуру
+      </div>
+      <button class="button" id="generate-css" onclick="generateCSS()">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+          style="width: 16px; height: 16px;">
+          <path d="M7 8H17M7 12H17M7 16H12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+          <rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2" />
+        </svg>
+        Генерировать CSS + HTML
+      </button>
+
+      <button class="button button-secondary" id="download-images" onclick="downloadAllImages()"
+        style="margin-top: 10px;">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+          style="width: 16px; height: 16px;">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" />
+          <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" />
+          <path d="M21 15L16 10L5 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+        Скачать все изображения
+      </button>
+
+      <button class="button button-secondary" id="keep-only-images" onclick="keepOnlyImages()"
+        style="margin-top: 10px;">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+          style="width: 16px; height: 16px;">
+          <path d="M3 6H21M19 6V20C19 21 18 22 17 22H7C6 22 5 21 5 20V6M8 6V4C8 3 9 2 10 2H14C15 2 16 3 16 4V6"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M10 11V17M14 11V17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+        Оставить только фотки
+      </button>
+    </div>
+
+  </div>
+
+
+
+  <div class="code-output" id="code-output">
+    <div class="section-title">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z"
+          stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M14 2V8H20" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M16 13H8M16 17H8M10 9H8" stroke="white" stroke-width="2" stroke-linecap="round" />
+      </svg>
+      C# Code:
+    </div>
+
+    <div class="code-container">
+      <button class="copy-btn" onclick="copyCode()">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+          style="width: 14px; height: 14px;">
+          <path
+            d="M8 5.00005C7.01165 5.00005 6.49359 5.00005 6.09202 5.21799C5.71569 5.40973 5.40973 5.71569 5.21799 6.09202C5 6.49359 5 7.01165 5 8.00005V16C5 16.9884 5 17.5065 5.21799 17.908C5.40973 18.2843 5.71569 18.5903 6.09202 18.782C6.49359 19 7.01165 19 8 19H16C16.9884 19 17.5065 19 17.908 18.782C18.2843 18.5903 18.5903 18.2843 18.782 17.908C19 17.5065 19 16.9884 19 16V8.00005C19 7.01165 19 6.49359 18.782 6.09202C18.5903 5.71569 18.2843 5.40973 17.908 5.21799C17.5065 5.00005 16.9884 5.00005 16 5.00005H8Z"
+            stroke="currentColor" stroke-width="2" />
+          <path
+            d="M9 12C9 11.0572 9 10.5858 9.29289 10.2929C9.58579 10 10.0572 10 11 10H13C13.9428 10 14.4142 10 14.7071 10.2929C15 10.5858 15 11.0572 15 12V16C15 16.9428 15 17.4142 14.7071 17.7071C14.4142 18 13.9428 18 13 18H11C10.0572 18 9.58579 18 9.29289 17.7071C9 17.4142 9 16.9428 9 16V12Z"
+            stroke="currentColor" stroke-width="2" />
+        </svg>
+        Копировать
+      </button>
+      <div class="code-box visible" id="code-csharp"></div>
+    </div>
+
+    <button class="button" onclick="downloadCode()" style="margin-top: 15px;">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+        style="width: 16px; height: 16px;">
+        <path
+          d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15M7 10L12 15M12 15L17 10M12 15V3"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      Скачать плагин
+    </button>
+
+    <button class="button button-secondary" onclick="downloadZipImages()" style="margin-top: 10px;">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+        style="width: 16px; height: 16px;">
+        <path d="M4 7H20M4 12H20M4 17H14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
+      Скачать ZIP фоток
+    </button>
+  </div>
+
+  <div class="code-output" id="html-output">
+    <div class="section-title">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z"
+          stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M14 2V8H20" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      HTML Code:
+    </div>
+
+    <div class="code-container">
+      <button class="copy-btn" onclick="copyHTMLCode()">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+          style="width: 14px; height: 14px;">
+          <path
+            d="M8 5.00005C7.01165 5.00005 6.49359 5.00005 6.09202 5.21799C5.71569 5.40973 5.40973 5.71569 5.21799 6.09202C5 6.49359 5 7.01165 5 8.00005V16C5 16.9884 5 17.5065 5.21799 17.908C5.40973 18.2843 5.71569 18.5903 6.09202 18.782C6.49359 19 7.01165 19 8 19H16C16.9884 19 17.5065 19 17.908 18.782C18.2843 18.5903 18.5903 18.2843 18.782 17.908C19 17.5065 19 16.9884 19 16V8.00005C19 7.01165 19 6.49359 18.782 6.09202C18.5903 5.71569 18.2843 5.40973 17.908 5.21799C17.5065 5.00005 16.9884 5.00005 16 5.00005H8Z"
+            stroke="currentColor" stroke-width="2" />
+          <path
+            d="M9 12C9 11.0572 9 10.5858 9.29289 10.2929C9.58579 10 10.0572 10 11 10H13C13.9428 10 14.4142 10 14.7071 10.2929C15 10.5858 15 11.0572 15 12V16C15 16.9428 15 17.4142 14.7071 17.7071C14.4142 18 13.9428 18 13 18H11C10.0572 18 9.58579 18 9.29289 17.7071C9 17.4142 9 16.9428 9 16V12Z"
+            stroke="currentColor" stroke-width="2" />
+        </svg>
+        Копировать
+      </button>
+      <div class="code-box visible" id="code-html"></div>
+    </div>
+
+    <button class="button" onclick="downloadHTMLCode()" style="margin-top: 15px;">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+        style="width: 16px; height: 16px;">
+        <path
+          d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15M7 10L12 15M12 15L17 10M12 15V3"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      Скачать HTML
+    </button>
+  </div>
+
+  <!-- CSS Output -->
+  <div class="code-output" id="css-output">
+    <div class="section-title">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z"
+          stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M14 2V8H20" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      HTML файл (CSS внутри):
+    </div>
+
+    <div class="code-container">
+      <button class="copy-btn" onclick="copyCSSCode()">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+          style="width: 14px; height: 14px;">
+          <path
+            d="M8 5.00005C7.01165 5.00005 6.49359 5.00005 6.09202 5.21799C5.71569 5.40973 5.40973 5.71569 5.21799 6.09202C5 6.49359 5 7.01165 5 8.00005V16C5 16.9884 5 17.5065 5.21799 17.908C5.40973 18.2843 5.71569 18.5903 6.09202 18.782C6.49359 19 7.01165 19 8 19H16C16.9884 19 17.5065 19 17.908 18.782C18.2843 18.5903 18.5903 18.2843 18.782 17.908C19 17.5065 19 16.9884 19 16V8.00005C19 7.01165 19 6.49359 18.782 6.09202C18.5903 5.71569 18.2843 5.40973 17.908 5.21799C17.5065 5.00005 16.9884 5.00005 16 5.00005H8Z"
+            stroke="currentColor" stroke-width="2" />
+          <path
+            d="M9 12C9 11.0572 9 10.5858 9.29289 10.2929C9.58579 10 10.0572 10 11 10H13C13.9428 10 14.4142 10 14.7071 10.2929C15 10.5858 15 11.0572 15 12V16C15 16.9428 15 17.4142 14.7071 17.7071C14.4142 18 13.9428 18 13 18H11C10.0572 18 9.58579 18 9.29289 17.7071C9 17.4142 9 16.9428 9 16V12Z"
+            stroke="currentColor" stroke-width="2" />
+        </svg>
+        Копировать код
+      </button>
+      <div class="code-box visible" id="code-css"></div>
+    </div>
+
+    <button class="button" onclick="downloadCSSFiles()" style="margin-top: 15px;">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+        style="width: 16px; height: 16px;">
+        <path
+          d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15M7 10L12 15M12 15L17 10M12 15V3"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      Скачать HTML файл
+    </button>
+  </div>
+
+
+
+  <script>
+    let generatedCSharp = '';
+    let generatedHTML = '';
+    let generatedCSS = '';
+    let generatedCSSHTML = '';
+    let frameName = '';
+    let tokenMasked = true;
+    let tokenInput = null;
+    let cachedImages = [];
+
+    function switchTab(tab) {
+      // Переключение табов
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+      document.getElementById('tab-' + tab).classList.add('active');
+      document.getElementById('content-' + tab).classList.add('active');
+
+      // Скрываем/показываем секции в зависимости от таба
+      const assetSection = document.getElementById('asset-mode-section');
+      const anchorSection = document.getElementById('anchor-mode-section');
+
+      if (tab === 'csharp') {
+        assetSection.style.display = 'block';
+        anchorSection.style.display = 'block';
+      } else {
+        assetSection.style.display = 'none';
+        anchorSection.style.display = 'none';
+      }
+    }
+
+    function generateHTML() {
+      const btn = document.getElementById('generate-html');
+      btn.disabled = true;
+      btn.innerHTML = '<svg class="icon icon-rotate" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;"><path d="M12 2V6M12 18V22M6 12H2M22 12H18M19.07 19.07L16.24 16.24M19.07 4.93L16.24 7.76M4.93 19.07L7.76 16.24M4.93 4.93L7.76 7.76" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Генерация...';
+
+      const apiToken = document.getElementById('api-token').value.trim();
+
+      document.getElementById('html-output').classList.remove('visible');
+      clearLog();
+      addLog('Начинаю генерацию HTML...', 'info');
+
+      parent.postMessage({ pluginMessage: { type: 'generate-html', apiToken } }, '*');
+    }
+
+    function generateCSS() {
+      const btn = document.getElementById('generate-css');
+      btn.disabled = true;
+      btn.innerHTML = '<svg class="icon icon-rotate" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;"><path d="M12 2V6M12 18V22M6 12H2M22 12H18M19.07 19.07L16.24 16.24M19.07 4.93L16.24 7.76M4.93 19.07L7.76 16.24M4.93 4.93L7.76 7.76" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Генерация...';
+
+      document.getElementById('css-output').classList.remove('visible');
+      clearLog();
+      addLog('🎨 Начинаю генерацию CSS...', 'info');
+
+      parent.postMessage({ pluginMessage: { type: 'generate-css' } }, '*');
+    }
+
+    function downloadAllImages() {
+      const btn = document.getElementById('download-images');
+      btn.disabled = true;
+      btn.innerHTML = '<svg class="icon icon-rotate" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;"><path d="M12 2V6M12 18V22M6 12H2M22 12H18M19.07 19.07L16.24 16.24M19.07 4.93L16.24 7.76M4.93 19.07L7.76 16.24M4.93 4.93L7.76 7.76" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Экспорт...';
+
+      clearLog();
+      addLog('📸 Начинаю экспорт изображений...', 'info');
+
+      parent.postMessage({ pluginMessage: { type: 'download-all-images' } }, '*');
+    }
+
+    function keepOnlyImages() {
+      if (!confirm('Удалить все элементы кроме изображений?\n\nЭто действие нельзя отменить!')) {
+        return;
+      }
+
+      const btn = document.getElementById('keep-only-images');
+      btn.disabled = true;
+      btn.innerHTML = '<svg class="icon icon-rotate" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;"><path d="M12 2V6M12 18V22M6 12H2M22 12H18M19.07 19.07L16.24 16.24M19.07 4.93L16.24 7.76M4.93 19.07L7.76 16.24M4.93 4.93L7.76 7.76" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Удаление...';
+
+      clearLog();
+      addLog('🗑️ Удаляю элементы...', 'info');
+
+      parent.postMessage({ pluginMessage: { type: 'keep-only-images' } }, '*');
+    }
+
+    function copyHTMLCode() {
+      if (!generatedHTML) {
+        alert('Сначала сгенерируйте HTML!');
+        return;
+      }
+
+      const textarea = document.createElement('textarea');
+      textarea.value = generatedHTML;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+
+      addLog('✅ HTML код скопирован в буфер обмена', 'success');
+
+      const btn = event.target.closest('.copy-btn');
+      if (btn) {
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = `
+          <svg class="success-circle-animation" viewBox="0 0 52 52" style="width: 20px; height: 20px;">
+            <circle class="success-circle-bg" cx="26" cy="26" r="25" fill="none"/>
+            <path class="success-checkmark" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+          </svg>
+          <span style="margin-left: 6px;">Скопировано!</span>
+        `;
+        setTimeout(() => { btn.innerHTML = originalHTML; }, 2500);
+      }
+    }
+
+    function downloadHTMLCode() {
+      if (!generatedHTML) {
+        alert('Сначала сгенерируйте HTML!');
+        return;
+      }
+
+      const cleanName = (frameName || 'Page').replace(/\s+/g, '');
+      const fileName = cleanName + '.html';
+      const blob = new Blob([generatedHTML], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      addLog(`✅ Файл ${fileName} скачан`, 'success');
+    }
+
+    function copyCSSCode() {
+      if (!generatedCSSHTML) {
+        alert('Сначала сгенерируйте HTML!');
+        return;
+      }
+
+      const textarea = document.createElement('textarea');
+      textarea.value = generatedCSSHTML;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+
+      addLog('✅ HTML код скопирован в буфер обмена', 'success');
+
+      const btn = event.target.closest('.copy-btn');
+      if (btn) {
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = `
+           <svg class="success-circle-animation" viewBox="0 0 52 52" style="width: 20px; height: 20px;">
+             <circle class="success-circle-bg" cx="26" cy="26" r="25" fill="none"/>
+             <path class="success-checkmark" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+           </svg>
+           <span style="margin-left: 6px;">Скопировано!</span>
+         `;
+        setTimeout(() => { btn.innerHTML = originalHTML; }, 2500);
+      }
+    }
+
+    function downloadCSSFiles() {
+      if (!generatedCSSHTML) {
+        alert('Сначала сгенерируйте HTML!');
+        return;
+      }
+
+      const cleanName = (frameName || 'Frame').replace(/\s+/g, '');
+
+      const htmlBlob = new Blob([generatedCSSHTML], { type: 'text/html;charset=utf-8' });
+      const htmlUrl = URL.createObjectURL(htmlBlob);
+      const htmlLink = document.createElement('a');
+      htmlLink.href = htmlUrl;
+      htmlLink.download = cleanName + '.html';
+      document.body.appendChild(htmlLink);
+      htmlLink.click();
+      document.body.removeChild(htmlLink);
+      URL.revokeObjectURL(htmlUrl);
+
+      addLog(`✅ Файл ${cleanName}.html скачан`, 'success');
+    }
+
+    // Simple ZIP (store) generator (no compression)
+    function zipSync(fileMap) {
+      const files = Object.keys(fileMap).map(name => ({ name, data: fileMap[name] }));
+      const encoder = new TextEncoder();
+      const parts = [];
+      const central = [];
+      let offset = 0;
+
+      const crcTable = new Uint32Array(256);
+      for (let i = 0; i < 256; i++) {
+        let c = i;
+        for (let k = 0; k < 8; k++) c = (c & 1) ? 0xEDB88320 ^ (c >>> 1) : (c >>> 1);
+        crcTable[i] = c >>> 0;
+      }
+      const crc32 = (data) => {
+        let c = 0 ^ (-1);
+        for (let i = 0; i < data.length; i++) c = (c >>> 8) ^ crcTable[(c ^ data[i]) & 0xFF];
+        return (c ^ (-1)) >>> 0;
+      };
+
+      const u16 = (n) => { const a = new Uint8Array(2); new DataView(a.buffer).setUint16(0, n, true); return a; };
+      const u32 = (n) => { const a = new Uint8Array(4); new DataView(a.buffer).setUint32(0, n, true); return a; };
+
+      // DOS time/date (current)
+      const now = new Date();
+      const dosTime = ((now.getHours() << 11) | (now.getMinutes() << 5) | (Math.floor(now.getSeconds() / 2))) & 0xFFFF;
+      const dosDate = (((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | (now.getDate())) & 0xFFFF;
+
+      for (const f of files) {
+        const nameBytes = encoder.encode(f.name);
+        const data = f.data instanceof Uint8Array ? f.data : new Uint8Array(f.data || []);
+        const crc = crc32(data);
+        const compSize = data.length;
+        const uncompSize = data.length;
+
+        const localHdr = new Uint8Array([
+          0x50, 0x4B, 0x03, 0x04, // local file header signature
+          20, 0, // version needed
+          0, 0,  // flags
+          0, 0,  // method (store)
+          dosTime & 0xFF, (dosTime >> 8) & 0xFF,  // time
+          dosDate & 0xFF, (dosDate >> 8) & 0xFF,  // date
+        ]);
+        const header = new Uint8Array(localHdr.length + 4 + 4 + 4 + 2 + 2 + nameBytes.length);
+        header.set(localHdr, 0);
+        header.set(u32(crc), localHdr.length);
+        header.set(u32(compSize), localHdr.length + 4);
+        header.set(u32(uncompSize), localHdr.length + 8);
+        header.set(u16(nameBytes.length), localHdr.length + 12);
+        header.set(u16(0), localHdr.length + 14);
+        header.set(nameBytes, localHdr.length + 16);
+
+        parts.push(header, data);
+
+        // Central directory header
+        const centSig = new Uint8Array([
+          0x50, 0x4B, 0x01, 0x02, // central dir header
+          20, 0, // version made by
+          20, 0, // version needed
+          0, 0,  // flags
+          0, 0,  // method
+          dosTime & 0xFF, (dosTime >> 8) & 0xFF,  // time
+          dosDate & 0xFF, (dosDate >> 8) & 0xFF,  // date
+        ]);
+        // 46-byte fixed central header + file name
+        const cent = new Uint8Array(centSig.length + 4 + 4 + 4 + 2 + 2 + 2 + 2 + 2 + 4 + 4 + nameBytes.length);
+        let p = 0; cent.set(centSig, p); p += centSig.length;
+        cent.set(u32(crc), p); p += 4;
+        cent.set(u32(compSize), p); p += 4;
+        cent.set(u32(uncompSize), p); p += 4;
+        cent.set(u16(nameBytes.length), p); p += 2;
+        cent.set(u16(0), p); p += 2; // extra
+        cent.set(u16(0), p); p += 2; // comment
+        cent.set(u16(0), p); p += 2; // disk
+        cent.set(u16(0), p); p += 2; // internal attrs
+        cent.set(u32(0), p); p += 4; // external attrs
+        cent.set(u32(offset), p); p += 4; // relative offset
+        cent.set(nameBytes, p);
+
+        central.push(cent);
+
+        // update offset
+        offset += header.length + data.length;
+      }
+
+      // Concatenate data and central directory
+      const concat = (arrs) => {
+        let len = 0; for (const a of arrs) len += a.length;
+        const out = new Uint8Array(len);
+        let pos = 0; for (const a of arrs) { out.set(a, pos); pos += a.length; }
+        return out;
+      };
+
+      const dataBlob = concat(parts);
+      const centralBlob = concat(central);
+
+      // End of central directory
+      const eocd = new Uint8Array([
+        0x50, 0x4B, 0x05, 0x06, // EOCD signature
+        0, 0, // disk
+        0, 0, // start disk
+      ]);
+      const tail = new Uint8Array(eocd.length + 2 + 2 + 4 + 4 + 2);
+      let q = 0; tail.set(eocd, q); q += eocd.length;
+      tail.set(u16(central.length), q); q += 2; // entries on disk
+      tail.set(u16(central.length), q); q += 2; // total entries
+      tail.set(u32(centralBlob.length), q); q += 4; // size of central
+      tail.set(u32(dataBlob.length), q); q += 4; // offset of central
+      tail.set(u16(0), q); // comment len
+
+      return concat([dataBlob, centralBlob, tail]);
+    }
+
+    function downloadZipImages() {
+      if (!cachedImages || !cachedImages.length) {
+        alert('Нет подготовленных изображений. Сначала запустите генерацию C# кода или HTML.');
+        return;
+      }
+
+      const files = {};
+      for (const img of cachedImages) {
+        const rawName = (img.filename || (img.hash + '.png')) || 'image.png';
+        const name = rawName.replace(/[^A-Za-z0-9._-]/g, '_');
+        const bytes = new Uint8Array(img.bytes || img.data || []);
+        files[name] = bytes;
+      }
+
+      try {
+        const zipped = zipSync(files);
+        const blob = new Blob([zipped], { type: 'application/zip' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = (frameName || 'images') + '.zip';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        addLog(`✅ ZIP архив "${(frameName || 'images') + '.zip'}" скачан (${cachedImages.length} файлов)`, 'success');
+      } catch (e) {
+        addLog('❌ Ошибка упаковки ZIP: ' + e.message, 'error');
+        console.error('ZIP error:', e);
+      }
+    }
+
+    // Инициализация после загрузки DOM
+    document.addEventListener('DOMContentLoaded', () => {
+      tokenInput = document.getElementById('api-token');
+      // Запрашиваем токен из хранилища
+      parent.postMessage({ pluginMessage: { type: 'request-init' } }, '*');
+    });
+
+    // Автосохранение токена при вводе
+    function saveTokenToStorage() {
+      const apiToken = document.getElementById('api-token').value.trim();
+      if (apiToken) {
+        try {
+          parent.postMessage({ pluginMessage: { type: 'save-token', apiToken } }, '*');
+        } catch (e) {
+          console.error('Ошибка сохранения токена:', e);
+        }
+      }
+    }
+
+    // Копирование кода в буфер обмена
+    function copyCode() {
+      if (!generatedCSharp) {
+        alert('Сначала сгенерируйте код!');
+        return;
+      }
+
+      const textarea = document.createElement('textarea');
+      textarea.value = generatedCSharp;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+
+      addLog('✅ C# код скопирован в буфер обмена', 'success');
+
+      // Показываем анимацию успеха на кнопке
+      const btn = event.target.closest('.copy-btn');
+      if (btn) {
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = `
+          <svg class="success-circle-animation" viewBox="0 0 52 52" style="width: 20px; height: 20px;">
+            <circle class="success-circle-bg" cx="26" cy="26" r="25" fill="none"/>
+            <path class="success-checkmark" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+          </svg>
+          <span style="margin-left: 6px;">Скопировано!</span>
+        `;
+        setTimeout(() => { btn.innerHTML = originalHTML; }, 2500);
+      }
+    }
+
+    // Скачивание кода как .cs файл
+    function downloadCode() {
+      if (!generatedCSharp) {
+        alert('Сначала сгенерируйте код!');
+        return;
+      }
+
+      const cleanName = (frameName || 'Plugin').replace(/\s+/g, '');
+      const fileName = cleanName + 'UI.cs';
+      const blob = new Blob([generatedCSharp], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      addLog(`✅ Файл ${fileName} скачан`, 'success');
+    }
+
+    function textToUppercase() {
+      clearLog();
+      addLog('🔤 Преобразую выделенный текст в CAPS...', 'info');
+      parent.postMessage({ pluginMessage: { type: 'text-to-uppercase' } }, '*');
+    }
+
+    function alignTextToRectangles() {
+      clearLog();
+      
+      // Автоматически открываем лог-окно
+      const logWindow = document.getElementById('log-window');
+      const toggleBtn = document.getElementById('toggle-log-btn');
+      if (logWindow.classList.contains('collapsed')) {
+        logWindow.classList.remove('collapsed');
+        toggleBtn.innerHTML = '<svg class="icon" id="toggle-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 14px; height: 14px;"><path d="M18 15L12 9L6 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Скрыть';
+      }
+      
+      addLog('📐 Выравниваю текст по размеру фонового элемента...', 'info');
+      parent.postMessage({ pluginMessage: { type: 'align-text-to-rectangles' } }, '*');
+    }
+
+    function alignTextHeights() {
+      clearLog();
+      
+      // Автоматически открываем лог-окно
+      const logWindow = document.getElementById('log-window');
+      const toggleBtn = document.getElementById('toggle-log-btn');
+      if (logWindow.classList.contains('collapsed')) {
+        logWindow.classList.remove('collapsed');
+        toggleBtn.innerHTML = '<svg class="icon" id="toggle-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 14px; height: 14px;"><path d="M18 15L12 9L6 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Скрыть';
+      }
+      
+      addLog('📏 Выравниваю высоту текстов...', 'info');
+      parent.postMessage({ pluginMessage: { type: 'align-text-heights' } }, '*');
+    }
+
+    function generateCode() {
+      const btn = document.getElementById('generate');
+      const icon = document.getElementById('generate-icon');
+      btn.disabled = true;
+      btn.innerHTML = '<svg class="icon icon-rotate" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;"><path d="M12 2V6M12 18V22M6 12H2M22 12H18M19.07 19.07L16.24 16.24M19.07 4.93L16.24 7.76M4.93 19.07L7.76 16.24M4.93 4.93L7.76 7.76" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Генерация...';
+
+      const apiToken = document.getElementById('api-token').value.trim();
+      const assetModeEl = document.querySelector('input[name="asset-mode"]:checked');
+      const assetMode = assetModeEl ? assetModeEl.value : 'urls';
+      const anchorModeEl = document.querySelector('input[name="anchor-mode"]:checked');
+      const anchorMode = anchorModeEl ? anchorModeEl.value : 'corners';
+
+      if (assetMode === 'urls' && !apiToken) {
+        alert('Введите API токен!');
+        btn.disabled = false;
+        btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Генерировать код';
+        return;
+      }
+
+      if (assetMode === 'urls') { try { parent.postMessage({ pluginMessage: { type: 'save-token', apiToken } }, '*'); } catch (_) { } }
+
+      document.getElementById('code-output').classList.remove('visible');
+      clearLog();
+      addLog('Начинаю генерацию...', 'info');
+
+      parent.postMessage({ pluginMessage: { type: 'generate-code', apiToken, assetMode, anchorMode, scale: 1 } }, '*');
+    }
+
+
+    async function uploadImagesToAPI(images, token) {
+      if (!token || !token.trim()) {
+        addLog('⚠️ Токен не задан — пропускаю загрузку изображений', 'error');
+        try { parent.postMessage({ pluginMessage: { type: 'upload-complete', results: {} } }, '*'); } catch (_) { }
+        return;
+      }
+
+      const results = {};
+      const totalImages = (images || []).length;
+      let uploadedCount = 0;
+      const startTime = Date.now();
+      const uploadTimes = []; // Массив времени загрузки каждого изображения
+
+      // Показываем прогресс-бар
+      const progressContainer = document.getElementById('progress-container');
+      const progressFill = document.getElementById('progress-fill');
+      const progressPercent = document.getElementById('progress-percent');
+      const progressCount = document.getElementById('progress-count');
+      const progressTime = document.getElementById('progress-time');
+      const progressText = document.getElementById('progress-text');
+
+      if (progressContainer) {
+        progressContainer.style.display = 'block';
+        progressText.textContent = 'Загрузка изображений...';
+      }
+
+      for (const img of (images || [])) {
+        const uploadStart = Date.now();
+
+        try {
+          const bytes = new Uint8Array(img.bytes || img.data || []);
+          const blob = new Blob([bytes], { type: img.mime || 'image/png' });
+          const form = new FormData();
+          form.append('image', blob, img.filename || `${img.hash || 'image'}.png`);
+          const res = await fetch('https://bublickrust.ru/api/images/upload', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: form
+          });
+          let json = null; try { json = await res.json(); } catch (_) { }
+          if (res.ok && json && json.success && json.directUrl) {
+            if (img.hash) results[img.hash] = json.directUrl;
+            uploadedCount++;
+
+            // Считаем время загрузки
+            const uploadTime = Date.now() - uploadStart;
+            uploadTimes.push(uploadTime);
+
+            // Обновляем прогресс
+            const progress = (uploadedCount / totalImages) * 100;
+            if (progressFill) progressFill.style.width = `${progress}%`;
+            if (progressPercent) progressPercent.textContent = `${Math.round(progress)}%`;
+            if (progressCount) progressCount.textContent = `${uploadedCount} / ${totalImages}`;
+
+            // Вычисляем оставшееся время
+            if (uploadTimes.length > 0 && uploadedCount < totalImages) {
+              const avgTime = uploadTimes.reduce((a, b) => a + b, 0) / uploadTimes.length;
+              const remainingImages = totalImages - uploadedCount;
+              const estimatedSeconds = Math.ceil((avgTime * remainingImages) / 1000);
+              if (progressTime) {
+                progressTime.textContent = `Осталось: ~${estimatedSeconds}с`;
+              }
+            } else if (uploadedCount === totalImages) {
+              if (progressTime) progressTime.textContent = 'Завершено!';
+            }
+
+            addLog(`✅ Загружено: ${json.directUrl} (${uploadedCount}/${totalImages})`, 'success');
+          } else {
+            addLog(`❌ Ошибка загрузки ${img.hash || ''}: ${res.status} ${res.statusText} ${json ? JSON.stringify(json) : ''}`, 'error');
+          }
+        } catch (e) {
+          addLog(`❌ Сбой загрузки ${img.hash || ''}: ${e.message}`, 'error');
+        }
+      }
+
+      // Скрываем прогресс-бар через 2 секунды после завершения
+      setTimeout(() => {
+        if (progressContainer) progressContainer.style.display = 'none';
+      }, 2000);
+
+      try { parent.postMessage({ pluginMessage: { type: 'upload-complete', results } }, '*'); } catch (_) { }
+    }
+
+    function clearLog() {
+      document.getElementById('log-window').innerHTML = '';
+    }
+
+    function getLogIcon(type) {
+      const icons = {
+        success: '<svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 14px; height: 14px;"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+        error: '<svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 14px; height: 14px;"><path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+        info: '<svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 14px; height: 14px;"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M12 16V12M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+      };
+      return icons[type] || icons.info;
+    }
+
+    function addLog(message, type = 'info') {
+      const logWindow = document.getElementById('log-window');
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      entry.innerHTML = getLogIcon(type) + ' ' + message;
+      logWindow.appendChild(entry);
+
+      const MAX_LOGS = 200;
+      while (logWindow.children.length > MAX_LOGS) {
+        logWindow.removeChild(logWindow.firstChild);
+      }
+
+      logWindow.scrollTop = logWindow.scrollHeight;
+    }
+
+    function toggleLogs() {
+      const logWindow = document.getElementById('log-window');
+      const toggleBtn = document.getElementById('toggle-log-btn');
+      const toggleIcon = document.getElementById('toggle-icon');
+
+      if (logWindow.classList.contains('collapsed')) {
+        logWindow.classList.remove('collapsed');
+        toggleBtn.innerHTML = '<svg class="icon" id="toggle-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 14px; height: 14px;"><path d="M18 15L12 9L6 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Скрыть';
+      } else {
+        logWindow.classList.add('collapsed');
+        toggleBtn.innerHTML = '<svg class="icon" id="toggle-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 14px; height: 14px;"><path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Показать';
+      }
+    }
+
+    function updateStatusIcon(type) {
+      const status = document.getElementById('status');
+      const icons = {
+        default: '<svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="white" stroke-width="2"/><path d="M12 6V12L16 14" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>',
+        success: '<svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 6L9 17L4 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+        error: '<svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 6L6 18M6 6L18 18" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      };
+      const icon = icons[type] || icons.default;
+      status.innerHTML = icon + ' ' + status.textContent.replace(/^[^\u0000-\u007F]*\s*/, '');
+    }
+
+    onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+
+      // Логируем все входящие сообщения (только в консоль, не в UI)
+      console.log('📨 Получено сообщение:', msg.type, msg);
+
+      if (msg.type === 'init') {
+        if (typeof msg.token === 'string' && msg.token) {
+          const input = document.getElementById('api-token');
+          if (input) {
+            input.value = msg.token;
+            addLog(`🔐 Токен загружен из хранилища (${msg.token.length} символов)`, 'success');
+          } else {
+            addLog('⚠️ Поле токена не найдено', 'error');
+          }
+        } else {
+          addLog('ℹ️ Токен не найден в хранилище', 'info');
+        }
+        return;
+      }
+      if (msg.type === 'upload-images') {
+        const images = msg.images || [];
+        const token = msg.token || '';
+        addLog(`🔄 Загружаю изображения: найдено ${images.length}`, 'info');
+        uploadImagesToAPI(images, token);
+        return;
+      }
+
+      if (msg.type === 'cache-images') {
+        cachedImages = msg.images || [];
+        addLog(`🖼️ Подготовлено изображений: ${cachedImages.length}`, 'info');
+        return;
+      }
+
+      if (msg.type === 'status') {
+        const status = document.getElementById('status');
+        status.className = 'status';
+        status.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="white" stroke-width="2"/><path d="M12 6V12L16 14" stroke="white" stroke-width="2" stroke-linecap="round"/></svg> ' + msg.message;
+      }
+      else if (msg.type === 'log') {
+        let logType = 'info';
+        // Сохраняем все эмодзи для отображения
+        const message = msg.message.trim();
+        if (msg.message.includes('✅') || msg.message.includes('🎉')) {
+          logType = 'success';
+        } else if (msg.message.includes('❌') || msg.message.includes('⚠️')) {
+          logType = 'error';
+        }
+        addLog(message, logType);
+      }
+      else if (msg.type === 'error') {
+        const status = document.getElementById('status');
+        status.className = 'status error';
+        status.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 6L6 18M6 6L18 18" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> ' + msg.message;
+
+        addLog(msg.message, 'error');
+
+        const btn = document.getElementById('generate');
+        btn.disabled = false;
+        btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Генерировать код';
+      }
+      else if (msg.type === 'code-generated') {
+        try {
+          console.log('🎯 ОБРАБОТЧИК code-generated ВЫЗВАН!');
+          addLog('🎯 Обработка code-generated...', 'info');
+
+          generatedCSharp = msg.csharp;
+          frameName = msg.frameName || 'Plugin';
+
+          console.log('📝 Код получен, длина:', msg.csharp ? msg.csharp.length : 0);
+          addLog(`📝 Код получен: ${msg.csharp ? msg.csharp.length : 0} символов`, 'info');
+
+          // Вставляем код (без подсветки синтаксиса для простоты)
+          const codeBox = document.getElementById('code-csharp');
+          if (codeBox) {
+            // Экранируем HTML и вставляем как текст
+            codeBox.textContent = msg.csharp;
+            console.log('✅ Код вставлен в codeBox');
+            addLog('✅ Код вставлен в окно', 'success');
+          } else {
+            console.error('❌ Элемент code-csharp не найден!');
+            addLog('❌ Ошибка: элемент code-csharp не найден', 'error');
+          }
+
+          const outputDiv = document.getElementById('code-output');
+          if (outputDiv) {
+            outputDiv.classList.add('visible');
+            console.log('✅ Блок code-output показан');
+            addLog('✅ Блок с кодом отображен', 'success');
+
+            // Прокручиваем к коду
+            setTimeout(() => {
+              outputDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+          } else {
+            console.error('❌ Элемент code-output не найден!');
+            addLog('❌ Ошибка: элемент code-output не найден', 'error');
+          }
+
+          // Разблокируем кнопку генерации
+          const btn = document.getElementById('generate');
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Генерировать C# код';
+            addLog('✅ Кнопка разблокирована', 'success');
+          }
+
+          // Скрыть кнопки действий
+          const actionButtons = document.getElementById('action-buttons');
+          if (actionButtons) {
+            actionButtons.style.display = 'none';
+          }
+
+          const status = document.getElementById('status');
+          if (status) {
+            status.className = 'status success';
+            status.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 6L9 17L4 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> C# код успешно сгенерирован!';
+          }
+
+          addLog('✅ Готово! C# код доступен для копирования и скачивания', 'success');
+          console.log('✅ Обработка code-generated завершена успешно');
+        } catch (error) {
+          console.error('❌ ОШИБКА в обработчике code-generated:', error);
+          addLog(`❌ ОШИБКА: ${error.message}`, 'error');
+
+          // Разблокируем кнопку даже при ошибке
+          const btn = document.getElementById('generate');
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Генерировать C# код';
+          }
+        }
+      }
+      else if (msg.type === 'html-generated') {
+        try {
+          generatedHTML = msg.html;
+          frameName = msg.frameName || 'Page';
+
+          addLog(`📝 HTML получен: ${msg.html ? msg.html.length : 0} символов`, 'info');
+
+          const codeBox = document.getElementById('code-html');
+          if (codeBox) {
+            codeBox.textContent = msg.html;
+            addLog('✅ HTML вставлен в окно', 'success');
+          }
+
+          const outputDiv = document.getElementById('html-output');
+          if (outputDiv) {
+            outputDiv.classList.add('visible');
+            addLog('✅ Блок с HTML отображен', 'success');
+
+            setTimeout(() => {
+              outputDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+          }
+
+          const btn = document.getElementById('generate-html');
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;"><path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Генерировать HTML страницу';
+          }
+
+          const status = document.getElementById('status');
+          if (status) {
+            status.className = 'status success';
+            status.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 6L9 17L4 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> HTML успешно сгенерирован!';
+          }
+
+          addLog('✅ Готово! HTML доступен для копирования и скачивания', 'success');
+        } catch (error) {
+          addLog(`❌ ОШИБКА: ${error.message}`, 'error');
+
+          const btn = document.getElementById('generate-html');
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;"><path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Генерировать HTML страницу';
+          }
+        }
+      }
+      else if (msg.type === 'images-start') {
+        // Начало получения изображений
+        window.downloadImagesData = {
+          total: msg.total,
+          frameName: msg.frameName || 'Frame',
+          fileMap: {},
+          received: 0
+        };
+        addLog(`📦 Получаю ${msg.total} изображений...`, 'info');
+      }
+      else if (msg.type === 'images-chunk') {
+        // Получаем порцию изображений
+        try {
+          if (!window.downloadImagesData) return;
+
+          const images = msg.images || [];
+          for (const img of images) {
+            const bytes = new Uint8Array(img.data);
+            window.downloadImagesData.fileMap[img.name] = bytes;
+            window.downloadImagesData.received++;
+          }
+
+          const progress = `${window.downloadImagesData.received}/${window.downloadImagesData.total}`;
+          addLog(`📥 Получено изображений: ${progress}`, 'info');
+        } catch (error) {
+          addLog(`⚠️ Ошибка получения: ${error.message}`, 'error');
+        }
+      }
+      else if (msg.type === 'images-complete') {
+        // Все изображения получены, создаём ZIP
+        try {
+          if (!window.downloadImagesData) return;
+
+          const data = window.downloadImagesData;
+          addLog(`📦 Создаю ZIP архив с ${data.received} изображениями...`, 'info');
+
+          const zipBytes = zipSync(data.fileMap);
+          const blob = new Blob([zipBytes], { type: 'application/zip' });
+          const url = URL.createObjectURL(blob);
+
+          const cleanName = data.frameName.replace(/\s+/g, '_');
+          const fileName = `${cleanName}_images.zip`;
+
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+
+          addLog(`✅ Архив ${fileName} скачан!`, 'success');
+
+          const btn = document.getElementById('download-images');
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15L16 10L5 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Скачать все изображения';
+          }
+
+          const status = document.getElementById('status');
+          if (status) {
+            status.className = 'status success';
+            status.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 6L9 17L4 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Изображения успешно скачаны!';
+          }
+
+          // Очищаем данные
+          delete window.downloadImagesData;
+        } catch (error) {
+          addLog(`❌ ОШИБКА: ${error.message}`, 'error');
+
+          const btn = document.getElementById('download-images');
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15L16 10L5 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Скачать все изображения';
+          }
+
+          delete window.downloadImagesData;
+        }
+      }
+      else if (msg.type === 'keep-only-images-complete') {
+        const deleted = msg.deleted || 0;
+        const kept = msg.kept || 0;
+
+        addLog(`✅ Операция завершена!`, 'success');
+        addLog(`🗑️ Удалено: ${deleted} элементов`, 'info');
+        addLog(`✅ Оставлено: ${kept} изображений`, 'success');
+
+        const btn = document.getElementById('keep-only-images');
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;"><path d="M3 6H21M19 6V20C19 21 18 22 17 22H7C6 22 5 21 5 20V6M8 6V4C8 3 9 2 10 2H14C15 2 16 3 16 4V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11V17M14 11V17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Оставить только фотки';
+        }
+
+        const status = document.getElementById('status');
+        if (status) {
+          status.className = 'status success';
+          status.innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 6L9 17L4 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Удалено ${deleted}, оставлено ${kept}`;
+        }
+      }
+      else if (msg.type === 'css-generated') {
+        try {
+          generatedCSS = msg.css;
+          generatedCSSHTML = msg.html;
+          frameName = msg.frameName || 'Frame';
+
+          addLog(`📝 HTML файл получен: ${msg.html ? msg.html.length : 0} символов`, 'info');
+
+          const cssBox = document.getElementById('code-css');
+          if (cssBox) {
+            cssBox.textContent = msg.html;
+            addLog('✅ HTML файл вставлен в окно', 'success');
+          }
+
+          const outputDiv = document.getElementById('css-output');
+          if (outputDiv) {
+            outputDiv.classList.add('visible');
+            addLog('✅ Блок с CSS отображен', 'success');
+
+            setTimeout(() => {
+              outputDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+          }
+
+          const btn = document.getElementById('generate-css');
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;"><path d="M7 8H17M7 12H17M7 16H12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/></svg> Генерировать CSS + HTML';
+          }
+
+          const status = document.getElementById('status');
+          if (status) {
+            status.className = 'status success';
+            status.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 6L9 17L4 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> CSS успешно сгенерирован!';
+          }
+
+          addLog('✅ Готово! CSS и HTML доступны для копирования', 'success');
+        } catch (error) {
+          addLog(`❌ ОШИБКА: ${error.message}`, 'error');
+
+          const btn = document.getElementById('generate-css');
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;"><path d="M7 8H17M7 12H17M7 16H12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/></svg> Генерировать CSS + HTML';
+          }
+        }
+      }
+      else if (msg.type === 'prefill-token') {
+        const { apiToken } = msg;
+        if (apiToken) {
+          const input = document.getElementById('api-token');
+          input.value = apiToken;
+        }
+      }
+    };
+
+
+
+  </script>
+</body>
+
+</html>

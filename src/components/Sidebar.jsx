@@ -1,0 +1,98 @@
+import React, { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, Server, Settings, LogOut, Rocket, X, Image } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+
+const Sidebar = ({ isOpen, onClose }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const menuItems = [
+    { icon: LayoutDashboard, label: 'Обзор', path: '/dashboard' },
+    { icon: Server, label: 'API Центр', path: '/dashboard/api' },
+    { icon: Image, label: 'Галерея', path: '/dashboard/gallery' },
+    { icon: Settings, label: 'Настройки', path: '/dashboard/settings' },
+  ];
+
+  const isActive = (path) => location.pathname === path;
+
+  const SidebarContent = () => (
+    <div className="h-full flex flex-col">
+      <div className="p-6 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-accent-primary text-accent-secondary flex items-center justify-center shadow-lg shadow-accent-primary/10">
+            <Rocket className="w-6 h-6" />
+          </div>
+          <span className="font-bold text-xl tracking-wider text-text-main">Cosmo</span>
+        </div>
+        {/* Close button for mobile only */}
+        <button onClick={onClose} className="md:hidden p-2 text-text-muted hover:text-text-main">
+          <X className="w-6 h-6" />
+        </button>
+      </div>
+
+      <nav className="flex-1 px-4 py-6 space-y-2">
+        {menuItems.map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+            onClick={onClose}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group relative overflow-hidden ${
+              isActive(item.path) 
+                ? 'bg-accent-primary text-accent-secondary shadow-lg' 
+                : 'text-text-muted hover:bg-bg-main hover:text-text-main'
+            }`}
+          >
+            <item.icon className={`w-5 h-5 ${isActive(item.path) ? 'text-accent-secondary' : 'group-hover:text-text-main transition-colors'}`} />
+            <span className="font-medium">{item.label}</span>
+          </Link>
+        ))}
+      </nav>
+
+      <div className="p-4 border-t border-border-color">
+        <button 
+          onClick={() => navigate('/')}
+          className="flex items-center gap-3 px-4 py-3 text-text-muted hover:text-text-main hover:bg-bg-main w-full rounded-xl transition-all"
+        >
+          <LogOut className="w-5 h-5" />
+          <span>Выход</span>
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      {/* Desktop Sidebar - Always Visible */}
+      <div className="hidden md:flex w-64 h-screen glass-panel border-r border-border-color flex-col fixed left-0 top-0 z-50">
+        <SidebarContent />
+      </div>
+
+      {/* Mobile Sidebar - Drawer */}
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={onClose}
+              className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed left-0 top-0 h-full w-64 bg-bg-main border-r border-border-color z-50 md:hidden"
+            >
+              <SidebarContent />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
+  );
+};
+
+export default Sidebar;

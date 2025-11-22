@@ -1,0 +1,14 @@
+{
+  "name": "Figma to Rust CUI Exporter v2.6",
+  "id": "bublickrust-rust-cui-exporter-v5",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"],
+  "networkAccess": {
+    "allowedDomains": [
+      "https://bublickrust.ru"
+    ]
+  }
+}
+
