@@ -96,7 +96,8 @@ app.use((err, req, res, next) => {
 // app.post('/api/:path*', (req, res) => { ... });
 
 // Catch-all: Serve index.html for React Router (SPA)
-app.get('*', (req, res) => {
+// Note: Using '/*' instead of '*' for compatibility with newer Express/path-to-regexp
+app.get('/*', (req, res) => {
     // Don't intercept API calls or static assets if they fall through
     if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
         return res.status(404).json({ error: 'Not found' });
