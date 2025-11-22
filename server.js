@@ -78,6 +78,19 @@ app.post('/api/images/upload', upload.single('image'), (req, res) => {
     });
 });
 
+// Error Handler for Multer and others
+app.use((err, req, res, next) => {
+    if (err instanceof multer.MulterError) {
+        // A Multer error occurred when uploading.
+        return res.status(400).json({ success: false, error: `Upload Error: ${err.message}` });
+    } else if (err) {
+        // An unknown error occurred when uploading.
+        console.error('[SERVER ERROR]', err);
+        return res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+    next();
+});
+
 // API: Generic mock for other endpoints
 app.post('/api/(.*)', (req, res) => {
     console.log(`[API] Mock POST request to ${req.path}`);
