@@ -14,11 +14,16 @@ const PORT = 3000;
 const CUSTOM_DOMAIN = 'https://bublickrust.ru/img';
 
 // Middleware
+// Enable CORS first to handle preflight requests
 app.use(cors({
     origin: '*', // Allow all origins (including null for local files/plugins)
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Explicit OPTIONS handler for preflight
+app.options('*', cors());
+
 app.use(express.json());
 
 // Static files from React build
