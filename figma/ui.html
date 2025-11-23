@@ -93,7 +93,7 @@
 
     /* Content */
     .content-container {
-        flex: 1; overflow-y: auto; padding: 24px; padding-bottom: 90px;
+        flex: 1; overflow-y: auto; padding: 24px; padding-bottom: 130px;
         padding-top: 60px; /* Space for header */
         position: relative;
     }
@@ -119,6 +119,10 @@
         background: rgba(255,255,255,0.1); 
         border-color: var(--glass-border);
     }
+    .user-profile-corner.active-menu {
+        background: rgba(255,255,255,0.15);
+        border-color: var(--accent-color);
+    }
     
     .corner-avatar {
         width: 28px; height: 28px; border-radius: 50%;
@@ -130,6 +134,145 @@
         max-width: 100px; white-space: nowrap; 
         overflow: hidden; text-overflow: ellipsis; 
     }
+
+    /* PROFILE MENU */
+    .profile-menu {
+        position: fixed;
+        top: 60px; 
+        right: 20px;
+        background: var(--glass-panel);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        padding: 8px;
+        display: none;
+        flex-direction: column;
+        gap: 4px;
+        z-index: 1001;
+        min-width: 140px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        animation: slideDown 0.2s ease;
+    }
+    .profile-menu.visible { display: flex; }
+
+    .menu-item {
+        display: flex; align-items: center; gap: 8px;
+        padding: 10px; border-radius: 8px;
+        background: transparent; border: none;
+        color: var(--text-muted); font-size: 11px; font-weight: 500;
+        cursor: pointer; transition: all 0.2s;
+        text-align: left; width: 100%;
+    }
+    .menu-item:hover {
+        background: rgba(255,255,255,0.1);
+        color: var(--text-main);
+    }
+    .menu-item.logout:hover {
+        background: rgba(255, 50, 50, 0.1);
+        color: #ff4d4d;
+    }
+
+    /* ROLE GLOW ANIMATION */
+    @keyframes borderFlow {
+        0% { background-position: 0% 50%; }
+        100% { background-position: 200% 50%; }
+    }
+
+    .user-profile-corner {
+        --glow-color: #4d88ff; /* Default User Blue */
+    }
+
+    .user-profile-corner.with-glow {
+        border-color: transparent !important;
+        box-shadow: 0 0 15px var(--glow-color);
+        position: fixed;
+    }
+
+    .user-profile-corner.with-glow::after {
+        content: ""; position: absolute; inset: 0; border-radius: 30px; padding: 1.5px;
+        background: linear-gradient(115deg, var(--glow-color), #fff, var(--glow-color)); 
+        background-size: 200% 100%;
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor; mask-composite: exclude;
+        animation: borderFlow 3s linear infinite;
+        pointer-events: none; z-index: 2; opacity: 0.8;
+    }
+
+    /* Role Specific Colors */
+    .user-profile-corner.is-admin { --glow-color: #ff4d4d; } /* Red */
+    .user-profile-corner.is-plus { --glow-color: #00ff88; }  /* Green */
+    .user-profile-corner.is-user { --glow-color: #4d88ff; }  /* Blue */
+
+    /* PLUS MODAL */
+    #plus-modal {
+        position: fixed; inset: 0; z-index: 9999;
+        background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+        display: none; align-items: center; justify-content: center;
+        opacity: 0; transition: opacity 0.3s;
+    }
+    #plus-modal.visible { display: flex; opacity: 1; }
+    
+    .plus-card {
+        background: rgba(20, 20, 20, 0.9);
+        box-shadow: 0 0 50px rgba(0, 255, 136, 0.2), inset 0 0 20px rgba(0, 255, 136, 0.1);
+        border-radius: 24px; padding: 32px; width: 90%; max-width: 400px;
+        text-align: center; transform: scale(0.9); transition: transform 0.3s;
+        position: relative; overflow: hidden;
+        /* Border removed here, handled by ::after for animation */
+    }
+    #plus-modal.visible .plus-card { transform: scale(1); }
+
+    /* Animated Border for Plus Card */
+    .plus-card::after {
+        content: ""; position: absolute; inset: 0; border-radius: 24px; padding: 1.5px;
+        background: linear-gradient(115deg, #00ff88, #fff, #00ff88); 
+        background-size: 200% 100%;
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor; mask-composite: exclude;
+        animation: borderFlow 3s linear infinite;
+        pointer-events: none; z-index: 2; opacity: 0.8;
+    }
+    
+    .plus-badge {
+        background: linear-gradient(135deg, #00ff88, #00cc6a);
+        color: #000; font-weight: 800; padding: 4px 12px; border-radius: 12px;
+        font-size: 12px; display: inline-block; margin-bottom: 16px;
+        box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+    }
+    
+    .plus-title {
+        font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 8px;
+        text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    
+    .plus-list {
+        text-align: left; margin: 24px 0; display: flex; flex-direction: column; gap: 12px;
+    }
+    .plus-item { display: flex; align-items: center; gap: 12px; font-size: 13px; color: #ddd; }
+    .plus-check { 
+        color: #00ff88; flex-shrink: 0; width: 18px; height: 18px; 
+        background: rgba(0, 255, 136, 0.1); border-radius: 50%; 
+        display: flex; align-items: center; justify-content: center;
+    }
+    
+    .btn-plus-action {
+        background: #00ff88; color: #000; border: none; width: 100%;
+        padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer;
+        font-size: 14px; margin-top: 8px; transition: all 0.2s;
+    }
+    .btn-plus-action:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0, 255, 136, 0.4); }
+    
+    .btn-close-modal {
+        position: absolute; top: 16px; right: 16px; background: transparent; border: none;
+        color: #666; cursor: pointer; padding: 4px;
+    }
+    .btn-close-modal:hover { color: #fff; }
+
+    /* Monokai Theme Admin Override */
+    [data-theme="monokai"] .user-profile-corner.is-admin { --glow-color: #f92672; }
+    [data-theme="monokai"] .user-profile-corner.is-plus { --glow-color: #a6e22e; }
 
     /* LOGS CORNER */
     .logs-corner {
@@ -400,17 +543,24 @@
     .log-box.visible { display: block; }
     .log-item { margin-bottom: 4px; display: flex; gap: 6px; }
 
-    /* Navbar */
-    .navbar {
+    /* Navbar Container */
+    .navbar-container {
         position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
         width: calc(100% - 40px);
-        background: var(--glass-panel); backdrop-filter: blur(20px);
-        border: 1px solid var(--glass-border); border-radius: 20px;
-        display: flex; justify-content: space-between; padding: 6px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.5); z-index: 100;
+        display: flex; flex-direction: column; align-items: center; gap: 8px;
+        z-index: 100;
         transition: transform 0.3s ease;
     }
-    .navbar.hidden { transform: translateX(-50%) translateY(100px); }
+    .navbar-container.hidden { transform: translateX(-50%) translateY(150px); }
+
+    /* Navbar Panel */
+    .navbar-panel {
+        width: 100%;
+        display: flex; gap: 4px; padding: 6px;
+        background: var(--glass-panel); backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border); border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
 
     .nav-btn {
         flex: 1; background: transparent; border: none; color: var(--text-muted);
@@ -428,6 +578,12 @@
         box-shadow: 0 2px 10px rgba(0,0,0,0.2); 
     }
     .nav-btn.active svg { stroke: currentColor; }
+
+    .version-label {
+        font-size: 9px; color: var(--text-muted); opacity: 0.5;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        font-weight: 500;
+    }
 
     /* Input Fields */
     .input-wrapper { position: relative; width: 100%; }
@@ -473,16 +629,77 @@
 
   <!-- LOGS CORNER -->
   <div class="logs-corner" onclick="toggleLogs()" title="Логи">
-     📜
+     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>
   </div>
 
   <!-- LOG WINDOW -->
   <div class="log-box" id="log-window"></div>
 
   <!-- USER PROFILE CORNER -->
-  <div class="user-profile-corner" id="user-profile-corner" onclick="if(confirm('Выйти из аккаунта?')) logout();">
+  <div class="user-profile-corner" id="user-profile-corner" onclick="toggleProfileMenu()">
       <img src="" class="corner-avatar" id="header-user-avatar" alt="">
       <div class="corner-name" id="header-user-name">User</div>
+  </div>
+  
+  <!-- PROFILE MENU -->
+  <div class="profile-menu" id="profile-menu">
+      <div style="padding: 4px 8px; font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Аккаунт</div>
+      
+      <!-- ROLE BADGE -->
+      <div id="menu-role-display" style="margin: 4px 8px 8px 8px; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; background: rgba(255,255,255,0.05); color: var(--text-muted); display: inline-block;">
+        Loading...
+      </div>
+
+      <button class="menu-item" id="btn-upgrade-menu" onclick="openPlusModal()" style="display: none; border: 1px solid #FFD700;">
+        <span style="color: #00ff88;">🚀</span> <span style="color: #fff;">Улучшить до PLUS</span>
+      </button>
+
+      <button class="menu-item logout" onclick="logout()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          Выйти
+      </button>
+  </div>
+
+  <!-- PLUS MODAL -->
+  <div id="plus-modal">
+    <div class="plus-card">
+        <button class="btn-close-modal" onclick="closePlusModal()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+        
+        <div class="plus-badge">PREMIUM</div>
+        <div class="plus-title">Bublick <span style="color:#00ff88">PLUS</span></div>
+        <div style="font-size:12px; color:rgba(255,255,255,0.6);">Максимальные возможности для вашего творчества</div>
+        
+        <div class="plus-list">
+            <div class="plus-item">
+                <div class="plus-check">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/></svg>
+                </div>
+                <div><b>Безлимитное использование</b> API</div>
+            </div>
+            <div class="plus-item">
+                <div class="plus-check">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/></svg>
+                </div>
+                <div>Доступ к <b>Искусственному Интеллекту</b></div>
+            </div>
+            <div class="plus-item">
+                <div class="plus-check">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                </div>
+                <div>Доступ ко всем <b>RustItems</b> ассетам</div>
+            </div>
+            <div class="plus-item">
+                <div class="plus-check">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                </div>
+                <div>Приоритетная генерация кода</div>
+            </div>
+        </div>
+        
+        <button class="btn-plus-action" onclick="window.open('https://bublickrust.ru/plus', '_blank')">ПОЛУЧИТЬ PLUS</button>
+    </div>
   </div>
 
   <div id="toast-container"></div>
@@ -637,26 +854,29 @@
         
         <div style="margin-top:24px; padding:16px; background:var(--glass-panel); border-radius:12px; text-align:center;">
             <div style="font-size:14px; font-weight:700; color:var(--text-main);">Bublick UI Exporter</div>
-            <div style="font-size:10px; color:var(--text-muted); margin-top:4px;">Version 3.5.0</div>
+            <div style="font-size:10px; color:var(--text-muted); margin-top:4px;">Последнее обновление: 23.11.2025</div>
         </div>
     </div>
 
   </div>
 
   <!-- NAVBAR -->
-  <div class="navbar hidden" id="main-navbar">
-    <button class="nav-btn active" onclick="switchTab('gen', this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
-        <span class="nav-label">Главная</span>
-    </button>
-    <button class="nav-btn" onclick="switchTab('extra', this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
-        <span class="nav-label">Экстра</span>
-    </button>
-    <button class="nav-btn" onclick="switchTab('settings', this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-        <span class="nav-label">Опции</span>
-    </button>
+  <div class="navbar-container hidden" id="main-navbar">
+    <div class="navbar-panel">
+        <button class="nav-btn active" onclick="switchTab('gen', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+            <span class="nav-label">Главная</span>
+        </button>
+        <button class="nav-btn" onclick="switchTab('extra', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+            <span class="nav-label">Экстра</span>
+        </button>
+        <button class="nav-btn" onclick="switchTab('settings', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <span class="nav-label">Опции</span>
+        </button>
+    </div>
+    <div class="version-label">Последнее обновление: 23.11.2025</div>
   </div>
 
   <script>
@@ -708,7 +928,50 @@
                     }
                     
                     // Show Pill
-                    document.getElementById('user-profile-corner').classList.add('visible');
+                    const profileCorner = document.getElementById('user-profile-corner');
+                    profileCorner.classList.add('visible');
+                    
+                    // Determine Role Display
+                    const roleEl = document.getElementById('menu-role-display');
+                    let roleName = 'User';
+                    let roleColor = '#aaa';
+                    
+                    // Check Admin & Plus
+                    // Support multiple casing: is_admin (DB), isAdmin (legacy), role (explicit)
+                    const isAdmin = currentUser.is_admin === true || currentUser.isAdmin === true || currentUser.role === 'admin';
+                    const isPlus = currentUser.is_plus === true || currentUser.isPlus === true || currentUser.role === 'plus';
+
+                    // Reset Classes
+                    profileCorner.classList.remove('is-admin', 'is-plus', 'is-user', 'with-glow');
+                    profileCorner.classList.add('with-glow'); // Enable glow for everyone now (colors differ)
+
+                    if (isAdmin) {
+                        roleName = 'ADMIN';
+                        roleColor = '#ff4d4d';
+                        profileCorner.classList.add('is-admin');
+                    } else if (isPlus) {
+                         roleName = 'PLUS';
+                         roleColor = '#00ff88'; // Green
+                         profileCorner.classList.add('is-plus');
+                    } else {
+                         roleName = 'USER';
+                         roleColor = '#4d88ff'; // Blue
+                         profileCorner.classList.add('is-user');
+                    }
+                    
+                    // Show Upgrade Button if not Plus (Admins can see it too)
+                    const upgradeBtn = document.getElementById('btn-upgrade-menu');
+                    if (upgradeBtn) {
+                        // Show if NOT Plus OR if Admin (Admin overrides Plus check if needed, or just always show for admin)
+                        // Logic: Hide only if (isPlus AND NOT isAdmin)
+                        upgradeBtn.style.display = (isPlus && !isAdmin) ? 'none' : 'flex';
+                    }
+                    
+                    roleEl.textContent = roleName;
+                    roleEl.style.color = roleColor;
+                    roleEl.style.borderColor = roleColor;
+                    roleEl.style.border = `1px solid ${roleColor}`;
+                    roleEl.style.background = `${roleColor}15`; // Low opacity bg
 
                     // Switch to Main App
                     showMainApp();
@@ -748,14 +1011,55 @@
         document.getElementById('auth-token').value = '';
         parent.postMessage({ pluginMessage: { type: 'save-token', apiToken: '' } }, '*');
         showAuthScreen();
+        toggleProfileMenu(false); // Force close
+        // Remove glows
+        const profileCorner = document.getElementById('user-profile-corner');
+        profileCorner.classList.remove('visible', 'is-admin', 'is-plus', 'is-user', 'with-glow');
         showToast('Вы вышли из аккаунта');
     }
+    
+    function openPlusModal() {
+        toggleProfileMenu(false);
+        document.getElementById('plus-modal').classList.add('visible');
+    }
+    
+    function closePlusModal() {
+        document.getElementById('plus-modal').classList.remove('visible');
+    }
+    
+    function toggleProfileMenu(forceState) {
+        const menu = document.getElementById('profile-menu');
+        const btn = document.getElementById('user-profile-corner');
+        
+        if (typeof forceState === 'boolean') {
+            if (forceState) {
+                menu.classList.add('visible');
+                btn.classList.add('active-menu');
+            } else {
+                menu.classList.remove('visible');
+                btn.classList.remove('active-menu');
+            }
+        } else {
+            menu.classList.toggle('visible');
+            btn.classList.toggle('active-menu');
+        }
+    }
+    
+    // Close menu on click outside
+    window.addEventListener('click', (e) => {
+        const menu = document.getElementById('profile-menu');
+        const btn = document.getElementById('user-profile-corner');
+        if (menu.classList.contains('visible') && !menu.contains(e.target) && !btn.contains(e.target)) {
+            toggleProfileMenu(false);
+        }
+    });
 
     function showAuthScreen() {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById('page-auth').classList.add('active');
         document.getElementById('main-navbar').classList.add('hidden');
         document.getElementById('user-profile-corner').classList.remove('visible');
+        document.getElementById('user-profile-corner').classList.remove('is-admin');
     }
 
     function showMainApp() {
@@ -1132,13 +1436,26 @@
             frameName = msg.frameName;
             // Also can store fileKey if needed, but better to send it with analytics
             
-            // Trigger analytics ping with file_key
+            // Trigger analytics ping with file_key and file_name from Plugin API
             const fileKey = msg.fileKey || 'unknown';
-            const fileName = encodeURIComponent(document.title || frameName || 'Unknown Project');
+            const fileName = encodeURIComponent(msg.fileName || document.title || 'Unknown Project');
+            
+            addLog(`Отправка аналитики: ${decodeURIComponent(fileName)} (${fileKey})`, 'info');
+
             if(currentToken) {
                 fetch(`https://bublickrust.ru/api/user/analytics?range=24h&file_name=${fileName}&file_key=${fileKey}`, {
                    headers: { 'Authorization': `Bearer ${currentToken}` }
-                }).catch(e => console.error('Analytics ping failed', e));
+                })
+                .then(r => {
+                    if(r.ok) addLog('Аналитика отправлена успешно', 'success');
+                    else addLog(`Ошибка аналитики: ${r.status}`, 'error');
+                })
+                .catch(e => {
+                    console.error('Analytics ping failed', e);
+                    addLog('Сбой отправки аналитики', 'error');
+                });
+            } else {
+                addLog('Аналитика пропущена: нет токена', 'error');
             }
 
             const area = document.getElementById('code-output');

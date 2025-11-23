@@ -179,11 +179,21 @@ async function generateCode() {
     const cuiCode = generateRustCUI(node, imageMap);
     const csharpCode = generateCSharpCode(node, imageMap, currentAssetMode, currentAnchorMode);
 
-    // Get File Key (ID)
-    const fileKey = figma.fileKey;
+      // Get File Key (ID) and Name
+    const fileKey = figma.fileKey || 'local_draft';
+    const fileName = figma.root.name || 'Untitled';
 
-    figma.ui.postMessage({ type: 'code-generated', cui: cuiCode, csharp: csharpCode, frameName: frameName, fileKey: fileKey });
-    // figma.ui.postMessage({ type: 'log', message: '🎉 Генерация завершена!' }); // Toast handles this
+    figma.ui.postMessage({ 
+        type: 'code-generated', 
+        cui: cuiCode, 
+        csharp: csharpCode, 
+        frameName: frameName, 
+        fileKey: fileKey,
+        fileName: fileName 
+    });
+    
+    // Log debug info
+    console.log('Generated Code for:', fileName, fileKey);
   } catch (error) {
     figma.ui.postMessage({ type: 'error', message: `❌ Ошибка: ${error.message}` });
   }
