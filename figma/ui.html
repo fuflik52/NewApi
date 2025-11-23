@@ -1445,6 +1445,14 @@
         </svg>
         Выровнять тексты по высоте
       </button>
+
+      <button class="button button-secondary" onclick="testUpload()" style="margin-top: 10px; border-color: rgba(255, 165, 0, 0.3);">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+          style="width: 16px; height: 16px;">
+          <path d="M12 19V5M5 12l7-7 7 7" stroke="orange" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span style="color: orange;">Тест загрузки картинки</span>
+      </button>
     </div>
 
     <!-- Контент таба HTML -->
@@ -2067,6 +2075,26 @@
       
       addLog('📏 Выравниваю высоту текстов...', 'info');
       parent.postMessage({ pluginMessage: { type: 'align-text-heights' } }, '*');
+    }
+
+    function testUpload() {
+      const apiToken = document.getElementById('api-token').value.trim();
+      if (!apiToken) {
+        alert('Введите API токен!');
+        return;
+      }
+      
+      clearLog();
+      // Автоматически открываем лог-окно
+      const logWindow = document.getElementById('log-window');
+      const toggleBtn = document.getElementById('toggle-log-btn');
+      if (logWindow.classList.contains('collapsed')) {
+        logWindow.classList.remove('collapsed');
+        toggleBtn.innerHTML = '<svg class="icon" id="toggle-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 14px; height: 14px;"><path d="M18 15L12 9L6 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Скрыть';
+      }
+
+      addLog('🧪 Начинаю тест загрузки...', 'info');
+      parent.postMessage({ pluginMessage: { type: 'test-upload', apiToken } }, '*');
     }
 
     function generateCode() {

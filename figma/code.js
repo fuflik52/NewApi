@@ -85,6 +85,8 @@ figma.ui.onmessage = async (msg) => {
       } catch (e) {
         figma.ui.postMessage({ type: 'error', message: `❌ Debug error: ${e.message}` });
       }
+    } else if (msg.type === 'test-upload') {
+      await handleTestUpload(msg.apiToken);
     }
   } catch (error) {
     figma.ui.postMessage({ type: 'error', message: `❌ Ошибка: ${error.message}` });
@@ -3574,4 +3576,47 @@ function escapeHtml(text) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
+}
+
+// Test Upload Function
+async function handleTestUpload(token) {
+  figma.ui.postMessage({ type: 'log', message: '🧪 Подготовка тестового изображения...' });
+  
+  // Create a small dummy frame to export
+  const frame = figma.createFrame();
+  frame.resize(100, 100);
+  frame.name = "Test_Upload_Image";
+  frame.fills = [{ type: 'SOLID', color: { r: 1, g: 0.5, b: 0 } }]; // Orange
+  
+  // Add some text
+  const text = figma.createText();
+  await figma.loadFontAsync({ family: "Inter", style: "Regular" });
+  text.characters = "TEST";
+  text.fontSize = 24;
+  text.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
+  text.x = 20;
+  text.y = 35;
+  frame.appendChild(text);
+
+  try {
+    const bytes = await frame.exportAsync({ format: 'PNG' });
+    const imagesPayload = [{
+      nodeId: 'test-upload',
+      hash: 'test-upload',
+      bytes: Array.from(bytes),
+      filename: 'test_upload_image.png',
+      mime: 'image/png'
+    }];
+
+    figma.ui.postMessage({ type: 'log', message: '📤 Отправка на сервер...' });
+    
+    // We use the same UI delegation mechanism
+    figma.ui.postMessage({ type: 'upload-images', images: imagesPayload, token });
+    
+  } catch (e) {
+    figma.ui.postMessage({ type: 'error', message: `❌ Ошибка теста: ${e.message}` });
+  } finally {
+    // Cleanup
+    frame.remove();
+  }
 }
