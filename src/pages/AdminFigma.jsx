@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Figma, ExternalLink, Users, Activity } from 'lucide-react';
+import { ExternalLink, Users, Activity } from 'lucide-react';
 import Loader from '../components/Loader';
+import FigmaColorIcon from '../components/icons/FigmaColorIcon';
 
 const AdminFigma = () => {
   const [users, setUsers] = useState([]);
@@ -36,7 +37,7 @@ const AdminFigma = () => {
     <div className="space-y-8 pb-10">
        <header>
         <h1 className="text-3xl font-bold text-text-main mb-2 flex items-center gap-3">
-          <Figma className="text-[#F24E1E]" />
+          <FigmaColorIcon className="w-8 h-8" />
           Пользователи Figma
         </h1>
         <p className="text-text-muted">Мониторинг активности плагина "BublickRust"</p>
@@ -84,19 +85,19 @@ const AdminFigma = () => {
                         <a 
                           href={`https://www.figma.com/file/${user.figma_file_id}`} 
                           target="_blank" 
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 text-sm text-accent-primary hover:text-accent-primary/80 transition-colors"
-                        >
-                          <Figma className="w-4 h-4" />
-                          {user.figma_file_name || 'Unknown File'}
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
-                    ) : (
-                        <div className="inline-flex items-center gap-2 text-sm text-text-muted">
-                          <Figma className="w-4 h-4" />
-                          {user.figma_file_name || 'Unknown File'}
-                        </div>
-                    )}
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-sm text-accent-primary hover:text-accent-primary/80 transition-colors"
+                    >
+                      <FigmaColorIcon className="w-4 h-4" />
+                      {user.figma_file_name || 'Unknown File'}
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                ) : (
+                    <div className="inline-flex items-center gap-2 text-sm text-text-muted">
+                      <FigmaColorIcon className="w-4 h-4" />
+                      {user.figma_file_name || 'Unknown File'}
+                    </div>
+                )}
                   </td>
                    <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-2">
