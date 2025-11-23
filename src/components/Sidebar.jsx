@@ -22,7 +22,8 @@ const Sidebar = ({ isOpen, onClose }) => {
   }, []);
 
   const menuItems = [
-    { icon: LayoutDashboard, label: 'Обзор', path: '/dashboard' },
+    // Only show Dashboard/Overview to admins
+    ...(isAdmin ? [{ icon: LayoutDashboard, label: 'Обзор', path: '/dashboard' }] : []),
     { icon: Server, label: 'API Центр', path: '/dashboard/api' },
     { icon: Image, label: 'Галерея', path: '/dashboard/gallery' },
     ...(isAdmin ? [{ icon: Users, label: 'Все пользователи', path: '/dashboard/users' }] : []),
@@ -66,7 +67,10 @@ const Sidebar = ({ isOpen, onClose }) => {
 
       <div className="p-4 border-t border-border-color">
         <button 
-          onClick={() => navigate('/')}
+          onClick={() => {
+              localStorage.removeItem('auth_token');
+              navigate('/');
+          }}
           className="flex items-center gap-3 px-4 py-3 text-text-muted hover:text-text-main hover:bg-bg-main w-full rounded-xl transition-all"
         >
           <LogOut className="w-5 h-5" />

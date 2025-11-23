@@ -1,11 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import StarBackground from '../components/StarBackground';
 
 const Layout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Protect Routes: Check Auth on Mount and Route Change
+  useEffect(() => {
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+          navigate('/', { replace: true });
+      }
+  }, [navigate, location]);
 
   useEffect(() => {
       // Console command to claim admin

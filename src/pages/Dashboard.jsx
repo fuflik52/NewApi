@@ -4,6 +4,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { motion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
 import { dbService } from '../services/mockDatabase';
+import { useNavigate } from 'react-router-dom';
 
 const StatCard = ({ title, value, change, icon: Icon }) => (
   <div className="glass-panel p-6 rounded-2xl relative overflow-hidden hover:translate-y-[-2px] transition-transform duration-300 group">
@@ -64,6 +65,7 @@ const Dashboard = () => {
   const [stats, setStats] = useState({ users: 0, uploads: 0, storage_bytes: 0, requests: 0 });
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   // Real data state
   const [chartData, setChartData] = useState([]);
@@ -87,15 +89,19 @@ const Dashboard = () => {
             const data = await res.json();
             if (data.success && data.user.is_admin) {
                 setIsAdmin(true);
+            } else {
+                // Not admin? Redirect to API page
+                navigate('/dashboard/api', { replace: true });
             }
         } catch (e) {
             console.error(e);
+            navigate('/dashboard/api', { replace: true });
         } finally {
             setLoading(false);
         }
     };
     checkUser();
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -160,14 +166,7 @@ const Dashboard = () => {
 
   if (loading) return <div className="p-8">Loading...</div>;
 
-  if (!isAdmin) {
-      return (
-          <div className="glass-panel p-8 rounded-2xl text-center">
-              <h2 className="text-2xl font-bold text-text-main mb-4">Доступ ограничен</h2>
-              <p className="text-text-muted">Эта панель доступна только администраторам.</p>
-          </div>
-      );
-  }
+  if (!isAdmin) return null; // Should have redirected already
 
   return (
     <div className="space-y-8">

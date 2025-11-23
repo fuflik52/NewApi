@@ -32,8 +32,28 @@ class MockDatabase {
   // API Methods mirroring potential backend endpoints
 
   async getApiToken() {
-    // Return empty or fetch from real API if needed
-    return this.tokens[0] || null;
+    try {
+        const token = localStorage.getItem('auth_token');
+        if (!token) return null;
+
+        const res = await fetch('/api/user/me', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (res.ok) {
+            const data = await res.json();
+            if (data.success && data.user) {
+                return {
+                    id: data.user.id,
+                    token: data.user.api_token || 'No Token Found', // Fallback to prevent null crash
+                    user_id: data.user.id
+                };
+            }
+        }
+    } catch (e) {
+        console.error("Failed to fetch API token", e);
+    }
+    return { token: 'Loading...' }; // Return safe fallback object
   }
 
   async regenerateToken() {
