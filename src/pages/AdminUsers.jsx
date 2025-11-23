@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Copy } from 'lucide-react';
+import { Copy, Eye, EyeOff } from 'lucide-react';
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [visibleKeys, setVisibleKeys] = useState({});
+  const [visibleIPs, setVisibleIPs] = useState({});
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -15,8 +17,6 @@ const AdminUsers = () => {
         if (res.ok) {
             const data = await res.json();
             setUsers(data);
-        } else {
-            // Handle forbidden or error
         }
       } catch (e) {
         console.error(e);
@@ -29,7 +29,14 @@ const AdminUsers = () => {
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
-    // Could show toast here
+  };
+
+  const toggleKeyVisibility = (id) => {
+      setVisibleKeys(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const toggleIPVisibility = (id) => {
+      setVisibleIPs(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
   if (loading) return <div className="p-8">Loading users...</div>;
@@ -50,6 +57,8 @@ const AdminUsers = () => {
                 <th className="p-4 font-medium text-text-muted">Email</th>
                 <th className="p-4 font-medium text-text-muted">API Token</th>
                 <th className="p-4 font-medium text-text-muted">Роль</th>
+                <th className="p-4 font-medium text-text-muted">IP Адрес</th>
+                <th className="p-4 font-medium text-text-muted">Запросов</th>
                 <th className="p-4 font-medium text-text-muted">Дата регистрации</th>
               </tr>
             </thead>
@@ -71,13 +80,23 @@ const AdminUsers = () => {
                   <td className="p-4 text-text-muted">{user.email}</td>
                   <td className="p-4">
                     <div className="flex items-center gap-2 font-mono text-sm bg-bg-main px-2 py-1 rounded border border-border-color max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap relative group">
-                       <span className="truncate">{user.api_token}</span>
-                       <button 
-                         onClick={() => copyToClipboard(user.api_token)}
-                         className="opacity-0 group-hover:opacity-100 absolute right-0 bg-bg-main p-1 text-accent-primary"
-                       >
-                         <Copy className="w-3 h-3" />
-                       </button>
+                       <span className="truncate">
+                           {visibleKeys[user.id] ? user.api_token : '••••••••••••••••••••••'}
+                       </span>
+                       <div className="flex gap-1 ml-2">
+                           <button 
+                             onClick={() => toggleKeyVisibility(user.id)}
+                             className="text-text-muted hover:text-text-main"
+                           >
+                             {visibleKeys[user.id] ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                           </button>
+                           <button 
+                             onClick={() => copyToClipboard(user.api_token)}
+                             className="text-text-muted hover:text-accent-primary"
+                           >
+                             <Copy className="w-3 h-3" />
+                           </button>
+                       </div>
                     </div>
                   </td>
                   <td className="p-4">
@@ -90,6 +109,22 @@ const AdminUsers = () => {
                             User
                         </span>
                     )}
+                  </td>
+                  <td className="p-4">
+                      <div className="flex items-center gap-2">
+                          <span className={`font-mono text-sm ${visibleIPs[user.id] ? '' : 'blur-sm select-none'}`}>
+                              {user.ip_address || 'Unknown'}
+                          </span>
+                          <button 
+                             onClick={() => toggleIPVisibility(user.id)}
+                             className="text-text-muted hover:text-text-main p-1"
+                           >
+                             {visibleIPs[user.id] ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                           </button>
+                      </div>
+                  </td>
+                  <td className="p-4">
+                      <span className="font-mono text-text-main">{user.request_count || 0}</span>
                   </td>
                   <td className="p-4 text-text-muted text-sm">
                     {new Date(user.created_at).toLocaleDateString()}
@@ -105,4 +140,3 @@ const AdminUsers = () => {
 };
 
 export default AdminUsers;
-

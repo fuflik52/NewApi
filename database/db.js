@@ -39,7 +39,8 @@ const setupDatabase = () => {
                 email TEXT,
                 api_token TEXT,
                 is_admin INTEGER DEFAULT 0,
-                created_at TEXT NOT NULL
+                created_at TEXT NOT NULL,
+                ip_address TEXT
             )`);
 
             // Create api_tokens table (Multi-token support)
