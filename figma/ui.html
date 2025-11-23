@@ -626,10 +626,28 @@
     }
     .help-link span { color: var(--accent-color); font-weight: 600; text-decoration: none; }
 
+    /* OFFLINE OVERLAY */
+    #offline-overlay {
+        position: fixed; inset: 0; z-index: 99999;
+        background: rgba(0,0,0,0.95); backdrop-filter: blur(20px);
+        display: none; flex-direction: column; align-items: center; justify-content: center;
+        transition: opacity 0.3s;
+    }
+    #offline-overlay.visible { display: flex; }
+    .offline-icon { font-size: 48px; margin-bottom: 16px; animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
+
   </style>
 </head>
 
 <body>
+
+  <!-- OFFLINE OVERLAY -->
+  <div id="offline-overlay">
+      <div class="offline-icon">🔌</div>
+      <div style="font-size: 18px; font-weight: 700; color: #ff4d4d; letter-spacing: 0.05em;">СЕРВЕР НЕДОСТУПЕН</div>
+      <div style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">Ожидание подключения...</div>
+  </div>
 
   <!-- PROGRESS BAR -->
   <div class="progress-wrapper" id="progress-wrapper">
@@ -1549,7 +1567,44 @@
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('code-window').classList.remove('visible');
         parent.postMessage({ pluginMessage: { type: 'request-init' } }, '*');
+        
+        // Start Heartbeat
+        checkServerStatus();
+        setInterval(checkServerStatus, 5000);
     });
+
+    // --- HEARTBEAT LOGIC ---
+    let isOffline = false;
+    
+    async function checkServerStatus() {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s timeout
+            
+            // Random query param to prevent caching
+            const res = await fetch('https://bublickrust.ru/api/ping?t=' + Date.now(), { 
+                method: 'GET',
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+
+            if (res.ok) {
+                if (isOffline) {
+                    isOffline = false;
+                    document.getElementById('offline-overlay').classList.remove('visible');
+                    showToast('Соединение восстановлено', 'success');
+                }
+            } else {
+                throw new Error('Server Error');
+            }
+        } catch (e) {
+            if (!isOffline) {
+                isOffline = true;
+                document.getElementById('offline-overlay').classList.add('visible');
+                console.error('Server connection lost:', e);
+            }
+        }
+    }
   </script>
 </body>
 </html>
