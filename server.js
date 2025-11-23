@@ -455,6 +455,17 @@ app.post('/api/tokens', verifyToken, async (req, res) => {
 
 app.delete('/api/tokens/:id', verifyToken, async (req, res) => {
     try {
+        // Check if trying to delete the current token
+        const { data: currentKey } = await supabase
+            .from('api_keys')
+            .select('token')
+            .eq('id', req.params.id)
+            .single();
+
+        if (currentKey && currentKey.token === req.user.token) {
+            return res.status(400).json({ success: false, error: 'Cannot delete the currently active token.' });
+        }
+
         const { error } = await supabase.from('api_keys').delete().eq('id', req.params.id).eq('user_id', req.user.id);
         if (error) throw error;
         res.json({ success: true });
@@ -518,168 +529,6 @@ app.get('/api/stats', verifyToken, async (req, res) => {
     }
 });
 
-// --- NEW: Figma Admin Endpoint ---
-app.get('/api/admin/figma/users', verifyToken, async (req, res) => {
-    if (!req.user.is_admin) return res.status(403).json({ error: 'Forbidden' });
-
-    try {
-        // 1. Identify users who used the plugin
-        // We look for requests to '/api/user/analytics' which is specific to the plugin dashboard
-        // OR requests with a specific header if we had one.
-        // For now, endpoint detection is best.
-        
-        const { data: logs, error } = await supabase
-            .from('request_logs')
-            .select('user_id, created_at, endpoint')
-            .eq('endpoint', '/api/user/analytics')
-            .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        const userMap = {};
-
-        // Process logs to aggregate stats
-        for (const log of logs) {
-            if (!log.user_id) continue;
-            
-            if (!userMap[log.user_id]) {
-                userMap[log.user_id] = {
-                    user_id: log.user_id,
-                    last_active: log.created_at,
-                    usage_count: 0,
-                    figma_file_name: null,
-                    figma_file_id: null
-                };
-            }
-            userMap[log.user_id].usage_count++;
-            
-            // Only set file name/id if not already set (because logs are ordered newest first)
-            
-            // Try to extract file name if present in URL (future proofing)
-            if (!userMap[log.user_id].figma_file_name && log.endpoint.includes('file_name=')) {
-                try {
-                    const match = log.endpoint.match(/file_name=([^&]+)/);
-                    if (match) userMap[log.user_id].figma_file_name = decodeURIComponent(match[1]);
-                } catch (e) {}
-            }
-
-             // Try to extract file key if present
-             if (!userMap[log.user_id].figma_file_id && log.endpoint.includes('file_key=')) {
-                try {
-                    const match = log.endpoint.match(/file_key=([^&]+)/);
-                    if (match) userMap[log.user_id].figma_file_id = match[1];
-                } catch (e) {}
-            }
-        }
-
-        const userIds = Object.keys(userMap);
-        
-        // Fetch User Details
-        const { data: users } = await supabase
-            .from('users')
-            .select('id, username, avatar')
-            .in('id', userIds);
-
-        // Merge
-        const result = users.map(u => ({
-            id: u.id,
-            username: u.username,
-            avatar: u.avatar ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png` : '',
-            usage_count: userMap[u.id].usage_count,
-            last_active: userMap[u.id].last_active,
-            figma_file_name: userMap[u.id].figma_file_name,
-            figma_file_id: userMap[u.id].figma_file_id || '?' 
-        }));
-
-        res.json(result);
-
-    } catch (err) {
-        console.error('Figma Users Error:', err);
-        res.status(500).json({ error: 'Failed to fetch figma users' });
-    }
-});
-
-// NEW: User Analytics Endpoint (For Figma Plugin)
-app.get('/api/user/analytics', verifyToken, async (req, res) => {
-    const { range } = req.query; // '24h', '7d', '30d'
-    const userId = req.user.id;
-    
-    let startTime = new Date();
-    let groupBy = 'hour'; // 'hour' or 'day'
-    let format = 'HH:00'; // 'HH:00' or 'DD.MM'
-
-    if (range === '7d') {
-        startTime.setDate(startTime.getDate() - 7);
-        groupBy = 'day';
-    } else if (range === '30d') {
-        startTime.setDate(startTime.getDate() - 30);
-        groupBy = 'day';
-    } else {
-        // Default 24h
-        startTime.setHours(startTime.getHours() - 24);
-        groupBy = 'hour';
-    }
-
-    try {
-        const { data: logs, error } = await supabase
-            .from('request_logs')
-            .select('created_at')
-            .eq('user_id', userId)
-            .gte('created_at', startTime.toISOString())
-            .order('created_at', { ascending: true });
-
-        if (error) throw error;
-
-        // Aggregate
-        const aggregated = {};
-        // Fill with 0s
-        if (groupBy === 'hour') {
-            for (let i = 0; i <= 24; i++) {
-                const d = new Date(startTime);
-                d.setHours(d.getHours() + i);
-                const key = d.getHours().toString().padStart(2, '0') + ':00';
-                aggregated[key] = 0;
-            }
-        } else {
-            const days = range === '7d' ? 7 : 30;
-            for (let i = 0; i <= days; i++) {
-                const d = new Date(startTime);
-                d.setDate(d.getDate() + i);
-                const key = `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}`;
-                aggregated[key] = 0;
-            }
-        }
-
-        logs.forEach(log => {
-            const d = new Date(log.created_at);
-            let key;
-            if (groupBy === 'hour') {
-                key = d.getHours().toString().padStart(2, '0') + ':00';
-            } else {
-                key = `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}`;
-            }
-            
-            if (aggregated[key] !== undefined) {
-                aggregated[key]++;
-            }
-        });
-
-        const chartData = Object.entries(aggregated).map(([name, value]) => ({ name, value }));
-        
-        // Calculate trend (last period vs previous period) - simplified
-        const total = logs.length;
-
-        res.json({
-            data: chartData,
-            total: total
-        });
-
-    } catch (err) {
-        console.error('User Analytics Error:', err);
-        res.status(500).json({ error: 'Analytics failed' });
-    }
-});
-
 // --- BASE INVADERS API (REMOVED) ---
 
 // NEW: Analytics Endpoint for Graphs (Admin)
@@ -691,7 +540,8 @@ app.get('/api/analytics', verifyToken, async (req, res) => {
         const { data: logs, error } = await supabase
             .from('request_logs')
             .select('created_at, status')
-            .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+            .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+            .limit(100000); // Increased limit from default 1000
 
         // Aggregate locally (easier than SQL group by for now)
         const history = {};
