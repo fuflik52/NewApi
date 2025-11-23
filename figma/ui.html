@@ -54,7 +54,7 @@
     }
 
     /* Background Stars and Grid */
-    body:not([data-theme="monokai"])::before {
+    body::before {
       content: ''; position: fixed; inset: 0;
       background-image: 
         linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
@@ -856,7 +856,7 @@
             </label>
         </div>
         
-        <div style="margin-top:24px; padding:16px; background:var(--glass-panel); border-radius:12px; text-align:center;">
+        <div style="margin-top:24px; padding:16px; border-radius:12px; text-align:center;">
             <div style="font-size:14px; font-weight:700; color:var(--text-main);">Bublick UI Exporter</div>
             <div style="font-size:10px; color:var(--text-muted); margin-top:4px;">Последнее обновление: 23.11.2025</div>
         </div>
