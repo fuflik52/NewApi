@@ -16,6 +16,24 @@ export default defineConfig({
       }
     }
   ],
+  build: {
+    chunkSizeWarningLimit: 1600,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('echarts') || id.includes('zrender')) {
+              return 'echarts';
+            }
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+              return 'vendor';
+            }
+            return 'npm';
+          }
+        }
+      }
+    }
+  },
   server: {
     host: true, // Открывает доступ по сети
     port: 3000,

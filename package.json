@@ -8,6 +8,7 @@
     "server": "node server.js",
     "client": "vite --host",
     "build": "vite build",
+    "build:memory": "node --max-old-space-size=4096 node_modules/vite/bin/vite.js build",
     "start": "node server.js",
     "lint": "eslint .",
     "preview": "vite preview"
