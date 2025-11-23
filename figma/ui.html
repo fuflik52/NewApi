@@ -430,7 +430,8 @@
         } else {
             document.body.removeAttribute('data-theme');
         }
-        parent.postMessage({ pluginMessage: { type: 'save-settings', settings: { theme } } }, '*');
+        // Instead of manual save, we use the unified saveSettings
+        saveSettings();
     }
 
     // --- UI ---
@@ -493,8 +494,14 @@
     function saveSettings() {
         const assetMode = document.querySelector('input[name="asset-mode"]:checked').value;
         const anchorMode = document.querySelector('input[name="anchor-mode"]:checked').value;
-        // Theme is saved in changeTheme
-        parent.postMessage({ pluginMessage: { type: 'save-settings', settings: { assetMode, anchorMode } } }, '*');
+        const theme = document.querySelector('input[name="theme"]:checked').value;
+        
+        parent.postMessage({ 
+            pluginMessage: { 
+                type: 'save-settings', 
+                settings: { assetMode, anchorMode, theme } 
+            } 
+        }, '*');
     }
 
     function generateCode() {
