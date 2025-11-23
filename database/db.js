@@ -28,12 +28,23 @@ const setupDatabase = () => {
                 url TEXT NOT NULL,
                 token TEXT,
                 uploaded_at TEXT NOT NULL
+            )`);
+
+            // Create users table
+            db.run(`CREATE TABLE IF NOT EXISTS users (
+                id TEXT PRIMARY KEY,
+                username TEXT NOT NULL,
+                discriminator TEXT,
+                avatar TEXT,
+                email TEXT,
+                api_token TEXT,
+                created_at TEXT NOT NULL
             )`, (err) => {
                 if (err) {
-                    console.error('Error creating table:', err);
+                    console.error('Error creating tables:', err);
                     reject(err);
                 } else {
-                    console.log('Uploads table ready');
+                    console.log('Tables ready');
                 }
             });
 

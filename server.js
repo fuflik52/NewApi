@@ -1,9 +1,11 @@
 import express from 'express';
+import 'dotenv/config';
 import cors from 'cors';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
+import axios from 'axios';
 import { fileURLToPath } from 'url';
 import db, { setupDatabase } from './database/db.js';
 
@@ -103,6 +105,85 @@ setupDatabase().then(() => {
 });
 
 // API Routes
+
+// Discord Auth Configuration
+const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
+const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
+// Default to port 3000 if not specified, but since PORT is defined above, we can use it?
+// Variable PORT is defined in scope.
+// However, we need to be careful if PORT is determined at runtime. 
+// Let's assume localhost:3000 for development default or use the PORT variable.
+// We need to construct the URI dynamically if not provided.
+const getRedirectUri = () => process.env.DISCORD_REDIRECT_URI || `http://localhost:${process.env.PORT || 3000}/api/auth/discord/callback`;
+
+// API: Discord Login Redirect
+app.get('/api/auth/discord', (req, res) => {
+    const clientId = process.env.DISCORD_CLIENT_ID;
+    if (!clientId) {
+        return res.status(500).send('Discord Client ID is missing on server.');
+    }
+    const redirectUri = getRedirectUri();
+    const redirectUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=identify%20email`;
+    res.redirect(redirectUrl);
+});
+
+// API: Discord Callback
+app.get('/api/auth/discord/callback', async (req, res) => {
+    const { code } = req.query;
+    if (!code) return res.status(400).send('No code provided.');
+
+    try {
+        const clientId = process.env.DISCORD_CLIENT_ID;
+        const clientSecret = process.env.DISCORD_CLIENT_SECRET;
+        const redirectUri = getRedirectUri();
+
+        const tokenResponse = await axios.post('https://discord.com/api/oauth2/token', new URLSearchParams({
+            client_id: clientId,
+            client_secret: clientSecret,
+            grant_type: 'authorization_code',
+            code,
+            redirect_uri: redirectUri,
+        }), {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        });
+
+        const accessToken = tokenResponse.data.access_token;
+        const userResponse = await axios.get('https://discord.com/api/users/@me', {
+            headers: { Authorization: `Bearer ${accessToken}` }
+        });
+
+        const { id, username, discriminator, avatar, email } = userResponse.data;
+        
+        // Generate simple API token
+        const apiToken = 'sk_live_' + Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2);
+
+        db.get('SELECT * FROM users WHERE id = ?', [id], (err, row) => {
+            if (err) {
+                console.error('DB Error:', err);
+                return res.status(500).send('Database error.');
+            }
+            
+            const finalToken = row && row.api_token ? row.api_token : apiToken;
+            
+            if (row) {
+                // Update user
+                db.run('UPDATE users SET username = ?, discriminator = ?, avatar = ?, email = ? WHERE id = ?', 
+                    [username, discriminator, avatar, email, id]);
+            } else {
+                // Create user
+                db.run('INSERT INTO users (id, username, discriminator, avatar, email, api_token, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                    [id, username, discriminator, avatar, email, finalToken, new Date().toISOString()]);
+            }
+            
+            // Redirect to frontend with token
+            res.redirect(`/?token=${finalToken}`);
+        });
+
+    } catch (error) {
+        console.error('Discord Auth Error:', error.response?.data || error.message);
+        res.status(500).send('Authentication failed. Check server logs.');
+    }
+});
 
 // API: Ping (CORS test)
 app.get('/api/ping', (req, res) => {
