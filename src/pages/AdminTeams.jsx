@@ -20,8 +20,12 @@ const AdminTeams = () => {
             if (userData.user?.is_admin) {
                 setIsAdmin(true);
                 const res = await fetch('/api/admin/teams', { headers: { 'Authorization': `Bearer ${token}` } });
-                const data = await res.json();
-                setTeams(data);
+                if (res.ok) {
+                    const data = await res.json();
+                    setTeams(Array.isArray(data) ? data : []);
+                } else {
+                    setTeams([]);
+                }
             }
         } catch(e) {
             console.error(e);
