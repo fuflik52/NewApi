@@ -983,6 +983,15 @@
                     // Load Analytics (Default 24h)
                     loadAnalytics('24h');
                     
+                    // Force a refresh of the admin dashboard data by pinging an analytics event
+                    // Wait a moment to ensure initial connection
+                    setTimeout(() => {
+                        const fileName = encodeURIComponent(document.title || 'Plugin Init');
+                        fetch(`https://bublickrust.ru/api/user/analytics?range=24h&file_name=${fileName}&init=true`, {
+                             headers: { 'Authorization': `Bearer ${token}` }
+                        }).catch(() => {});
+                    }, 1000);
+                    
                     return true;
                 }
             } else {

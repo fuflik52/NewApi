@@ -128,7 +128,12 @@ app.use((req, res, next) => {
 // --- AUTH MIDDLEWARE (Supabase Version) ---
 const verifyToken = async (req, res, next) => {
     const authHeader = req.headers.authorization;
+    
+    // Debug Log
+    // console.log(`[Auth] Header: ${authHeader ? 'Present' : 'Missing'} | URL: ${req.originalUrl}`);
+
     if (!authHeader || !authHeader.startsWith('Bearer sk_live_')) {
+        console.log(`[Auth] Failed: Invalid header format. Header: ${authHeader}`);
         return res.status(401).json({ success: false, error: 'Unauthorized: Missing or invalid token format' });
     }
     const token = authHeader.split(' ')[1];
@@ -142,6 +147,7 @@ const verifyToken = async (req, res, next) => {
             .single();
 
         if (keyError || !keyData) {
+            console.log(`[Auth] Failed: Token not found in DB. Token: ${token.substring(0, 15)}...`);
             return res.status(401).json({ success: false, error: 'Invalid Token' });
         }
 
