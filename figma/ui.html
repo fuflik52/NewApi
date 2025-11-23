@@ -264,24 +264,59 @@
         color: var(--accent-color);
     }
 
-    /* Code Area */
-    .code-wrapper {
-      margin-top: 24px; background: rgba(0,0,0,0.5);
-      border: 1px solid var(--glass-border); border-radius: var(--radius);
-      padding: 20px; position: relative; display: none; animation: fadeIn 0.3s ease;
+    /* Code Area - VS Code Style */
+    .editor-container {
+        display: flex;
+        background: #1e1e1e; /* VS Code Dark Bg */
+        border: 1px solid #3e3e42;
+        border-radius: 6px;
+        height: 240px;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 16px;
+        font-family: 'Consolas', 'Menlo', 'Monaco', 'Courier New', monospace;
+        font-size: 12px;
+        line-height: 18px;
     }
-    .code-wrapper.visible { display: block; }
-    
+
+    .line-numbers {
+        min-width: 40px;
+        background: #1e1e1e;
+        color: #858585;
+        text-align: right;
+        padding: 10px 8px 10px 0;
+        border-right: 1px solid #3e3e42;
+        user-select: none;
+        overflow: hidden;
+        white-space: pre;
+        font-family: inherit;
+        font-size: inherit;
+        line-height: inherit;
+    }
+
     .code-area {
-      width: 100%; height: 220px; /* Increased height */
-      background: transparent; border: none;
-      color: var(--text-main); font-family: 'Consolas', 'Monaco', monospace;
-      font-size: 11px; line-height: 1.6; resize: none; outline: none;
-      margin-bottom: 16px;
+        flex: 1;
+        background: transparent;
+        color: #d4d4d4; /* VS Code Text Light */
+        border: none;
+        resize: none;
+        outline: none;
+        padding: 10px;
+        white-space: pre;
+        overflow: auto;
+        font-family: inherit;
+        font-size: inherit;
+        line-height: inherit;
     }
     
+    /* Scrollbar override for editor to allow scrolling */
+    .code-area::-webkit-scrollbar { width: 8px; height: 8px; background: transparent; }
+    .code-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+    .code-area::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+
     .btn-copy {
         position: absolute; top: 16px; right: 16px;
+        z-index: 10;
         background: rgba(255,255,255,0.1); 
         border: 1px solid var(--glass-border);
         border-radius: 8px; padding: 6px 12px; 
@@ -486,7 +521,11 @@
 
       <div class="code-wrapper" id="code-window">
         <button class="btn-copy" onclick="copyCode()">COPY CODE</button>
-        <textarea class="code-area" id="code-output" readonly></textarea>
+        
+        <div class="editor-container">
+            <div class="line-numbers" id="line-numbers"></div>
+            <textarea class="code-area" id="code-output" readonly spellcheck="false" onscroll="syncScroll()"></textarea>
+        </div>
         
         <div class="download-actions">
             <button class="btn-secondary" onclick="downloadCodeFile()">
@@ -830,6 +869,12 @@
         } catch(e) { showToast('Ошибка ZIP: ' + e.message, 'error'); }
     }
 
+    function syncScroll() {
+        const area = document.getElementById('code-output');
+        const nums = document.getElementById('line-numbers');
+        nums.scrollTop = area.scrollTop;
+    }
+
     async function uploadImagesToAPI(images, token) {
         addLog(`Загрузка ${images.length} изображений...`, 'info');
         
@@ -905,7 +950,16 @@
         else if (msg.type === 'code-generated') {
             generatedCSharp = msg.csharp;
             frameName = msg.frameName;
-            document.getElementById('code-output').value = generatedCSharp;
+            
+            const area = document.getElementById('code-output');
+            area.value = generatedCSharp;
+            
+            // Generate Line Numbers
+            const lines = generatedCSharp.split('\n').length;
+            let nums = '';
+            for(let i=1; i<=lines; i++) nums += i + '<br>';
+            document.getElementById('line-numbers').innerHTML = nums;
+
             document.getElementById('code-window').classList.add('visible');
             showToast('Код успешно сгенерирован!', 'success');
             const btn = document.getElementById('generate-btn');
