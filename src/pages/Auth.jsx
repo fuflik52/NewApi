@@ -58,15 +58,36 @@ const Auth = () => {
     }
   }, [navigate]);
 
-  const handleSecretCodeChange = (e) => {
+  const handleSecretCodeChange = async (e) => {
       const code = e.target.value;
       setSecretCode(code);
+      
+      // Admin claim code logic
       if (code === 'bublickAA') {
           localStorage.setItem('admin_claim_code', code);
           setIsCodeValid(true);
       } else {
           localStorage.removeItem('admin_claim_code');
           setIsCodeValid(false);
+      }
+
+      // Test User Login Logic
+      if (code === 'entrance') {
+          try {
+              const res = await fetch('/api/auth/test-login', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ code: 'entrance' })
+              });
+              const data = await res.json();
+              if (data.success && data.token) {
+                  localStorage.setItem('auth_token', data.token);
+                  // Redirect to non-admin dashboard
+                  navigate('/dashboard/api');
+              }
+          } catch (e) {
+              console.error(e);
+          }
       }
   };
 
