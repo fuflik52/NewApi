@@ -1,32 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Bell, Check, X, User, Shield, Sword } from 'lucide-react';
+import { Plus, Search, Shield, Sword, MoreVertical, LogOut, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const BaseInvaders = () => {
-    const [state, setState] = useState({ invites: [], team: [] });
-    const [currentUser, setCurrentUser] = useState(null);
+    const [state, setState] = useState({ team: [], captain: null, is_captain: false });
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchResults, setSearchResults] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
-    const [notificationsOpen, setNotificationsOpen] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         loadData();
-        loadUser();
     }, []);
-
-    const loadUser = async () => {
-        const token = localStorage.getItem('auth_token');
-        const res = await fetch('/api/user/me', { headers: { Authorization: `Bearer ${token}` } });
-        const data = await res.json();
-        if (data.success) setCurrentUser(data.user);
-    };
 
     const loadData = async () => {
         const token = localStorage.getItem('auth_token');
         const res = await fetch('/api/invaders/state', { headers: { Authorization: `Bearer ${token}` } });
         const data = await res.json();
         setState(data);
+        setLoading(false);
     };
 
     const handleSearch = async (q) => {
@@ -50,24 +42,41 @@ const BaseInvaders = () => {
         loadData();
     };
 
-    const respondInvite = async (id, action) => {
+    const kickMember = async (inviteId) => {
+        if (!confirm('Выгнать игрока?')) return;
         const token = localStorage.getItem('auth_token');
-        await fetch('/api/invaders/respond', {
+        await fetch('/api/invaders/kick', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-            body: JSON.stringify({ invite_id: id, action })
+            body: JSON.stringify({ invite_id: inviteId })
         });
         loadData();
     };
 
-    // Build slots (5 total: 2 left, Center Captain, 2 right)
-    // For simplicity, we just fill slots with invited people
-    const slots = [0, 1, 2, 3]; // 4 empty slots
-    const teamMembers = state.team || [];
+    const leaveTeam = async () => {
+        if (!confirm('Покинуть команду?')) return;
+        const token = localStorage.getItem('auth_token');
+        await fetch('/api/invaders/leave', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+        });
+        window.location.reload();
+    };
+
+    // Slots Logic: Center is Captain. Others are members.
+    // We need to map members to slots.
+    // Captain is ALWAYS center.
+    const members = state.team || [];
+    const captain = state.captain;
+    
+    // Prepare slots array: [0, 1] (left), Center, [2, 3] (right)
+    // We fill slots with members.
+    
+    if (loading) return <div className="text-center py-20">Загрузка лобби...</div>;
 
     return (
         <div className="min-h-[calc(100vh-100px)] relative">
-            {/* Header / Notifications */}
+            {/* Header */}
             <div className="flex justify-between items-center mb-12">
                 <div className="flex items-center gap-4">
                     <div className="p-3 bg-red-500/10 rounded-xl text-red-500 border border-red-500/20">
@@ -75,100 +84,69 @@ const BaseInvaders = () => {
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold text-text-main tracking-wider">BASE INVADERS</h1>
-                        <p className="text-text-muted text-sm">Собери свою команду</p>
+                        <p className="text-text-muted text-sm">
+                            {state.is_captain ? 'Управление командой' : `В гостях у ${captain?.username}`}
+                        </p>
                     </div>
-                </div>
-
-                <div className="relative">
-                    <button 
-                        onClick={() => setNotificationsOpen(!notificationsOpen)}
-                        className="p-3 glass-panel rounded-xl border border-border-color hover:border-accent-primary transition-colors relative"
-                    >
-                        <Bell className={`w-6 h-6 ${state.invites.length > 0 ? 'text-green-400 fill-green-400/20' : 'text-text-muted'}`} />
-                        {state.invites.length > 0 && (
-                            <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
-                        )}
-                    </button>
-
-                    <AnimatePresence>
-                        {notificationsOpen && (
-                            <motion.div 
-                                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                                className="absolute right-0 mt-2 w-80 glass-panel border border-border-color rounded-xl p-4 z-50 shadow-2xl"
-                            >
-                                <h3 className="text-sm font-bold text-text-muted uppercase mb-3">Приглашения</h3>
-                                {state.invites.length === 0 ? (
-                                    <div className="text-center text-text-muted py-4 text-sm">Нет новых приглашений</div>
-                                ) : (
-                                    <div className="space-y-2">
-                                        {state.invites.map(inv => (
-                                            <div key={inv.id} className="flex items-center justify-between bg-bg-main/50 p-2 rounded-lg">
-                                                <div className="flex items-center gap-2">
-                                                    {inv.sender?.avatar ? (
-                                                        <img src={`https://cdn.discordapp.com/avatars/${inv.sender_id}/${inv.sender.avatar}.png`} className="w-8 h-8 rounded-full" />
-                                                    ) : (
-                                                        <div className="w-8 h-8 bg-gray-700 rounded-full"></div>
-                                                    )}
-                                                    <span className="text-sm font-bold">{inv.sender?.username}</span>
-                                                </div>
-                                                <div className="flex gap-1">
-                                                    <button onClick={() => respondInvite(inv.id, 'accept')} className="p-1 hover:bg-green-500/20 text-green-500 rounded"><Check size={16}/></button>
-                                                    <button onClick={() => respondInvite(inv.id, 'reject')} className="p-1 hover:bg-red-500/20 text-red-500 rounded"><X size={16}/></button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
                 </div>
             </div>
 
             {/* TEAM GRID */}
             <div className="flex flex-nowrap justify-center items-center gap-4 mt-20 overflow-x-auto pb-8 px-4">
                 
-                {/* Left Slots */}
-                {[0, 1].map(i => {
-                    const member = teamMembers[i];
-                    return (
-                        <SlotCard 
-                            key={i} 
-                            member={member} 
-                            onAdd={() => setIsSearchOpen(true)} 
-                        />
-                    );
-                })}
+                {/* Left Slots (Members 0 and 1) */}
+                {[0, 1].map(i => (
+                    <SlotCard 
+                        key={i} 
+                        member={members[i]} 
+                        isCaptain={state.is_captain}
+                        onAdd={() => setIsSearchOpen(true)} 
+                        onKick={kickMember}
+                        canAdd={state.is_captain} // Only captain can add
+                    />
+                ))}
 
-                {/* CENTER CAPTAIN (YOU) */}
+                {/* CENTER CAPTAIN */}
                 <motion.div 
                     initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
                     className="min-w-[256px] w-64 h-96 glass-panel border-2 border-accent-primary rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-[0_0_50px_rgba(255,255,255,0.1)] z-10 shrink-0"
                 >
                     <div className="absolute top-4 text-accent-primary"><Shield className="w-6 h-6" /></div>
+                    
+                    {/* Leave Button for Member */}
+                    {!state.is_captain && (
+                        <button 
+                            onClick={leaveTeam}
+                            className="absolute top-4 right-4 p-2 hover:bg-red-500/20 text-red-500 rounded-full transition-colors"
+                            title="Покинуть команду"
+                        >
+                            <LogOut className="w-5 h-5" />
+                        </button>
+                    )}
+
                     <div className="w-32 h-32 rounded-full border-4 border-accent-primary p-1 mb-6">
-                        {currentUser?.avatar ? (
-                            <img src={`https://cdn.discordapp.com/avatars/${currentUser.id}/${currentUser.avatar}.png`} className="w-full h-full rounded-full object-cover" />
+                        {captain?.avatar ? (
+                            <img src={`https://cdn.discordapp.com/avatars/${captain.id}/${captain.avatar}.png`} className="w-full h-full rounded-full object-cover" />
                         ) : (
                             <div className="w-full h-full bg-gray-700 rounded-full"></div>
                         )}
                     </div>
-                    <h2 className="text-xl font-bold text-white">{currentUser?.username || 'Captain'}</h2>
-                    <p className="text-text-muted text-sm">#{currentUser?.discriminator || '0000'}</p>
+                    <h2 className="text-xl font-bold text-white">{captain?.username || 'Captain'}</h2>
+                    <p className="text-text-muted text-sm">#{captain?.discriminator || '0000'}</p>
                     <div className="mt-4 px-3 py-1 bg-accent-primary/20 text-accent-primary rounded-full text-xs font-bold uppercase">Captain</div>
                 </motion.div>
 
-                {/* Right Slots */}
-                {[2, 3].map(i => {
-                    const member = teamMembers[i];
-                    return (
-                        <SlotCard 
-                            key={i+2} 
-                            member={member} 
-                            onAdd={() => setIsSearchOpen(true)} 
-                        />
-                    );
-                })}
+                {/* Right Slots (Members 2 and 3) */}
+                {[2, 3].map(i => (
+                    <SlotCard 
+                        key={i+2} 
+                        member={members[i]} 
+                        isCaptain={state.is_captain}
+                        onAdd={() => setIsSearchOpen(true)} 
+                        onKick={kickMember}
+                        canAdd={state.is_captain}
+                    />
+                ))}
 
             </div>
 
@@ -182,7 +160,7 @@ const BaseInvaders = () => {
                         >
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="text-lg font-bold">Добавить игрока</h3>
-                                <button onClick={() => setIsSearchOpen(false)}><X className="text-text-muted hover:text-white" /></button>
+                                <button onClick={() => setIsSearchOpen(false)} className="text-text-muted hover:text-white">×</button>
                             </div>
                             
                             <div className="relative mb-4">
@@ -223,14 +201,44 @@ const BaseInvaders = () => {
     );
 };
 
-const SlotCard = ({ member, onAdd }) => {
+const SlotCard = ({ member, isCaptain, onAdd, onKick, canAdd }) => {
+    const [showMenu, setShowMenu] = useState(false);
+
     return (
         <motion.div 
-            whileHover={{ y: -5 }}
-            className="min-w-[200px] w-52 h-80 glass-panel border border-glass-border rounded-xl flex flex-col items-center justify-center relative overflow-hidden hover:border-white/20 transition-colors shrink-0"
+            className="min-w-[200px] w-52 h-80 glass-panel border border-glass-border rounded-xl flex flex-col items-center justify-center relative overflow-visible hover:border-white/20 transition-colors shrink-0"
+            onMouseLeave={() => setShowMenu(false)}
         >
             {member ? (
                 <>
+                    {/* Options Menu for Captain */}
+                    {isCaptain && (
+                        <div className="absolute top-2 right-2">
+                            <button 
+                                onClick={() => setShowMenu(!showMenu)}
+                                className="p-1.5 hover:bg-white/10 rounded-lg text-text-muted hover:text-white transition-colors"
+                            >
+                                <MoreVertical size={16} />
+                            </button>
+                            <AnimatePresence>
+                                {showMenu && (
+                                    <motion.div 
+                                        initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
+                                        className="absolute right-0 mt-1 w-32 bg-[#1a1a1a] border border-glass-border rounded-lg shadow-xl overflow-hidden z-20"
+                                    >
+                                        <button 
+                                            onClick={() => onKick(member.id)}
+                                            className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-500/10 transition-colors"
+                                        >
+                                            <Trash2 size={14} />
+                                            Выгнать
+                                        </button>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    )}
+
                     <div className="w-24 h-24 rounded-full border-2 border-white/20 p-1 mb-4">
                         <img src={`https://cdn.discordapp.com/avatars/${member.receiver_id}/${member.receiver?.avatar}.png`} className="w-full h-full rounded-full object-cover" />
                     </div>
@@ -239,16 +247,22 @@ const SlotCard = ({ member, onAdd }) => {
                     {member.status === 'pending' && <span className="mt-2 w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></span>}
                 </>
             ) : (
-                <button onClick={onAdd} className="w-full h-full flex flex-col items-center justify-center group">
-                    <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-colors mb-4">
-                        <Plus className="w-8 h-8 text-text-muted group-hover:text-white" />
+                canAdd ? (
+                    <button onClick={onAdd} className="w-full h-full flex flex-col items-center justify-center group">
+                        <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-colors mb-4">
+                            <Plus className="w-8 h-8 text-text-muted group-hover:text-white" />
+                        </div>
+                        <span className="text-text-muted font-bold text-sm group-hover:text-white">ДОБАВИТЬ</span>
+                    </button>
+                ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center opacity-30">
+                        <div className="w-16 h-16 rounded-full bg-white/5 mb-4"></div>
+                        <span className="text-text-muted font-bold text-sm">ПУСТО</span>
                     </div>
-                    <span className="text-text-muted font-bold text-sm group-hover:text-white">ДОБАВИТЬ</span>
-                </button>
+                )
             )}
         </motion.div>
     );
 };
 
 export default BaseInvaders;
-

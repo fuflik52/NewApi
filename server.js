@@ -145,7 +145,7 @@ const verifyToken = async (req, res, next) => {
             token: token, 
             is_admin: userData.is_admin 
         };
-        return next();
+                return next();
 
     } catch (err) {
         console.error('Auth Middleware Error:', err);
@@ -275,7 +275,7 @@ app.get('/api/auth/discord/callback', async (req, res) => {
 
         const { id, username, discriminator, avatar, email } = userResponse.data;
         const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-
+        
         await supabase.from('users').upsert({
             id: id,
             username: username,
@@ -294,7 +294,7 @@ app.get('/api/auth/discord/callback', async (req, res) => {
         let finalToken;
         if (keys && keys.length > 0) {
             finalToken = keys[0].token;
-        } else {
+            } else {
             finalToken = 'sk_live_' + Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2);
             await supabase.from('api_keys').insert({
                 user_id: id,
@@ -303,7 +303,7 @@ app.get('/api/auth/discord/callback', async (req, res) => {
             });
         }
 
-        res.redirect(`/?token=${finalToken}`);
+            res.redirect(`/?token=${finalToken}`);
 
     } catch (error) {
         console.error('Discord Auth Error:', error.response?.data || error.message);
@@ -541,23 +541,81 @@ app.get('/api/invaders/state', verifyToken, async (req, res) => {
             .eq('receiver_id', myId)
             .eq('status', 'pending');
 
-        // 2. Get my team slots (people I invited + accepted) OR (team I joined)
-        // Check if I am a captain (sent invites that are accepted)
-        // For MVP: Just show "My Lobby" -> people I invited.
-        
-        const { data: mySentInvites } = await supabase
+        // 2. Check if I am in someone else's team (I accepted an invite)
+        const { data: myMembership } = await supabase
             .from('team_invites')
-            .select('*, receiver:users!receiver_id(username, avatar, discriminator)')
-            .eq('sender_id', myId);
+            .select('*, sender:users!sender_id(id, username, avatar, discriminator)')
+            .eq('receiver_id', myId)
+            .eq('status', 'accepted')
+            .single();
+
+        let team = [];
+        let captain = null;
+
+        if (myMembership) {
+            // I am a member. Get the captain and all other members.
+            captain = myMembership.sender;
+            
+            // Get all members invited by this captain
+            const { data: teamMembers } = await supabase
+                .from('team_invites')
+                .select('*, receiver:users!receiver_id(id, username, avatar, discriminator)')
+                .eq('sender_id', captain.id)
+                .eq('status', 'accepted');
+            
+            team = teamMembers || [];
+        } else {
+            // I am the captain (or solo). Get people I invited.
+            const { data: myUser } = await supabase.from('users').select('*').eq('id', myId).single();
+            captain = myUser;
+
+            const { data: mySentInvites } = await supabase
+                .from('team_invites')
+                .select('*, receiver:users!receiver_id(id, username, avatar, discriminator)')
+                .eq('sender_id', myId);
+            
+            team = mySentInvites || [];
+        }
 
         res.json({
             invites: pendingReceived || [],
-            team: mySentInvites || [] 
+            team: team,
+            captain: captain,
+            is_captain: captain.id === myId
         });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'State error' });
     }
+});
+
+// Kick Member (Captain only)
+app.post('/api/invaders/kick', verifyToken, async (req, res) => {
+    const { invite_id } = req.body;
+    try {
+        // Ensure I am the sender (captain)
+        const { error } = await supabase.from('team_invites')
+            .delete()
+            .eq('id', invite_id)
+            .eq('sender_id', req.user.id);
+        
+        if (error) throw error;
+        res.json({ success: true });
+    } catch(e) { res.status(500).json({ error: 'Kick failed' }); }
+});
+
+// Leave Team (Member only)
+app.post('/api/invaders/leave', verifyToken, async (req, res) => {
+    try {
+        // Find the accepted invite where I am receiver
+        const { error } = await supabase.from('team_invites')
+            .delete()
+            .eq('receiver_id', req.user.id)
+            .eq('status', 'accepted');
+
+        if (error) throw error;
+        res.json({ success: true });
+    } catch(e) { res.status(500).json({ error: 'Leave failed' }); }
 });
 
 // Send Invite
@@ -730,15 +788,15 @@ app.post('/api/images/upload', upload.single('image'), verifyToken, async (req, 
             console.error('DB Insert Error:', dbError);
         }
 
-        res.json({
-            success: true,
+    res.json({
+        success: true,
             directUrl: customUrl, // <--- HERE IS THE CHANGE: Return YOUR link
-            file: {
-                name: req.file.originalname,
-                size: req.file.size,
-                mime: req.file.mimetype
-            }
-        });
+        file: {
+            name: req.file.originalname,
+            size: req.file.size,
+            mime: req.file.mimetype
+        }
+    });
 
     } catch (err) {
         console.error('Upload Handler Error:', err);
@@ -763,7 +821,7 @@ app.get('/api/images/list', async (req, res) => {
         const responseImages = images.map(img => ({
             id: img.id,
             url: `${CUSTOM_DOMAIN}/${img.id}`, // Return custom URL in list too
-            size: parseFloat((img.size / (1024 * 1024)).toFixed(2)),
+            size: parseFloat((img.size / (1024 * 1024)).toFixed(2)), 
             name: img.original_name,
             uploaded_at: img.uploaded_at
         }));

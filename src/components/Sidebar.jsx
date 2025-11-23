@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Server, Settings, LogOut, Rocket, X, Image, Users, Sword } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
-const Sidebar = ({ isOpen, onClose }) => {
+const Sidebar = ({ isOpen, onClose, pendingInvites = 0 }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
@@ -24,7 +24,12 @@ const Sidebar = ({ isOpen, onClose }) => {
   const menuItems = [
     // Only show Dashboard/Overview to admins
     ...(isAdmin ? [{ icon: LayoutDashboard, label: 'Обзор', path: '/dashboard' }] : []),
-    { icon: Sword, label: 'Base Invaders', path: '/dashboard/base-invaders' },
+    { 
+        icon: Sword, 
+        label: 'Base Invaders', 
+        path: '/dashboard/base-invaders',
+        badge: pendingInvites > 0 ? pendingInvites : null 
+    },
     { icon: Server, label: 'API Центр', path: '/dashboard/api' },
     { icon: Image, label: 'Галерея', path: '/dashboard/gallery' },
     ...(isAdmin ? [{ icon: Users, label: 'Все пользователи', path: '/dashboard/users' }] : []),
@@ -62,6 +67,12 @@ const Sidebar = ({ isOpen, onClose }) => {
           >
             <item.icon className={`w-5 h-5 ${isActive(item.path) ? 'text-accent-secondary' : 'group-hover:text-text-main transition-colors'}`} />
             <span className="font-medium">{item.label}</span>
+            
+            {item.badge && (
+                <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse shadow-[0_0_8px_#ef4444]">
+                    {item.badge}
+                </span>
+            )}
           </Link>
         ))}
       </nav>
