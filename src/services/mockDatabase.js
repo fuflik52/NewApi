@@ -32,33 +32,83 @@ class MockDatabase {
   // API Methods mirroring potential backend endpoints
 
   async getApiToken() {
+    // DEPRECATED: Use getApiTokens() instead
+    // Kept for compatibility during migration
     try {
         const token = localStorage.getItem('auth_token');
         if (!token) return null;
-
-        const res = await fetch('/api/user/me', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
         
-        if (res.ok) {
-            const data = await res.json();
-            if (data.success && data.user) {
-                return {
-                    id: data.user.id,
-                    token: data.user.api_token || 'No Token Found', // Fallback to prevent null crash
-                    user_id: data.user.id
-                };
-            }
+        const tokens = await this.getApiTokens();
+        if (tokens && tokens.length > 0) {
+            return { token: tokens[0].token, id: 'legacy' };
         }
+
+        return { token: 'No Token Found' };
     } catch (e) {
-        console.error("Failed to fetch API token", e);
+        return { token: 'Error' };
     }
-    return { token: 'Loading...' }; // Return safe fallback object
+  }
+
+  async getApiTokens() {
+      try {
+          const token = localStorage.getItem('auth_token');
+          if (!token) return [];
+
+          const res = await fetch('/api/tokens', {
+              headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok) {
+              return await res.json();
+          }
+      } catch (e) {
+          console.error("Failed to fetch tokens", e);
+      }
+      return [];
+  }
+
+  async createToken(name = "New Key") {
+      try {
+          const token = localStorage.getItem('auth_token');
+          const res = await fetch('/api/tokens', {
+              method: 'POST',
+              headers: { 
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ name })
+          });
+          
+          const data = await res.json();
+          if (res.ok && data.success) {
+              return data.token;
+          } else {
+              throw new Error(data.error || 'Failed to create');
+          }
+      } catch (e) {
+          throw e;
+      }
+  }
+
+  async deleteToken(id) {
+      try {
+          const token = localStorage.getItem('auth_token');
+          const res = await fetch(`/api/tokens/${id}`, {
+              method: 'DELETE',
+              headers: { 'Authorization': `Bearer ${token}` }
+          });
+          return res.ok;
+      } catch (e) {
+          return false;
+      }
   }
 
   async regenerateToken() {
-    // This should probably call backend in real app
-    return null; 
+    // Legacy support wrapper
+    try {
+        return await this.createToken("Regenerated Key");
+    } catch (e) {
+        return null;
+    }
   }
 
   async getUsageStats(days = 30, tokenId = null) {

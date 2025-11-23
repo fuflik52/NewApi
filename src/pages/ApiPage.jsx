@@ -1,206 +1,195 @@
 import React, { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Key, Copy, Check, Terminal, Shield, Zap, ChevronDown, Eye, EyeOff, RefreshCw, Database as DbIcon } from 'lucide-react';
+import { Key, Copy, Check, Terminal, Shield, Zap, ChevronDown, Eye, EyeOff, RefreshCw, Plus, Trash2, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { dbService } from '../services/mockDatabase';
 
 const ApiPage = () => {
-  const [apiKey, setApiKey] = useState('Loading...');
-  const [copied, setCopied] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [showKey, setShowKey] = useState(false);
+  const [tokens, setTokens] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [copiedId, setCopiedId] = useState(null);
+  const [isCreating, setIsCreating] = useState(false);
+  const [visibleKeys, setVisibleKeys] = useState({}); // Map of id -> boolean
+  
+  // Charts state
   const [timeRange, setTimeRange] = useState(30);
   const [showTimeMenu, setShowTimeMenu] = useState(false);
   const [chartData, setChartData] = useState([]);
   const [totalRequests, setTotalRequests] = useState(0);
 
-  // Initial Data Load
-  useEffect(() => {
-    const loadData = async () => {
-      const tokenData = await dbService.getApiToken();
-      // Check if tokenData is valid before accessing properties
-      if (tokenData && tokenData.token) {
-          setApiKey(tokenData.token);
-          
-          if (tokenData.id) {
-            // Pass token ID to get specific user stats
-            const stats = await dbService.getUsageStats(timeRange, tokenData.id);
-            setChartData(stats);
-
-            const total = await dbService.getTotalRequests(tokenData.id);
-            setTotalRequests(total);
+  const loadTokens = async () => {
+      try {
+          const data = await dbService.getApiTokens();
+          setTokens(data);
+          // Load stats for first token if exists
+          if (data.length > 0) {
+              // Mock stats loading
+              const stats = await dbService.getUsageStats(timeRange, data[0].id);
+              setChartData(stats);
+              const total = await dbService.getTotalRequests(data[0].id);
+              setTotalRequests(total);
           }
-      } else {
-          setApiKey('Error loading token');
+      } catch (e) {
+          console.error(e);
+      } finally {
+          setLoading(false);
       }
-    };
-    loadData();
+  };
+
+  useEffect(() => {
+    loadTokens();
   }, [timeRange]);
 
-  const startGeneration = async () => {
-    setIsGenerating(true);
-    
-    // Animation effect
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let interval = setInterval(() => {
-      let randomKey = 'sk_live_';
-      for (let i = 0; i < 24; i++) {
-          randomKey += chars.charAt(Math.floor(Math.random() * chars.length));
+  const handleCreateToken = async () => {
+      if (tokens.length >= 3) {
+          setError('Maximum 3 tokens allowed');
+          setTimeout(() => setError(''), 3000);
+          return;
       }
-      setApiKey(randomKey);
-    }, 50);
 
-    // Actual DB call
-    const newToken = await dbService.regenerateToken();
-    
-    clearInterval(interval);
-    // Check if newToken is valid
-    if (newToken) {
-        setApiKey(newToken);
-    } else {
-        // If generation failed (e.g. not implemented on backend yet), revert to safe state or show error
-        // For now, just re-fetch current token
-        const tokenData = await dbService.getApiToken();
-        setApiKey(tokenData?.token || 'Error');
-    }
-    setIsGenerating(false);
+      setIsCreating(true);
+      try {
+          await dbService.createToken(`Key ${tokens.length + 1}`);
+          await loadTokens();
+      } catch (e) {
+          setError(e.message);
+          setTimeout(() => setError(''), 3000);
+      } finally {
+          setIsCreating(false);
+      }
   };
 
-  const copyToClipboard = () => {
-    if (apiKey && apiKey !== 'Loading...' && apiKey !== 'Error') {
-        navigator.clipboard.writeText(apiKey);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    }
+  const handleDeleteToken = async (id) => {
+      if (confirm('Are you sure you want to delete this token? This action cannot be undone.')) {
+          await dbService.deleteToken(id);
+          await loadTokens();
+      }
   };
+
+  const toggleVisibility = (id) => {
+      setVisibleKeys(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const copyToClipboard = (text, id) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const primaryKey = tokens.length > 0 ? tokens[0].token : 'sk_live...';
 
   return (
     <div className="space-y-8 pb-10">
       
-      {/* Header with Domain Simulation */}
+      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-text-main mb-2 flex items-center gap-2">
             <Zap className="text-accent-primary" />
             API Центр
           </h1>
-          <p className="text-text-muted">Управление доступом и мониторинг</p>
+          <p className="text-text-muted">Управление ключами доступа ({tokens.length}/3)</p>
         </div>
         <div className="flex items-center gap-4">
-          <a href="/dashboard/api/test" className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-bg-main border border-border-color text-sm text-text-muted hover:text-text-main hover:border-accent-primary transition-colors">
-            <Terminal className="w-4 h-4" />
-            Тест API
-          </a>
-          <a href="/dashboard/api/docs" className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-bg-main border border-border-color text-sm text-text-muted hover:text-text-main hover:border-accent-primary transition-colors">
-            <Terminal className="w-4 h-4" />
-            Документация
-          </a>
-          <div className="px-4 py-2 rounded-full bg-bg-main border border-border-color font-mono text-sm text-text-muted flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-            api.bublickrust.ru
-          </div>
+             <button 
+                onClick={handleCreateToken}
+                disabled={isCreating || tokens.length >= 3}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full bg-accent-primary text-accent-secondary font-bold shadow-lg transition-all ${
+                    tokens.length >= 3 ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90 hover:scale-105'
+                }`}
+             >
+                {isCreating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                Создать ключ
+             </button>
         </div>
       </div>
 
-      {/* API Key Section */}
-      <div className="glass-panel p-8 rounded-2xl border-t-4 border-accent-primary">
-        <div className="flex items-center gap-3 mb-6">
-          <Key className="w-6 h-6 text-accent-primary" />
-          <h2 className="text-xl font-semibold text-text-main">Ваш API Ключ</h2>
-        </div>
-        
-        <div className="flex flex-col md:flex-row gap-4 items-center">
-          <div className="relative flex-1 w-full group">
-            <input 
-              type={showKey ? "text" : "password"} 
-              value={apiKey} 
-              readOnly
-              className="w-full bg-bg-main border border-border-color rounded-xl px-6 py-4 font-mono text-text-main focus:outline-none focus:border-accent-primary transition-colors text-lg tracking-wider pr-24"
-            />
-            
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-               <motion.button 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => setShowKey(!showKey)}
-                  className="p-2 hover:bg-bg-main rounded-lg text-text-muted hover:text-text-main transition-colors overflow-hidden"
-                  title={showKey ? "Скрыть" : "Показать"}
-               >
-                  <AnimatePresence mode="wait" initial={false}>
-                    {showKey ? (
-                      <motion.div
-                        key="hide"
-                        initial={{ opacity: 0, scale: 0.5, rotate: -90 }}
-                        animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                        exit={{ opacity: 0, scale: 0.5, rotate: 90 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <EyeOff className="w-5 h-5" />
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="show"
-                        initial={{ opacity: 0, scale: 0.5, rotate: 90 }}
-                        animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                        exit={{ opacity: 0, scale: 0.5, rotate: -90 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <Eye className="w-5 h-5" />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-               </motion.button>
-               <motion.button 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={copyToClipboard}
-                className="p-2 hover:bg-bg-main rounded-lg text-text-muted hover:text-text-main overflow-hidden"
-                title="Копировать"
-              >
-                <AnimatePresence mode="wait" initial={false}>
-                  {copied ? (
-                    <motion.div
-                      key="check"
-                      initial={{ opacity: 0, scale: 0.5 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.5 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Check className="w-5 h-5 text-emerald-400" />
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="copy"
-                      initial={{ opacity: 0, scale: 0.5 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.5 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Copy className="w-5 h-5" />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.button>
+      {/* Error Message */}
+      <AnimatePresence>
+        {error && (
+            <motion.div 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="bg-red-500/10 border border-red-500/50 text-red-500 p-4 rounded-xl flex items-center gap-3"
+            >
+                <AlertCircle className="w-5 h-5" />
+                {error}
+            </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Token List */}
+      <div className="space-y-4">
+        {loading ? (
+            <div className="text-center p-8 text-text-muted">Loading keys...</div>
+        ) : tokens.length === 0 ? (
+            <div className="glass-panel p-12 rounded-2xl text-center">
+                <Key className="w-12 h-12 text-text-muted mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-text-main mb-2">Нет активных ключей</h3>
+                <p className="text-text-muted mb-6">Создайте API ключ для доступа к сервису.</p>
+                <button 
+                    onClick={handleCreateToken}
+                    className="px-6 py-3 bg-accent-primary text-accent-secondary rounded-xl font-bold hover:opacity-90 transition-all"
+                >
+                    Создать первый ключ
+                </button>
             </div>
-          </div>
-          <motion.button 
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={startGeneration}
-            disabled={isGenerating}
-            className={`w-full md:w-auto whitespace-nowrap bg-accent-primary text-accent-secondary font-bold py-4 px-8 rounded-xl shadow-lg flex items-center justify-center gap-2 ${isGenerating ? 'opacity-80 cursor-not-allowed' : 'hover:opacity-90'}`}
-          >
-            {isGenerating ? <RefreshCw className="w-5 h-5 animate-spin" /> : null}
-            {isGenerating ? 'Генерация...' : 'Сгенерировать новый'}
-          </motion.button>
-        </div>
-        <p className="mt-4 text-sm text-text-muted flex items-center gap-2">
-          <Shield className="w-4 h-4" />
-          Никогда не передавайте этот ключ третьим лицам.
-        </p>
+        ) : (
+            tokens.map((token) => (
+                <motion.div 
+                    key={token.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="glass-panel p-6 rounded-2xl border border-border-color group hover:border-accent-primary/30 transition-colors"
+                >
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div className="flex-1 w-full">
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="font-semibold text-text-main">{token.name}</span>
+                                <span className="text-xs text-text-muted px-2 py-0.5 rounded-full bg-bg-main border border-border-color">
+                                    {new Date(token.created_at).toLocaleDateString()}
+                                </span>
+                            </div>
+                            <div className="relative flex items-center bg-bg-main rounded-xl border border-border-color overflow-hidden">
+                                <div className="px-4 py-3 font-mono text-text-muted flex-1 truncate">
+                                    {visibleKeys[token.id] ? token.token : '•'.repeat(24) + token.token.slice(-4)}
+                                </div>
+                                <div className="flex items-center border-l border-border-color bg-bg-main">
+                                    <button 
+                                        onClick={() => toggleVisibility(token.id)}
+                                        className="p-3 hover:bg-accent-primary/10 hover:text-accent-primary transition-colors"
+                                        title={visibleKeys[token.id] ? "Hide" : "Show"}
+                                    >
+                                        {visibleKeys[token.id] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                    </button>
+                                    <button 
+                                        onClick={() => copyToClipboard(token.token, token.id)}
+                                        className="p-3 hover:bg-accent-primary/10 hover:text-accent-primary transition-colors border-l border-border-color"
+                                        title="Copy"
+                                    >
+                                        {copiedId === token.id ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <button 
+                            onClick={() => handleDeleteToken(token.id)}
+                            className="p-3 rounded-xl hover:bg-red-500/10 text-text-muted hover:text-red-500 transition-colors md:self-end"
+                            title="Delete Token"
+                        >
+                            <Trash2 className="w-5 h-5" />
+                        </button>
+                    </div>
+                </motion.div>
+            ))
+        )}
       </div>
 
-      {/* Instructions */}
+      {/* Instructions using primary key */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="glass-panel p-8 rounded-2xl">
           <div className="flex items-center gap-3 mb-6">
@@ -209,20 +198,17 @@ const ApiPage = () => {
           </div>
           <div className="space-y-4">
             <p className="text-text-muted">
-              Используйте этот ключ в заголовке <code className="text-text-main">Authorization</code> для всех запросов.
+              Используйте ключ в заголовке <code className="text-text-main">Authorization</code>.
             </p>
             
             <div className="bg-bg-main rounded-xl overflow-hidden border border-border-color">
               <div className="flex items-center gap-2 px-4 py-2 bg-accent-primary/10 border-b border-border-color">
-                <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
-                <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
-                <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
-                <span className="text-xs text-text-muted ml-2">BASH</span>
+                <span className="text-xs text-text-muted">Example Request</span>
               </div>
               <div className="p-4 overflow-x-auto">
                 <pre className="font-mono text-sm text-text-muted">
 {`curl -X POST https://bublickrust.ru/api/images/upload \\
-  -H "Authorization: Bearer ${apiKey && apiKey.length > 10 ? apiKey.substring(0, 10) : 'sk_live...'}..." \\
+  -H "Authorization: Bearer ${primaryKey.substring(0, 12)}..." \\
   -F "image=@your-image.png"`}
                 </pre>
               </div>
@@ -241,99 +227,7 @@ const ApiPage = () => {
                <span className="font-mono text-text-main">POST /api/gradient-role</span>
                <span className="text-text-muted text-sm">Градиентные роли</span>
              </li>
-             <li className="flex items-center justify-between p-3 rounded-lg bg-bg-main border border-border-color">
-               <span className="font-mono text-text-main">POST /api/tournament-application</span>
-               <span className="text-text-muted text-sm">Турнирная заявка</span>
-             </li>
            </ul>
-        </div>
-      </div>
-
-      {/* Chart */}
-      <div className="glass-panel p-8 rounded-2xl">
-        <div className="flex items-center justify-between mb-8 relative">
-          <div>
-            <h2 className="text-xl font-semibold text-text-main">Использование API</h2>
-            <p className="text-text-muted">Количество запросов: <span className="text-accent-primary font-bold">{totalRequests.toLocaleString()}</span></p>
-          </div>
-          
-          <div className="relative">
-            <button 
-              onClick={() => setShowTimeMenu(!showTimeMenu)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-bg-main text-sm text-text-muted border border-border-color hover:bg-accent-primary/10 transition-colors"
-            >
-              Последние {timeRange} дней
-              <ChevronDown className={`w-4 h-4 transition-transform ${showTimeMenu ? 'rotate-180' : ''}`} />
-            </button>
-
-            <AnimatePresence>
-              {showTimeMenu && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  className="absolute right-0 top-full mt-2 w-48 bg-bg-main border border-border-color rounded-xl shadow-xl z-20 overflow-hidden"
-                >
-                  {[7, 30, 90].map((days) => (
-                    <button
-                      key={days}
-                      onClick={() => {
-                        setTimeRange(days);
-                        setShowTimeMenu(false);
-                      }}
-                      className={`w-full text-left px-4 py-3 text-sm hover:bg-accent-primary/10 transition-colors ${timeRange === days ? 'text-accent-primary' : 'text-text-muted'}`}
-                    >
-                      Последние {days} дней
-                    </button>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-
-        <div className="h-[300px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData}>
-              <defs>
-                <linearGradient id="colorRequests" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--chart-color)" stopOpacity={0.2}/>
-                  <stop offset="95%" stopColor="var(--chart-color)" stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
-              <XAxis 
-                dataKey="name" 
-                axisLine={false} 
-                tickLine={false} 
-                tick={{ fill: 'var(--text-muted)', fontSize: 12 }} 
-                dy={10}
-              />
-              <YAxis 
-                axisLine={false} 
-                tickLine={false} 
-                tick={{ fill: 'var(--text-muted)', fontSize: 12 }} 
-              />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: 'var(--bg-main)', 
-                  border: '1px solid var(--border-color)',
-                  borderRadius: '8px',
-                  color: 'var(--text-main)'
-                }}
-                itemStyle={{ color: 'var(--chart-color)' }}
-              />
-              <Area 
-                type="monotone" 
-                dataKey="requests" 
-                stroke="var(--chart-color)" 
-                strokeWidth={2}
-                fillOpacity={1} 
-                fill="url(#colorRequests)" 
-                animationDuration={2000}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
         </div>
       </div>
     </div>

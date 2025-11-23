@@ -8,6 +8,7 @@ import os from 'os';
 import axios from 'axios';
 import { fileURLToPath } from 'url';
 import db, { setupDatabase } from './database/db.js';
+import { v4 as uuidv4 } from 'uuid';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -116,6 +117,36 @@ const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
 // We need to construct the URI dynamically if not provided.
 const getRedirectUri = () => process.env.DISCORD_REDIRECT_URI || `http://localhost:${process.env.PORT || 3000}/api/auth/discord/callback`;
 
+// Helper: Verify token (supports both legacy single token and new multiple tokens)
+const verifyToken = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer sk_live_')) {
+        // Also check query param for simple GET requests (like images) if needed, but middleware is usually stricter
+        return res.status(401).json({ success: false, error: 'Unauthorized' });
+    }
+    const token = authHeader.split(' ')[1];
+
+    // Check multi-token table first
+    db.get('SELECT user_id FROM api_tokens WHERE token = ?', [token], (err, row) => {
+        if (err) return res.status(500).json({ error: 'DB Error' });
+        
+        if (row) {
+            req.user = { id: row.user_id, token: token };
+            return next();
+        }
+
+        // Fallback to legacy single token
+        db.get('SELECT id, is_admin FROM users WHERE api_token = ?', [token], (err, userRow) => {
+            if (err) return res.status(500).json({ error: 'DB Error' });
+            if (userRow) {
+                req.user = { id: userRow.id, token: token, is_admin: userRow.is_admin };
+                return next();
+            }
+            return res.status(401).json({ success: false, error: 'Invalid Token' });
+        });
+    });
+};
+
 // API: Discord Login Redirect
 app.get('/api/auth/discord', (req, res) => {
     const clientId = process.env.DISCORD_CLIENT_ID;
@@ -154,7 +185,8 @@ app.get('/api/auth/discord/callback', async (req, res) => {
 
         const { id, username, discriminator, avatar, email } = userResponse.data;
         
-        // Generate simple API token
+        // Generate simple API token (legacy fallback or primary auth token)
+        // For simplicity, we use the legacy api_token as the "login session" token as well for now
         const apiToken = 'sk_live_' + Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2);
 
         db.get('SELECT * FROM users WHERE id = ?', [id], (err, row) => {
@@ -173,6 +205,11 @@ app.get('/api/auth/discord/callback', async (req, res) => {
                 // Create user
                 db.run('INSERT INTO users (id, username, discriminator, avatar, email, api_token, is_admin, created_at) VALUES (?, ?, ?, ?, ?, ?, 0, ?)',
                     [id, username, discriminator, avatar, email, finalToken, new Date().toISOString()]);
+                
+                // Also create initial token entry in new table
+                const tokenId = uuidv4();
+                db.run('INSERT INTO api_tokens (id, user_id, token, name, created_at) VALUES (?, ?, ?, ?, ?)',
+                    [tokenId, id, finalToken, 'Default Key', new Date().toISOString()]);
             }
             
             // Redirect to frontend with token
@@ -221,15 +258,102 @@ app.get('/api/user/me', (req, res) => {
     }
     const token = authHeader.split(' ')[1];
 
-    db.get('SELECT id, username, email, avatar, is_admin FROM users WHERE api_token = ?', [token], (err, row) => {
-        if (err) {
-             console.error('DB Error:', err);
-             return res.status(500).json({ success: false, error: 'Database Error' });
+    // Try finding user by token (legacy) or token table
+    db.get('SELECT id, username, email, avatar, is_admin, api_token FROM users WHERE api_token = ?', [token], (err, row) => {
+        if (row) {
+            return res.json({ success: true, user: row });
         }
-        if (!row) {
-            return res.status(404).json({ success: false, error: 'User not found' });
+        
+        // Check new token table
+        db.get('SELECT user_id FROM api_tokens WHERE token = ?', [token], (err, tokenRow) => {
+             if (!tokenRow) return res.status(404).json({ success: false, error: 'User not found' });
+             
+             db.get('SELECT id, username, email, avatar, is_admin, api_token FROM users WHERE id = ?', [tokenRow.user_id], (err, userRow) => {
+                 if (userRow) {
+                     return res.json({ success: true, user: userRow });
+                 }
+                 return res.status(404).json({ success: false, error: 'User not found' });
+             });
+        });
+    });
+});
+
+// API: Get User Tokens (Multi-token support)
+app.get('/api/tokens', verifyToken, (req, res) => {
+    db.all('SELECT id, token, name, created_at, last_used_at FROM api_tokens WHERE user_id = ? ORDER BY created_at DESC', [req.user.id], (err, rows) => {
+        if (err) return res.status(500).json({ error: 'DB Error' });
+        
+        // Migration check: if no tokens found, maybe migrate legacy token
+        if (rows.length === 0) {
+             // Find user's legacy token
+             db.get('SELECT api_token FROM users WHERE id = ?', [req.user.id], (err, userRow) => {
+                 if (userRow && userRow.api_token) {
+                     const tokenId = uuidv4();
+                     const now = new Date().toISOString();
+                     db.run('INSERT INTO api_tokens (id, user_id, token, name, created_at) VALUES (?, ?, ?, ?, ?)',
+                        [tokenId, req.user.id, userRow.api_token, 'Default Key', now], (err) => {
+                            if (!err) {
+                                // Return the migrated token
+                                return res.json([{
+                                    id: tokenId,
+                                    token: userRow.api_token,
+                                    name: 'Default Key',
+                                    created_at: now,
+                                    last_used_at: null
+                                }]);
+                            } else {
+                                return res.json([]);
+                            }
+                        });
+                 } else {
+                     res.json([]);
+                 }
+             });
+        } else {
+            res.json(rows);
         }
-        res.json({ success: true, user: row });
+    });
+});
+
+// API: Create New Token
+app.post('/api/tokens', verifyToken, (req, res) => {
+    // Check count limit
+    db.get('SELECT COUNT(*) as count FROM api_tokens WHERE user_id = ?', [req.user.id], (err, row) => {
+        if (err) return res.status(500).json({ error: 'DB Error' });
+        
+        if (row.count >= 3) {
+            return res.status(400).json({ success: false, error: 'Maximum of 3 tokens allowed.' });
+        }
+
+        const newToken = 'sk_live_' + Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2);
+        const tokenId = uuidv4();
+        const name = req.body.name || `Key ${row.count + 1}`;
+        const now = new Date().toISOString();
+
+        db.run('INSERT INTO api_tokens (id, user_id, token, name, created_at) VALUES (?, ?, ?, ?, ?)',
+            [tokenId, req.user.id, newToken, name, now], (err) => {
+                if (err) return res.status(500).json({ error: 'Failed to create token' });
+                
+                res.json({
+                    success: true,
+                    token: {
+                        id: tokenId,
+                        token: newToken,
+                        name: name,
+                        created_at: now
+                    }
+                });
+            });
+    });
+});
+
+// API: Delete Token
+app.delete('/api/tokens/:id', verifyToken, (req, res) => {
+    const { id } = req.params;
+    db.run('DELETE FROM api_tokens WHERE id = ? AND user_id = ?', [id, req.user.id], function(err) {
+        if (err) return res.status(500).json({ error: 'DB Error' });
+        if (this.changes === 0) return res.status(404).json({ error: 'Token not found' });
+        res.json({ success: true });
     });
 });
 
@@ -247,25 +371,47 @@ app.post('/api/admin/claim', (req, res) => {
     }
     const token = authHeader.split(' ')[1];
 
-    db.run('UPDATE users SET is_admin = 1 WHERE api_token = ?', [token], function(err) {
-        if (err) {
-            console.error('DB Error:', err);
-            return res.status(500).json({ success: false, error: 'Database Error' });
+    // Find user by any valid token
+    db.get('SELECT user_id FROM api_tokens WHERE token = ?', [token], (err, tRow) => {
+        let userId = null;
+        if (tRow) userId = tRow.user_id;
+        else {
+             // Legacy check
+             db.get('SELECT id FROM users WHERE api_token = ?', [token], (err, uRow) => {
+                 if (uRow) userId = uRow.id;
+             });
         }
-        res.json({ success: true, message: 'Access Granted. Welcome, Commander.' });
+        
+        // Wait a tick for legacy callback or use promise... callback hell here, let's simplify
+        // Actually let's just use the user endpoint logic or direct update if we find the user
+        const doUpdate = (uid) => {
+            if (!uid) return res.status(401).json({ success: false, error: 'User not found' });
+            db.run('UPDATE users SET is_admin = 1 WHERE id = ?', [uid], function(err) {
+                if (err) {
+                    console.error('DB Error:', err);
+                    return res.status(500).json({ success: false, error: 'Database Error' });
+                }
+                res.json({ success: true, message: 'Access Granted. Welcome, Commander.' });
+            });
+        };
+
+        if (userId) doUpdate(userId);
+        else {
+             // Fallback legacy query
+             db.get('SELECT id FROM users WHERE api_token = ?', [token], (err, row) => {
+                 if (row) doUpdate(row.id);
+                 else res.status(401).json({ success: false, error: 'Unauthorized' });
+             });
+        }
     });
 });
 
 // API: Get Stats (Real Data) - Admin Only
-app.get('/api/stats', (req, res) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer sk_live_')) {
-        return res.status(401).json({ success: false, error: 'Unauthorized' });
-    }
-    const token = authHeader.split(' ')[1];
-
-    // Check if requester is admin
-    db.get('SELECT is_admin FROM users WHERE api_token = ?', [token], (err, row) => {
+app.get('/api/stats', verifyToken, (req, res) => {
+    // Check if requester is admin (req.user should have is_admin if we updated verifyToken correctly, 
+    // but verifyToken currently only sets id/token. Let's fetch is_admin).
+    
+    db.get('SELECT is_admin FROM users WHERE id = ?', [req.user.id], (err, row) => {
         if (err || !row || !row.is_admin) {
             return res.status(403).json({ success: false, error: 'Forbidden' });
         }
@@ -291,15 +437,8 @@ app.get('/api/stats', (req, res) => {
 });
 
 // API: List All Users (Admin Only)
-app.get('/api/admin/users', (req, res) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer sk_live_')) {
-        return res.status(401).json({ success: false, error: 'Unauthorized' });
-    }
-    const token = authHeader.split(' ')[1];
-
-    // Check if requester is admin
-    db.get('SELECT is_admin FROM users WHERE api_token = ?', [token], (err, row) => {
+app.get('/api/admin/users', verifyToken, (req, res) => {
+    db.get('SELECT is_admin FROM users WHERE id = ?', [req.user.id], (err, row) => {
         if (err || !row || !row.is_admin) {
             return res.status(403).json({ success: false, error: 'Forbidden' });
         }
@@ -325,13 +464,7 @@ app.get('/api/ping', (req, res) => {
 });
 
 // API: Upload Image
-app.post('/api/images/upload', upload.single('image'), (req, res) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer sk_live_')) {
-        return res.status(401).json({ success: false, error: 'Unauthorized' });
-    }
-    const token = authHeader.split(' ')[1];
-
+app.post('/api/images/upload', upload.single('image'), verifyToken, (req, res) => {
     if (!req.file) {
         return res.status(400).json({ success: false, error: 'No image file provided' });
     }
@@ -348,7 +481,7 @@ app.post('/api/images/upload', upload.single('image'), (req, res) => {
         req.file.size,
         req.file.mimetype,
         directUrl,
-        token,
+        req.user.token, // Use the token from verified request
         now,
         (err) => {
             if (err) {
@@ -374,16 +507,20 @@ app.post('/api/images/upload', upload.single('image'), (req, res) => {
 // API: List Images by Token
 app.get('/api/images/list', (req, res) => {
     const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer sk_live_')) {
-        if (req.query.key && req.query.key.startsWith('sk_live_')) {
-             // proceed
-        } else {
-            return res.status(401).json({ success: false, error: 'Unauthorized' });
-        }
+    let token = null;
+
+    if (authHeader && authHeader.startsWith('Bearer sk_live_')) {
+        token = authHeader.split(' ')[1];
+    } else if (req.query.key && req.query.key.startsWith('sk_live_')) {
+        token = req.query.key;
+    }
+
+    if (!token) {
+        return res.status(401).json({ success: false, error: 'Unauthorized' });
     }
     
-    const token = authHeader ? authHeader.split(' ')[1] : req.query.key;
-    
+    // Basic check if token exists in either table (optional security)
+    // For now just fetch uploads by token string
     db.all('SELECT * FROM uploads WHERE token = ? ORDER BY uploaded_at DESC', [token], (err, rows) => {
         if (err) {
             console.error('[DB ERROR] Fetch images failed', err);

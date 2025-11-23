@@ -40,14 +40,18 @@ const setupDatabase = () => {
                 api_token TEXT,
                 is_admin INTEGER DEFAULT 0,
                 created_at TEXT NOT NULL
-            )`, (err) => {
-                if (err) {
-                    console.error('Error creating tables:', err);
-                    reject(err);
-                } else {
-                    console.log('Tables ready');
-                }
-            });
+            )`);
+
+            // Create api_tokens table (Multi-token support)
+            db.run(`CREATE TABLE IF NOT EXISTS api_tokens (
+                id TEXT PRIMARY KEY,
+                user_id TEXT NOT NULL,
+                token TEXT NOT NULL,
+                name TEXT,
+                created_at TEXT NOT NULL,
+                last_used_at TEXT,
+                FOREIGN KEY(user_id) REFERENCES users(id)
+            )`);
 
             // Check if we need to migrate data from JSON
             const jsonPath = path.join(__dirname, 'uploads_metadata.json');
@@ -87,4 +91,3 @@ const setupDatabase = () => {
 
 export default db;
 export { setupDatabase };
-
