@@ -97,15 +97,16 @@ const ApiPage = () => {
       }
   };
 
+  const [tokenToDelete, setTokenToDelete] = useState(null);
+
   const handleDeleteToken = async (id) => {
-      if (confirm('Are you sure you want to delete this token? This action cannot be undone.')) {
-          const token = localStorage.getItem('auth_token');
-          await fetch(`/api/tokens/${id}`, {
-              method: 'DELETE',
-              headers: { 'Authorization': `Bearer ${token}` }
-          });
-          await loadData();
-      }
+      const token = localStorage.getItem('auth_token');
+      await fetch(`/api/tokens/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+      });
+      setTokenToDelete(null);
+      await loadData();
   };
 
   const toggleVisibility = (id) => {
@@ -329,7 +330,7 @@ print(response.json())`
                             </div>
                         </div>
                         <button 
-                            onClick={() => handleDeleteToken(token.id)}
+                            onClick={() => setTokenToDelete(token.id)}
                             className="p-3 rounded-xl hover:bg-red-500/10 text-text-muted hover:text-red-500 transition-colors md:self-end"
                             title="Delete Token"
                         >
@@ -340,6 +341,54 @@ print(response.json())`
             ))
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+          {tokenToDelete && (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+                onClick={() => setTokenToDelete(null)}
+              >
+                  <motion.div 
+                    initial={{ scale: 0.95, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.95, opacity: 0 }}
+                    onClick={e => e.stopPropagation()}
+                    className="bg-bg-panel border border-border-color rounded-2xl p-6 max-w-md w-full shadow-2xl"
+                  >
+                      <div className="flex items-center gap-3 text-red-500 mb-4">
+                          <div className="p-3 rounded-full bg-red-500/10">
+                              <Trash2 className="w-6 h-6" />
+                          </div>
+                          <h3 className="text-xl font-bold">Удалить ключ?</h3>
+                      </div>
+                      
+                      <p className="text-text-muted mb-6 leading-relaxed">
+                          Вы уверены, что хотите удалить этот API ключ? <br/>
+                          <span className="text-red-400 font-medium">Это действие нельзя отменить</span>, и все приложения, использующие этот ключ, перестанут работать.
+                      </p>
+
+                      <div className="flex items-center justify-end gap-3">
+                          <button 
+                              onClick={() => setTokenToDelete(null)}
+                              className="px-4 py-2 rounded-xl text-text-muted hover:text-text-main hover:bg-white/5 transition-colors font-medium"
+                          >
+                              Отмена
+                          </button>
+                          <button 
+                              onClick={() => handleDeleteToken(tokenToDelete)}
+                              className="px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold transition-all shadow-lg shadow-red-500/20"
+                          >
+                              Удалить
+                          </button>
+                      </div>
+                  </motion.div>
+              </motion.div>
+          )}
+      </AnimatePresence>
 
       {/* Instructions using primary key */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
