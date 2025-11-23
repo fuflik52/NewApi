@@ -102,7 +102,10 @@ const Dashboard = () => {
 
     const fetchStats = async () => {
         try {
-            const res = await fetch('/api/stats');
+            const token = localStorage.getItem('auth_token');
+            const res = await fetch('/api/stats', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             const data = await res.json();
             setStats(data);
         } catch (e) { console.error(e); }

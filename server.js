@@ -256,24 +256,36 @@ app.post('/api/admin/claim', (req, res) => {
     });
 });
 
-// API: Get Stats (Real Data)
+// API: Get Stats (Real Data) - Admin Only
 app.get('/api/stats', (req, res) => {
-    // Only for admins? Or public stats? Let's make it open but data is generic.
-    // Count users
-    db.get('SELECT COUNT(*) as count FROM users', (err, userRow) => {
-        if (err) return res.status(500).json({ error: 'DB Error' });
-        
-        // Count uploads and size
-        db.get('SELECT COUNT(*) as count, SUM(size) as total_size FROM uploads', (err, uploadRow) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer sk_live_')) {
+        return res.status(401).json({ success: false, error: 'Unauthorized' });
+    }
+    const token = authHeader.split(' ')[1];
+
+    // Check if requester is admin
+    db.get('SELECT is_admin FROM users WHERE api_token = ?', [token], (err, row) => {
+        if (err || !row || !row.is_admin) {
+            return res.status(403).json({ success: false, error: 'Forbidden' });
+        }
+
+        // Count users
+        db.get('SELECT COUNT(*) as count FROM users', (err, userRow) => {
             if (err) return res.status(500).json({ error: 'DB Error' });
             
-            const stats = {
-                users: userRow.count,
-                uploads: uploadRow.count,
-                storage_bytes: uploadRow.total_size || 0,
-                requests: 0 // We don't track requests in DB yet, so 0 or mock
-            };
-            res.json(stats);
+            // Count uploads and size
+            db.get('SELECT COUNT(*) as count, SUM(size) as total_size FROM uploads', (err, uploadRow) => {
+                if (err) return res.status(500).json({ error: 'DB Error' });
+                
+                const stats = {
+                    users: userRow.count,
+                    uploads: uploadRow.count,
+                    storage_bytes: uploadRow.total_size || 0,
+                    requests: 0 // We don't track requests in DB yet
+                };
+                res.json(stats);
+            });
         });
     });
 });
