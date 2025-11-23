@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Image as ImageIcon, HardDrive, Loader2, AlertCircle, X, Calendar, Copy, Check, Link as LinkIcon } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Search, Image as ImageIcon, HardDrive, Loader2, AlertCircle, X, Calendar, Copy, Check, Link as LinkIcon, ArrowUpDown, SortAsc, SortDesc, Filter } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { dbService } from '../services/mockDatabase';
 
@@ -11,15 +11,27 @@ const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [copied, setCopied] = useState(false);
 
+  // Filtering & Sorting
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortConfig, setSortConfig] = useState({ key: 'uploaded_at', direction: 'desc' });
+
   // Pre-fill API Key if user has one
   useEffect(() => {
       const loadKey = async () => {
           try {
-              const tokens = await dbService.getApiTokens();
-              if (tokens && tokens.length > 0) {
-                  setApiKey(tokens[0].token);
-                  // Auto-load images if key found
-                  handleSearch(null, tokens[0].token);
+              // Use fetch directly instead of mockDatabase to be consistent with new flow
+              const token = localStorage.getItem('auth_token');
+              if (!token) return;
+
+              // Get user tokens
+              const res = await fetch('/api/tokens', { headers: { 'Authorization': `Bearer ${token}` } });
+              if (res.ok) {
+                  const tokens = await res.json();
+                  if (tokens && tokens.length > 0) {
+                      setApiKey(tokens[0].token);
+                      // Auto-load images
+                      handleSearch(null, tokens[0].token);
+                  }
               }
           } catch (e) { console.error(e); }
       };
@@ -34,14 +46,21 @@ const Gallery = () => {
 
     setLoading(true);
     setError('');
-    // Only reset images if explicit search
-    if (e) setImages(null); 
-
+    
     try {
-      const result = await dbService.getImagesByToken(keyToUse);
-      setImages(result);
-      if (result.length === 0) {
-        setError('Изображения не найдены или неверный ключ.');
+      // Using direct API fetch
+      const res = await fetch('/api/images/list', {
+          headers: { 'Authorization': `Bearer ${keyToUse}` }
+      });
+      
+      if (res.ok) {
+          const result = await res.json();
+          setImages(result);
+          if (result.length === 0) {
+            setError('Изображения не найдены.');
+          }
+      } else {
+          setError('Неверный ключ или ошибка сервера.');
       }
     } catch (err) {
       setError('Ошибка при загрузке данных.');
@@ -54,6 +73,44 @@ const Gallery = () => {
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  // Filter and Sort Logic
+  const filteredAndSortedImages = useMemo(() => {
+      if (!images) return [];
+
+      let result = [...images];
+
+      // Filter
+      if (searchTerm) {
+          const lowerTerm = searchTerm.toLowerCase();
+          result = result.filter(img => 
+              img.name.toLowerCase().includes(lowerTerm) || 
+              img.id.includes(lowerTerm)
+          );
+      }
+
+      // Sort
+      result.sort((a, b) => {
+          let aValue = a[sortConfig.key];
+          let bValue = b[sortConfig.key];
+
+          if (typeof aValue === 'string') aValue = aValue.toLowerCase();
+          if (typeof bValue === 'string') bValue = bValue.toLowerCase();
+
+          if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+          if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+          return 0;
+      });
+
+      return result;
+  }, [images, searchTerm, sortConfig]);
+
+  const handleSort = (key) => {
+      setSortConfig(current => ({
+          key,
+          direction: current.key === key && current.direction === 'desc' ? 'asc' : 'desc'
+      }));
   };
 
   const totalSize = images ? images.reduce((acc, img) => acc + img.size, 0).toFixed(1) : 0;
@@ -70,27 +127,78 @@ const Gallery = () => {
         <p className="text-text-muted">Просмотр загруженных файлов по API ключу</p>
       </header>
 
-      {/* Search Section */}
-      <div className="glass-panel p-8 rounded-2xl">
-        <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto">
-          <div className="relative">
+      {/* Search & Controls Section */}
+      <div className="glass-panel p-6 rounded-2xl space-y-6">
+        {/* API Key Input */}
+        <form onSubmit={handleSearch} className="relative">
+            <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted w-5 h-5" />
             <input
-              type="text"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              placeholder="Введите ваш API Key (sk_live_...)"
-              className="w-full bg-bg-main border border-border-color rounded-xl pl-12 pr-32 py-4 text-text-main focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary transition-all font-mono"
+                type="text"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                placeholder="Введите ваш API Key (sk_live_...)"
+                className="w-full bg-bg-main border border-border-color rounded-xl pl-12 pr-32 py-4 text-text-main focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary transition-all font-mono"
             />
             <button
-              type="submit"
-              disabled={loading}
-              className="absolute right-2 top-2 bottom-2 px-6 rounded-lg bg-accent-primary text-accent-secondary font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                type="submit"
+                disabled={loading}
+                className="absolute right-2 top-2 bottom-2 px-6 rounded-lg bg-accent-primary text-accent-secondary font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Найти'}
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Обновить'}
             </button>
-          </div>
+            </div>
         </form>
+
+        {/* Toolbar (Sort/Filter) - Only show if images exist */}
+        {images && images.length > 0 && (
+            <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className="flex flex-col md:flex-row gap-4 pt-4 border-t border-border-color"
+            >
+                <div className="relative flex-1">
+                    <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted w-4 h-4" />
+                    <input 
+                        type="text" 
+                        placeholder="Фильтр по имени..." 
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full bg-bg-main border border-border-color rounded-lg pl-9 pr-4 py-2 text-sm text-text-main focus:outline-none focus:border-accent-primary transition-colors"
+                    />
+                </div>
+                <div className="flex gap-2">
+                    <button 
+                        onClick={() => handleSort('uploaded_at')}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium transition-all ${
+                            sortConfig.key === 'uploaded_at' 
+                                ? 'bg-accent-primary/10 border-accent-primary text-accent-primary' 
+                                : 'bg-bg-main border-border-color text-text-muted hover:text-text-main'
+                        }`}
+                    >
+                        <Calendar className="w-4 h-4" />
+                        Дата
+                        {sortConfig.key === 'uploaded_at' && (
+                            sortConfig.direction === 'desc' ? <SortDesc className="w-3 h-3" /> : <SortAsc className="w-3 h-3" />
+                        )}
+                    </button>
+                    <button 
+                        onClick={() => handleSort('size')}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium transition-all ${
+                            sortConfig.key === 'size' 
+                                ? 'bg-accent-primary/10 border-accent-primary text-accent-primary' 
+                                : 'bg-bg-main border-border-color text-text-muted hover:text-text-main'
+                        }`}
+                    >
+                        <HardDrive className="w-4 h-4" />
+                        Размер
+                        {sortConfig.key === 'size' && (
+                            sortConfig.direction === 'desc' ? <SortDesc className="w-3 h-3" /> : <SortAsc className="w-3 h-3" />
+                        )}
+                    </button>
+                </div>
+            </motion.div>
+        )}
       </div>
 
       {/* Results */}
@@ -136,30 +244,41 @@ const Gallery = () => {
               </div>
             </div>
 
-            {/* Image Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {images.map((img, index) => (
-                <motion.div
-                  key={img.id}
-                  onClick={() => setSelectedImage(img)}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="group relative aspect-video rounded-xl overflow-hidden glass-panel border border-border-color cursor-pointer hover:shadow-[0_0_20px_rgba(0,0,0,0.3)] transition-shadow"
-                >
-                  <img 
-                    src={img.url} 
-                    alt={img.name} 
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                     <div className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white border border-white/20">
-                        Подробнее
-                     </div>
-                  </div>
-                </motion.div>
-              ))}
+            {/* Image Grid (Masonry-ish) */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <AnimatePresence>
+                  {filteredAndSortedImages.map((img, index) => (
+                    <motion.div
+                      layout
+                      key={img.id}
+                      onClick={() => setSelectedImage(img)}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ delay: index * 0.05 }}
+                      className="group relative aspect-square rounded-xl overflow-hidden glass-panel border border-border-color cursor-pointer hover:shadow-lg hover:border-accent-primary/50 transition-all"
+                    >
+                      <img 
+                        src={img.url} 
+                        alt={img.name} 
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                         <p className="text-white text-sm font-medium truncate">{img.name}</p>
+                         <p className="text-white/60 text-xs">{img.size} MB</p>
+                      </div>
+                    </motion.div>
+                  ))}
+              </AnimatePresence>
             </div>
+            
+            {filteredAndSortedImages.length === 0 && (
+                <div className="text-center py-12 text-text-muted">
+                    Ничего не найдено по вашему запросу.
+                </div>
+            )}
+
           </motion.div>
         )}
       </AnimatePresence>
