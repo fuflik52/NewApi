@@ -223,9 +223,10 @@ print(response.json())`
         <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass-panel rounded-2xl p-6"
+            className="glass-panel rounded-2xl p-6 mb-8 relative overflow-hidden"
         >
-            <div className="flex items-center gap-2 mb-6">
+            <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none" />
+            <div className="flex items-center gap-2 mb-6 relative z-10">
                 <BarChart2 className="text-accent-primary w-5 h-5" />
                 <h2 className="text-xl font-semibold text-text-main">Активность API (24ч)</h2>
             </div>

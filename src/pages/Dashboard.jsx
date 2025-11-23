@@ -3,6 +3,7 @@ import { Activity, Users, Database, Globe, Server, Cpu } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend } from 'recharts';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import Loader from '../components/Loader';
 
 const StatCard = ({ title, value, change, icon: Icon }) => (
   <div className="glass-panel p-6 rounded-2xl relative overflow-hidden hover:translate-y-[-2px] transition-transform duration-300 group">
@@ -148,7 +149,7 @@ const Dashboard = () => {
     return () => clearInterval(interval);
   }, [isAdmin]);
 
-  if (loading) return <div className="p-8">Loading...</div>;
+  if (loading) return <Loader />;
   if (!isAdmin) return null;
 
   return (
@@ -191,8 +192,9 @@ const Dashboard = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="glass-panel rounded-2xl p-8"
+        className="glass-panel rounded-2xl p-8 relative overflow-hidden"
       >
+        <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none" />
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-text-main">Общая активность (Запросы за 24ч)</h2>
           <div className="flex gap-2">
@@ -230,8 +232,9 @@ const Dashboard = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="glass-panel rounded-2xl p-6 flex flex-col"
+          className="glass-panel rounded-2xl p-6 flex flex-col relative overflow-hidden"
         >
+          <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none" />
           <h3 className="text-lg font-semibold text-text-main mb-4">Распределение ответов</h3>
           <div className="flex-1 min-h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -253,7 +256,12 @@ const Dashboard = () => {
                   contentStyle={{ backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--text-main)' }}
                   itemStyle={{ color: 'var(--text-main)' }}
                 />
-                <Legend verticalAlign="bottom" height={36} iconType="circle" />
+                <Legend 
+                  verticalAlign="bottom" 
+                  height={36} 
+                  iconType="circle"
+                  formatter={(value, entry) => <span className="text-text-muted ml-2">{value}</span>}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>

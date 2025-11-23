@@ -3,10 +3,12 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import StarBackground from '../components/StarBackground';
+import { useTheme } from '../context/ThemeContext';
 
 const Layout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { background } = useTheme();
 
   // Admin Claim command
   useEffect(() => {
@@ -29,11 +31,15 @@ const Layout = () => {
 
   return (
     <div className="min-h-screen bg-bg-main text-text-main transition-colors duration-300 relative overflow-x-hidden">
-      <div className="fixed inset-0 bg-grid-pattern pointer-events-none z-0" />
-      <StarBackground />
+      {(background === 'grid' || background === 'both') && (
+        <div className="fixed inset-0 bg-grid-pattern pointer-events-none z-0" />
+      )}
+      {(background === 'stars' || background === 'both') && (
+        <StarBackground />
+      )}
       
       <Sidebar 
-        isOpen={isMobileMenuOpen} 
+        isOpen={isMobileMenuOpen}  
         onClose={() => setIsMobileMenuOpen(false)} 
       />
       

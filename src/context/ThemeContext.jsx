@@ -3,7 +3,18 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState('dark'); // 'dark', 'light', 'cosmo', 'monokai'
+  const [theme, setThemeState] = useState(() => localStorage.getItem('app_theme') || 'dark');
+  const [background, setBackgroundState] = useState(() => localStorage.getItem('app_background') || 'both'); // 'grid', 'stars', 'both', 'none'
+
+  const setTheme = (newTheme) => {
+    setThemeState(newTheme);
+    localStorage.setItem('app_theme', newTheme);
+  };
+
+  const setBackground = (newBg) => {
+    setBackgroundState(newBg);
+    localStorage.setItem('app_background', newBg);
+  };
 
   useEffect(() => {
     // Update CSS variables based on theme
@@ -49,7 +60,7 @@ export const ThemeProvider = ({ children }) => {
   }, [theme]);
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme, background, setBackground }}>
       {children}
     </ThemeContext.Provider>
   );
