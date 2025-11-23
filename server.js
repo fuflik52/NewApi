@@ -108,16 +108,26 @@ const verifyToken = async (req, res, next) => {
             return res.status(401).json({ success: false, error: 'Invalid Token' });
         }
 
-        // 2. Update stats (async)
-        supabase.from('api_keys')
-            .update({ 
-                last_used_at: new Date().toISOString(),
-                requests_count: (keyData.requests_count || 0) + 1 
-            })
-            .eq('token', token)
-            .then(({ error }) => {
-                if (error) console.error('Failed to update token stats', error);
-            });
+        // 2. Update stats (async) - ONLY for non-system routes (e.g. uploads)
+        // We don't want to count dashboard refreshes (stats, analytics, tokens) as API usage
+        const isSystemRoute = req.path.startsWith('/api/stats') || 
+                              req.path.startsWith('/api/analytics') || 
+                              req.path.startsWith('/api/tokens') || 
+                              req.path.startsWith('/api/admin') ||
+                              req.path.startsWith('/api/user') ||
+                              (req.method === 'DELETE');
+
+        if (!isSystemRoute) {
+            supabase.from('api_keys')
+                .update({ 
+                    last_used_at: new Date().toISOString(),
+                    requests_count: (keyData.requests_count || 0) + 1 
+                })
+                .eq('token', token)
+                .then(({ error }) => {
+                    if (error) console.error('Failed to update token stats', error);
+                });
+        }
 
         // 3. Get user info
         const { data: userData, error: userError } = await supabase
