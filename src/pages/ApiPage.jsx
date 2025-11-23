@@ -3,6 +3,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Key, Copy, Check, Terminal, Shield, Zap, ChevronDown, Eye, EyeOff, RefreshCw, Plus, Trash2, AlertCircle, BarChart2, Database, Server, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { dbService } from '../services/mockDatabase';
+import Loader from '../components/Loader';
 
 const ApiPage = () => {
   const [tokens, setTokens] = useState([]);
