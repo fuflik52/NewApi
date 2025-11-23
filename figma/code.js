@@ -13,6 +13,7 @@ const API_BASE = 'https://bublickrust.ru';
 let currentApiToken = '';
 let currentAssetMode = 'urls'; // 'urls' | 'data'
 let currentAnchorMode = 'corners'; // 'corners' | 'center'
+let currentTheme = 'cosmic'; // 'cosmic' | 'monokai'
 // Масштабирование теперь управляется внутри сгенерированного C#-плагина (перс-параметр 0.5..1.0)
 let currentRootFrame = null;
 let pendingUploadResolve = null; // Ожидание завершения загрузки изображений из UI
@@ -31,15 +32,21 @@ figma.ui.onmessage = async (msg) => {
       const token = await figma.clientStorage.getAsync('apiToken');
       const assetMode = await figma.clientStorage.getAsync('assetMode');
       const anchorMode = await figma.clientStorage.getAsync('anchorMode');
+      const theme = await figma.clientStorage.getAsync('theme');
       
       currentApiToken = token || '';
       currentAssetMode = assetMode || 'urls';
       currentAnchorMode = anchorMode || 'corners';
+      currentTheme = theme || 'cosmic';
 
       figma.ui.postMessage({ 
         type: 'init', 
         token: currentApiToken,
-        settings: { assetMode: currentAssetMode, anchorMode: currentAnchorMode }
+        settings: { 
+            assetMode: currentAssetMode, 
+            anchorMode: currentAnchorMode,
+            theme: currentTheme
+        }
       });
       
       if (currentApiToken) figma.ui.postMessage({ type: 'log', message: `🔐 Токен загружен локально` });
@@ -57,6 +64,10 @@ figma.ui.onmessage = async (msg) => {
         if (msg.settings.anchorMode) {
             currentAnchorMode = msg.settings.anchorMode;
             await figma.clientStorage.setAsync('anchorMode', currentAnchorMode);
+        }
+        if (msg.settings.theme) {
+            currentTheme = msg.settings.theme;
+            await figma.clientStorage.setAsync('theme', currentTheme);
         }
         figma.ui.postMessage({ type: 'log', message: '⚙️ Настройки сохранены' });
     }
