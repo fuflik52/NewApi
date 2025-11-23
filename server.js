@@ -429,7 +429,88 @@ app.get('/api/stats', verifyToken, async (req, res) => {
     }
 });
 
-// NEW: Analytics Endpoint for Graphs
+// NEW: User Analytics Endpoint (For Figma Plugin)
+app.get('/api/user/analytics', verifyToken, async (req, res) => {
+    const { range } = req.query; // '24h', '7d', '30d'
+    const userId = req.user.id;
+    
+    let startTime = new Date();
+    let groupBy = 'hour'; // 'hour' or 'day'
+    let format = 'HH:00'; // 'HH:00' or 'DD.MM'
+
+    if (range === '7d') {
+        startTime.setDate(startTime.getDate() - 7);
+        groupBy = 'day';
+    } else if (range === '30d') {
+        startTime.setDate(startTime.getDate() - 30);
+        groupBy = 'day';
+    } else {
+        // Default 24h
+        startTime.setHours(startTime.getHours() - 24);
+        groupBy = 'hour';
+    }
+
+    try {
+        const { data: logs, error } = await supabase
+            .from('request_logs')
+            .select('created_at')
+            .eq('user_id', userId)
+            .gte('created_at', startTime.toISOString())
+            .order('created_at', { ascending: true });
+
+        if (error) throw error;
+
+        // Aggregate
+        const aggregated = {};
+        // Fill with 0s
+        if (groupBy === 'hour') {
+            for (let i = 0; i <= 24; i++) {
+                const d = new Date(startTime);
+                d.setHours(d.getHours() + i);
+                const key = d.getHours().toString().padStart(2, '0') + ':00';
+                aggregated[key] = 0;
+            }
+        } else {
+            const days = range === '7d' ? 7 : 30;
+            for (let i = 0; i <= days; i++) {
+                const d = new Date(startTime);
+                d.setDate(d.getDate() + i);
+                const key = `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+                aggregated[key] = 0;
+            }
+        }
+
+        logs.forEach(log => {
+            const d = new Date(log.created_at);
+            let key;
+            if (groupBy === 'hour') {
+                key = d.getHours().toString().padStart(2, '0') + ':00';
+            } else {
+                key = `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+            }
+            
+            if (aggregated[key] !== undefined) {
+                aggregated[key]++;
+            }
+        });
+
+        const chartData = Object.entries(aggregated).map(([name, value]) => ({ name, value }));
+        
+        // Calculate trend (last period vs previous period) - simplified
+        const total = logs.length;
+
+        res.json({
+            data: chartData,
+            total: total
+        });
+
+    } catch (err) {
+        console.error('User Analytics Error:', err);
+        res.status(500).json({ error: 'Analytics failed' });
+    }
+});
+
+// NEW: Analytics Endpoint for Graphs (Admin)
 app.get('/api/analytics', verifyToken, async (req, res) => {
     if (!req.user.is_admin) return res.status(403).json({ error: 'Forbidden' });
     
