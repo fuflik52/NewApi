@@ -18,14 +18,21 @@ const ApiPage = () => {
   useEffect(() => {
     const loadData = async () => {
       const tokenData = await dbService.getApiToken();
-      setApiKey(tokenData.token);
-      
-      // Pass token ID to get specific user stats
-      const stats = await dbService.getUsageStats(timeRange, tokenData.id);
-      setChartData(stats);
+      // Check if tokenData is valid before accessing properties
+      if (tokenData && tokenData.token) {
+          setApiKey(tokenData.token);
+          
+          if (tokenData.id) {
+            // Pass token ID to get specific user stats
+            const stats = await dbService.getUsageStats(timeRange, tokenData.id);
+            setChartData(stats);
 
-      const total = await dbService.getTotalRequests(tokenData.id);
-      setTotalRequests(total);
+            const total = await dbService.getTotalRequests(tokenData.id);
+            setTotalRequests(total);
+          }
+      } else {
+          setApiKey('Error loading token');
+      }
     };
     loadData();
   }, [timeRange]);
@@ -47,14 +54,24 @@ const ApiPage = () => {
     const newToken = await dbService.regenerateToken();
     
     clearInterval(interval);
-    setApiKey(newToken);
+    // Check if newToken is valid
+    if (newToken) {
+        setApiKey(newToken);
+    } else {
+        // If generation failed (e.g. not implemented on backend yet), revert to safe state or show error
+        // For now, just re-fetch current token
+        const tokenData = await dbService.getApiToken();
+        setApiKey(tokenData?.token || 'Error');
+    }
     setIsGenerating(false);
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(apiKey);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (apiKey && apiKey !== 'Loading...' && apiKey !== 'Error') {
+        navigator.clipboard.writeText(apiKey);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   return (
@@ -205,7 +222,7 @@ const ApiPage = () => {
               <div className="p-4 overflow-x-auto">
                 <pre className="font-mono text-sm text-text-muted">
 {`curl -X POST https://bublickrust.ru/api/images/upload \\
-  -H "Authorization: Bearer ${apiKey.substring(0, 10)}..." \\
+  -H "Authorization: Bearer ${apiKey && apiKey.length > 10 ? apiKey.substring(0, 10) : 'sk_live...'}..." \\
   -F "image=@your-image.png"`}
                 </pre>
               </div>
