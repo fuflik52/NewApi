@@ -112,7 +112,7 @@ app.use((req, res, next) => {
              // For now, just log the basics
              supabase.from('request_logs').insert({
                  user_id: userId,
-                 endpoint: req.path,
+                 endpoint: req.originalUrl || req.url,
                  method: req.method,
                  status: res.statusCode,
                  duration: duration
