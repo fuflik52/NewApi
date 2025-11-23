@@ -53,18 +53,19 @@
       transition: background 0.3s ease, color 0.3s ease;
     }
 
-    /* Background Stars */
+    /* Background Stars and Grid */
     body:not([data-theme="monokai"])::before {
       content: ''; position: fixed; inset: 0;
-      background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.03) 0%, transparent 60%);
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 20px 20px;
       z-index: -1; pointer-events: none;
     }
     body:not([data-theme="monokai"])::after {
       content: ''; position: fixed; inset: 0;
-      background-image: radial-gradient(1px 1px at 50% 50%, rgba(255,255,255,0.2) 0%, transparent 100%);
-      background-size: 400px 400px;
-      animation: stars 60s linear infinite;
-      z-index: -2; pointer-events: none; opacity: 0.4;
+      background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.03) 0%, transparent 60%);
+      z-index: -2; pointer-events: none;
     }
 
     /* Toast Notifications */
@@ -416,6 +417,19 @@
         position: relative;
         padding: 0; box-sizing: border-box;
         overflow: hidden;
+    }
+    
+    /* Grid Background for Chart */
+    .chart-container::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: 
+            linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+        background-size: 20px 20px;
+        pointer-events: none;
+        opacity: 0.5;
     }
     
     /* SVG Chart Styles */
