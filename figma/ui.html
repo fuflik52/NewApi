@@ -265,24 +265,35 @@
     }
 
     .chart-container {
-        width: 100%; height: 120px; 
+        width: 100%; height: 140px; 
         margin-top: 16px;
         background: var(--glass-panel);
         border: 1px solid var(--glass-border);
         border-radius: var(--radius);
         position: relative;
-        display: flex; align-items: flex-end; justify-content: space-between;
-        padding: 10px; box-sizing: border-box;
+        padding: 0; box-sizing: border-box;
         overflow: hidden;
     }
-    .chart-bar {
-        flex: 1; background: var(--accent-color);
-        opacity: 0.5; border-radius: 2px 2px 0 0;
-        margin: 0 1px;
-        transition: all 0.3s ease;
-    }
-    .chart-bar:hover { opacity: 1; transform: scaleY(1.1); transform-origin: bottom; }
     
+    /* SVG Chart Styles */
+    .chart-svg { width: 100%; height: 100%; display: block; cursor: crosshair; }
+    .chart-area { fill: var(--accent-color); fill-opacity: 0.2; }
+    .chart-line { fill: none; stroke: var(--accent-color); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .chart-tooltip {
+        position: absolute; top: 10px; left: 10px;
+        background: rgba(0,0,0,0.8); color: #fff;
+        padding: 4px 8px; border-radius: 4px;
+        font-size: 10px; pointer-events: none;
+        opacity: 0; transition: opacity 0.1s;
+        border: 1px solid rgba(255,255,255,0.2);
+        z-index: 10; white-space: nowrap;
+    }
+    .chart-cursor {
+        position: absolute; top: 0; bottom: 0; width: 1px;
+        background: rgba(255,255,255,0.3);
+        pointer-events: none; display: none;
+    }
+
     .time-toggles {
         display: flex; gap: 4px; margin-top: 8px;
         background: var(--glass-panel); border-radius: 8px; padding: 2px;
@@ -787,16 +798,85 @@
         const container = document.getElementById('activity-chart');
         container.innerHTML = '';
         
-        // Normalize data
+        if (!data || data.length === 0) {
+            container.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:10px;">Нет данных</div>';
+            return;
+        }
+
+        // Create SVG
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('class', 'chart-svg');
+        svg.setAttribute('viewBox', '0 0 300 100');
+        svg.setAttribute('preserveAspectRatio', 'none');
+
+        // Data Prep
         const maxVal = Math.max(...data.map(d => d.value)) || 1;
+        const points = data.map((d, i) => {
+            const x = (i / (data.length - 1)) * 300;
+            const y = 100 - (d.value / maxVal) * 80; // Leave some top padding
+            return [x, y];
+        });
+
+        // Build Path (Line)
+        let d = `M ${points[0][0]} ${points[0][1]}`;
+        for (let i = 1; i < points.length; i++) {
+            // Simple smoothing (bezier) could be added here, but straight lines are safer for raw SVG
+            d += ` L ${points[i][0]} ${points[i][1]}`;
+        }
+
+        // Build Area (Polygon)
+        const areaD = `${d} L 300 100 L 0 100 Z`;
+
+        // Elements
+        const pathArea = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        pathArea.setAttribute('d', areaD);
+        pathArea.setAttribute('class', 'chart-area');
+
+        const pathLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        pathLine.setAttribute('d', d);
+        pathLine.setAttribute('class', 'chart-line');
+
+        svg.appendChild(pathArea);
+        svg.appendChild(pathLine);
         
-        data.forEach(item => {
-            const bar = document.createElement('div');
-            bar.className = 'chart-bar';
-            const heightPct = (item.value / maxVal) * 100;
-            bar.style.height = Math.max(heightPct, 5) + '%'; // Min 5% height for visibility
-            bar.title = `${item.name}: ${item.value}`;
-            container.appendChild(bar);
+        // Interactive Elements
+        const tooltip = document.createElement('div');
+        tooltip.className = 'chart-tooltip';
+        
+        const cursorLine = document.createElement('div');
+        cursorLine.className = 'chart-cursor';
+
+        container.appendChild(svg);
+        container.appendChild(tooltip);
+        container.appendChild(cursorLine);
+
+        // Interaction
+        container.addEventListener('mousemove', (e) => {
+            const rect = container.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const pct = Math.max(0, Math.min(1, x / rect.width));
+            
+            // Find closest point
+            const index = Math.round(pct * (data.length - 1));
+            const item = data[index];
+            
+            if (item) {
+                cursorLine.style.display = 'block';
+                cursorLine.style.left = x + 'px';
+                
+                tooltip.style.opacity = '1';
+                tooltip.innerHTML = `<div style="font-weight:bold">${item.value} запросов</div><div style="opacity:0.7">${item.name}</div>`;
+                
+                // Tooltip position smarts
+                let tipX = x + 10;
+                if (tipX + 100 > rect.width) tipX = x - 110;
+                tooltip.style.left = tipX + 'px';
+            }
+        });
+
+        container.addEventListener('mouseleave', () => {
+            tooltip.style.opacity = '0';
+            cursorLine.style.display = 'none';
         });
     }
 
