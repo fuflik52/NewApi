@@ -4,11 +4,71 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const BaseInvaders = () => {
     const [state, setState] = useState({ team: [], captain: null, is_captain: false });
-// ... existing code ...
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [searchResults, setSearchResults] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        loadData();
+    }, []);
+
+    const loadData = async () => {
+        try {
+            const token = localStorage.getItem('auth_token');
+            if (!token) return;
+            const res = await fetch('/api/invaders/state', { headers: { Authorization: `Bearer ${token}` } });
+            const data = await res.json();
+            setState(data);
+        } catch(e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSearch = async (q) => {
+        setSearchQuery(q);
+        if (q.length < 2) { setSearchResults([]); return; }
+        const token = localStorage.getItem('auth_token');
+        const res = await fetch(`/api/users/search?q=${q}`, { headers: { Authorization: `Bearer ${token}` } });
+        const data = await res.json();
+        setSearchResults(data);
+    };
+
+    const sendInvite = async (receiverId) => {
+        const token = localStorage.getItem('auth_token');
+        await fetch('/api/invaders/invite', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ receiver_id: receiverId })
+        });
+        setIsSearchOpen(false);
+        setSearchQuery('');
+        loadData();
+    };
+
+    const kickMember = async (inviteId) => {
+        if (!confirm('Выгнать игрока?')) return;
+        const token = localStorage.getItem('auth_token');
+        await fetch('/api/invaders/kick', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ invite_id: inviteId })
+        });
+        loadData();
+    };
+
+    const members = state.team?.members || [];
+    const captain = state.team?.captain;
+    const isCaptain = state.team?.is_captain;
+
+    if (loading) return <div className="text-center py-20">Загрузка лобби...</div>;
+
     return (
         <div className="min-h-[calc(100vh-100px)] relative">
             {/* Header - Team Management */}
-            <div className="absolute top-0 left-0 flex items-center gap-3 mb-8">
+            <div className="absolute top-0 left-0 flex items-center gap-3 mb-8 z-20">
                 <div className="p-2 bg-accent-primary/10 rounded-lg text-accent-primary border border-accent-primary/20">
                     <Shield className="w-6 h-6" />
                 </div>
@@ -17,14 +77,9 @@ const BaseInvaders = () => {
                     <p className="text-xs text-text-muted">Lobby Control</p>
                 </div>
             </div>
-
-            {/* Header - Old (Keep or Remove? User said "sleva sverhu" - top left. I added absolute above. The old header was centered/justified. I will keep the structure but maybe simplify or remove duplicate if needed. Let's keep the grid layout clean.) */}
-            {/* Actually, the user asked for "Управление командой" specifically. */}
             
             <div className="flex justify-center items-center mb-12 pt-16"> 
-                 {/* Title was here, removed or changed? Let's keep the main title "BASE INVADERS" maybe centered? */}
-                 {/* User said: "сделай BASE INVADERS Управление командой слева сверзу" */}
-                 {/* So "BASE INVADERS" title can stay or move. Let's keep "BASE INVADERS" center or large. */}
+                 {/* Title area */}
             </div>
 
             {/* TEAM GRID */}
@@ -35,10 +90,10 @@ const BaseInvaders = () => {
                     <SlotCard 
                         key={i} 
                         member={members[i]} 
-                        isCaptain={state.is_captain}
+                        isCaptain={isCaptain}
                         onAdd={() => setIsSearchOpen(true)} 
                         onKick={kickMember}
-                        canAdd={state.is_captain} 
+                        canAdd={isCaptain} 
                     />
                 ))}
 
@@ -69,15 +124,62 @@ const BaseInvaders = () => {
                     <SlotCard 
                         key={i+2} 
                         member={members[i]} 
-                        isCaptain={state.is_captain}
+                        isCaptain={isCaptain}
                         onAdd={() => setIsSearchOpen(true)} 
                         onKick={kickMember}
-                        canAdd={state.is_captain}
+                        canAdd={isCaptain}
                     />
                 ))}
 
             </div>
-            {/* ... */}
+
+             {/* SEARCH MODAL */}
+            <AnimatePresence>
+                {isSearchOpen && (
+                    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                        <motion.div 
+                            initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }}
+                            className="bg-[#0a0a0a] border border-glass-border w-full max-w-md rounded-2xl p-6 shadow-2xl"
+                        >
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-lg font-bold">Добавить игрока</h3>
+                                <button onClick={() => setIsSearchOpen(false)} className="text-text-muted hover:text-white">×</button>
+                            </div>
+                            
+                            <div className="relative mb-4">
+                                <Search className="absolute left-3 top-3 text-text-muted w-5 h-5" />
+                                <input 
+                                    type="text" 
+                                    placeholder="Введите Discord имя..." 
+                                    className="w-full bg-bg-main border border-glass-border rounded-xl py-3 pl-10 text-white focus:border-accent-primary outline-none"
+                                    value={searchQuery}
+                                    onChange={(e) => handleSearch(e.target.value)}
+                                />
+                            </div>
+
+                            <div className="space-y-2 max-h-60 overflow-y-auto">
+                                {searchResults.map(user => (
+                                    <div key={user.id} className="flex items-center justify-between p-3 bg-bg-main rounded-xl hover:bg-glass-panel transition-colors">
+                                        <div className="flex items-center gap-3">
+                                            <img src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`} className="w-8 h-8 rounded-full" onError={(e) => e.target.src = 'https://via.placeholder.com/32'} />
+                                            <div>
+                                                <div className="font-bold text-sm">{user.username}</div>
+                                                <div className="text-xs text-text-muted">#{user.discriminator}</div>
+                                            </div>
+                                        </div>
+                                        <button onClick={() => sendInvite(user.id)} className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors">
+                                            <Plus className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                ))}
+                                {searchQuery.length > 1 && searchResults.length === 0 && (
+                                    <div className="text-center text-text-muted text-sm py-4">Никого не найдено</div>
+                                )}
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
@@ -85,21 +187,10 @@ const BaseInvaders = () => {
 const SlotCard = ({ member, isCaptain, onAdd, onKick, canAdd }) => {
     const [showMenu, setShowMenu] = useState(false);
     
-    // Fix: Correctly resolve user object from invite or member entry
-    // 'member' can be:
-    // 1. Invite object: { id, status, receiver: { id, username, avatar } }
-    // 2. "Me" object: { id, username, avatar, is_me: true, invite_id }
-    
     const user = member?.receiver || (member?.is_me ? member : null);
-    // If member exists but no receiver and not is_me? fallback to member (if backend sends direct user obj)
-    // But let's stick to what we know.
-    
-    const avatarId = user?.id || member?.receiver_id; 
-    // For "Me" object, id is top level. For invite, receiver.id.
-    
-    const username = user?.username;
     const avatar = user?.avatar;
-    const status = member?.status || (member?.is_me ? 'accepted' : 'pending'); // Me is always accepted
+    const username = user?.username;
+    const status = member?.status || (member?.is_me ? 'accepted' : 'pending'); 
 
     return (
         <motion.div 
@@ -108,11 +199,7 @@ const SlotCard = ({ member, isCaptain, onAdd, onKick, canAdd }) => {
         >
             {user ? (
                 <>
-                    {/* Options Menu for Captain (can kick anyone except self, but this is slotcard so not self) */}
-                    {/* Only captain can kick. And cannot kick "Me" if "Me" is shown in slot? Wait. */}
-                    {/* If I am captain, I see members in slots. I can kick them. */}
-                    {/* If I am member, I see captain (center) and other members. I cannot kick. */}
-                    {isCaptain && (
+                    {isCaptain && !member.is_me && (
                         <div className="absolute top-2 right-2">
                             <button 
                                 onClick={() => setShowMenu(!showMenu)}
@@ -127,7 +214,7 @@ const SlotCard = ({ member, isCaptain, onAdd, onKick, canAdd }) => {
                                         className="absolute right-0 mt-1 w-32 bg-[#1a1a1a] border border-glass-border rounded-lg shadow-xl overflow-hidden z-20"
                                     >
                                         <button 
-                                            onClick={() => onKick(member.id || member.invite_id)} // Invite ID for kicking
+                                            onClick={() => onKick(member.id || member.invite_id)}
                                             className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-500/10 transition-colors"
                                         >
                                             <Trash2 size={14} />
@@ -150,4 +237,22 @@ const SlotCard = ({ member, isCaptain, onAdd, onKick, canAdd }) => {
                     {status === 'pending' && <span className="mt-2 w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></span>}
                 </>
             ) : (
-                // Empty Slot Logic ...
+                canAdd ? (
+                    <button onClick={onAdd} className="w-full h-full flex flex-col items-center justify-center group">
+                        <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-colors mb-4">
+                            <Plus className="w-8 h-8 text-text-muted group-hover:text-white" />
+                        </div>
+                        <span className="text-text-muted font-bold text-sm group-hover:text-white">ДОБАВИТЬ</span>
+                    </button>
+                ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center opacity-30">
+                        <div className="w-16 h-16 rounded-full bg-white/5 mb-4"></div>
+                        <span className="text-text-muted font-bold text-sm">ПУСТО</span>
+                    </div>
+                )
+            )}
+        </motion.div>
+    );
+};
+
+export default BaseInvaders;
