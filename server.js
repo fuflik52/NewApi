@@ -14,8 +14,7 @@ setupDatabase();
 
 const app = express();
 const PORT = 3000;
-// Use localhost for local development ensuring images load correctly
-const CUSTOM_DOMAIN = 'http://localhost:3000';
+const CUSTOM_DOMAIN = 'https://bublickrust.ru';
 
 // Middleware
 app.use(cors());

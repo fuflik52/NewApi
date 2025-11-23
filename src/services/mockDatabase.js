@@ -209,9 +209,9 @@ class MockDatabase {
                          // Construct a safe URL relative to the current window location
                          safeUrl = `${window.location.origin}/${id}`;
                     }
-                } else if (img.url.includes('bublickrust')) {
+                } else if (img.url.includes('bublickrust.ru')) {
                     // Fallback for local dev (http) -> localhost:3000
-                    safeUrl = img.url.replace('http://bublickrust', 'http://localhost:3000');
+                    safeUrl = img.url.replace('https://bublickrust.ru', 'http://localhost:3000');
                 }
 
                 return {
