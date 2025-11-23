@@ -6,6 +6,9 @@ import path from 'path';
 import axios from 'axios';
 import { fileURLToPath } from 'url';
 import { supabase } from './database/supabase.js';
+import session from 'express-session';
+import passport from 'passport';
+import { Strategy as SteamStrategy } from 'passport-steam';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,6 +18,29 @@ const PORT = process.env.PORT || 3000;
 const CUSTOM_DOMAIN = process.env.CUSTOM_DOMAIN || `https://bublickrust.ru/img`; 
 // Hardcode redirect URI to avoid environment confusion
 const DISCORD_REDIRECT_URI = 'https://bublickrust.ru/api/auth/discord/callback';
+const STEAM_API_KEY = process.env.STEAM_API_KEY || 'B983279B5864722C034B802D1875D458'; // Public test key or need user's
+
+// Passport Steam Setup
+passport.serializeUser((user, done) => {
+  done(null, user);
+});
+
+passport.deserializeUser((obj, done) => {
+  done(null, obj);
+});
+
+passport.use(new SteamStrategy({
+    returnURL: 'https://bublickrust.ru/api/auth/steam/return',
+    realm: 'https://bublickrust.ru/',
+    apiKey: STEAM_API_KEY
+  },
+  function(identifier, profile, done) {
+    process.nextTick(function () {
+      profile.identifier = identifier;
+      return done(null, profile);
+    });
+  }
+));
 
 // IMPORTANT: Set this to your Supabase Project URL
 const SUPABASE_PROJECT_URL = process.env.SUPABASE_URL; 
@@ -35,7 +61,18 @@ app.use(cors({
     credentials: true
 }));
 
+app.use(session({
+    secret: 'super_secret_steam_key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Set to true if using https behind proxy
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.options(/.*/, cors({
+// ... existing code ...
     origin: function (origin, callback) {
         if (!origin || origin === 'null') return callback(null, true);
         return callback(null, true);
@@ -309,6 +346,132 @@ app.get('/api/auth/discord/callback', async (req, res) => {
         console.error('Discord Auth Error:', error.response?.data || error.message);
         res.status(500).send('Authentication Failed: ' + (error.response?.data?.error_description || 'Unknown error'));
     }
+});
+
+// --- STEAM AUTH ---
+
+app.get('/api/auth/steam', (req, res, next) => {
+    // Store the user's auth token in session to link accounts later
+    if (req.query.token) {
+        req.session.link_user_token = req.query.token;
+        req.session.save();
+    }
+    passport.authenticate('steam', { failureRedirect: '/' })(req, res, next);
+});
+
+app.get('/api/auth/steam/return', 
+  passport.authenticate('steam', { failureRedirect: '/' }),
+  async (req, res) => {
+    try {
+        const steamProfile = req.user;
+        const authToken = req.session.link_user_token;
+
+        if (!authToken) {
+            // Login mode (not supported yet, we only do linking)
+            return res.redirect('/?error=NoAuthTokenForSteam');
+        }
+
+        // Find user by auth token
+        const { data: keyData } = await supabase
+            .from('api_keys')
+            .select('user_id')
+            .eq('token', authToken)
+            .single();
+
+        if (keyData) {
+            // Update User with Steam Info
+            await supabase.from('users').update({
+                steam_id: steamProfile.id,
+                steam_name: steamProfile.displayName,
+                steam_avatar: steamProfile.photos?.[2]?.value || steamProfile.photos?.[0]?.value
+            }).eq('id', keyData.user_id);
+        }
+
+        res.redirect('/dashboard/invaders');
+    } catch (err) {
+        console.error('Steam Return Error:', err);
+        res.redirect('/dashboard?error=SteamLinkFailed');
+    }
+  }
+);
+
+// --- ADMIN TEAMS API ---
+
+// Get All Teams
+app.get('/api/admin/teams', verifyToken, async (req, res) => {
+    if (!req.user.is_admin) return res.status(403).json({ error: 'Forbidden' });
+
+    try {
+        // 1. Get all teams with captains
+        const { data: teams, error } = await supabase
+            .from('teams')
+            .select('*, captain:users!captain_id(id, username, avatar, discriminator, steam_name, steam_avatar)');
+        
+        if (error) throw error;
+
+        // 2. Get all accepted invites (members)
+        const { data: invites } = await supabase
+            .from('team_invites')
+            .select('*, receiver:users!receiver_id(id, username, avatar, discriminator, steam_name, steam_avatar)')
+            .eq('status', 'accepted');
+
+        // 3. Combine
+        const teamsWithMembers = teams.map(team => {
+            const members = invites
+                .filter(inv => inv.team_id === team.id || inv.sender_id === team.captain_id) // Handle both logic (team_id is better if migration done, otherwise sender_id for virtual teams)
+                // In our previous logic we used sender_id as virtual team ID often. 
+                // Let's support sender_id linking.
+                // BaseInvaders logic used: team_id OR sender_id group.
+                // Wait, existing logic creates a 'teams' row. So we should rely on 'teams' table if possible.
+                // But invites might just link to team_id.
+                // Let's assume invites have valid team_id.
+                // If not, we filter by sender_id = captain_id.
+                
+                // Filter: invite.team_id === team.id
+                .filter(inv => inv.team_id === team.id)
+                .map(inv => ({
+                    id: inv.receiver.id,
+                    username: inv.receiver.username,
+                    discriminator: inv.receiver.discriminator,
+                    avatar: inv.receiver.avatar,
+                    steam_name: inv.receiver.steam_name,
+                    steam_avatar: inv.receiver.steam_avatar,
+                    invite_id: inv.id
+                }));
+
+            return {
+                id: team.id,
+                name: team.name,
+                captain: team.captain,
+                members: members
+            };
+        });
+
+        res.json(teamsWithMembers);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to fetch teams' });
+    }
+});
+
+// Delete Team
+app.delete('/api/admin/teams/:id', verifyToken, async (req, res) => {
+    if (!req.user.is_admin) return res.status(403).json({ error: 'Forbidden' });
+    try {
+        await supabase.from('teams').delete().eq('id', req.params.id);
+        // Also delete invites for this team? Cascade should handle it if FK set, otherwise manual:
+        await supabase.from('team_invites').delete().eq('team_id', req.params.id);
+        res.json({ success: true });
+    } catch(e) { res.status(500).json({ error: 'Delete failed' }); }
+});
+
+// Delete Member (Kick)
+app.delete('/api/admin/invites/:id', verifyToken, async (req, res) => {
+    if (!req.user.is_admin) return res.status(403).json({ error: 'Forbidden' });
+    try {
+        await supabase.from('team_invites').delete().eq('id', req.params.id);
+        res.json({ success: true });
+    } catch(e) { res.status(500).json({ error: 'Kick failed' }); }
 });
 
 // Get User
