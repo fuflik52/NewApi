@@ -10,10 +10,13 @@ const Auth = () => {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const token = params.get('token');
+    const urlToken = params.get('token');
+    const storedToken = localStorage.getItem('auth_token');
     
-    const handleAuth = async (token) => {
-        localStorage.setItem('auth_token', token);
+    const handleAuth = async (token, isNewLogin = false) => {
+        if (isNewLogin) {
+            localStorage.setItem('auth_token', token);
+        }
         
         // Check for secret claim code
         const storedCode = localStorage.getItem('admin_claim_code');
@@ -41,20 +44,27 @@ const Auth = () => {
             });
             const data = await res.json();
             
-            if (data.success && data.user.is_admin) {
-                 navigate('/dashboard');
+            if (data.success) {
+                if (data.user.is_admin) {
+                    navigate('/dashboard');
+                } else {
+                    // Non-admin users go to API page by default
+                    navigate('/dashboard/api');
+                }
             } else {
-                 // Non-admin users go to API page by default
-                 navigate('/dashboard/api');
+                // Token invalid - only clear if it was a stored token check
+                if (!isNewLogin) localStorage.removeItem('auth_token');
             }
         } catch (e) {
             console.error("Auth check failed", e);
-            navigate('/dashboard/api');
+            if (!isNewLogin) localStorage.removeItem('auth_token');
         }
     };
 
-    if (token) {
-      handleAuth(token);
+    if (urlToken) {
+      handleAuth(urlToken, true);
+    } else if (storedToken) {
+      handleAuth(storedToken, false);
     }
   }, [navigate]);
 

@@ -29,6 +29,7 @@ const Layout = () => {
 
   return (
     <div className="min-h-screen bg-bg-main text-text-main transition-colors duration-300 relative overflow-x-hidden">
+      <div className="fixed inset-0 bg-grid-pattern pointer-events-none z-0" />
       <StarBackground />
       
       <Sidebar 
