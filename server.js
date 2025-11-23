@@ -3,6 +3,7 @@ import cors from 'cors';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import os from 'os';
 import { fileURLToPath } from 'url';
 import db, { setupDatabase } from './database/db.js';
 
@@ -71,9 +72,26 @@ const upload = multer({
 
 // Initialize Database and Start Server
 setupDatabase().then(() => {
-    app.listen(PORT, '0.0.0.0', () => {
+    // Listen on all interfaces (default if no host specified, or use '0.0.0.0')
+    app.listen(PORT, () => {
+        const nets = os.networkInterfaces();
+        const results = Object.create(null); 
+
+        for (const name of Object.keys(nets)) {
+            for (const net of nets[name]) {
+                if (net.family === 'IPv4' && !net.internal) {
+                    if (!results[name]) {
+                        results[name] = [];
+                    }
+                    results[name].push(net.address);
+                }
+            }
+        }
+
         console.log(`
-🚀 Server running on http://0.0.0.0:${PORT}
+🚀 Server running on port ${PORT}
+🌐 Local: http://localhost:${PORT}
+🌐 Network: http://${Object.values(results).flat()[0] || '0.0.0.0'}:${PORT}
 📂 Serving static files from ${distPath}
 📂 Uploads directory: ${uploadsDir}
 🔗 Custom Domain Base: ${CUSTOM_DOMAIN}
