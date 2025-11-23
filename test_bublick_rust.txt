@@ -1,6 +1,6 @@
 # Пример содержимого на сервере:
 DISCORD_TOKEN=INSERT_YOUR_TOKEN_HERE
 DISCORD_CLIENT_ID=1417959083704582224
-DISCORD_CLIENT_SECRET=1417959083704582224
+DISCORD_CLIENT_SECRET=gAnFNJc3LHHddv9s3aQFdD1Wzy7Yfijt
 DISCORD_REDIRECT_URI=http://bublickrust.ru/api/auth/discord/callback 
 # Для продакшена поменяйте localhost на ваш домен!

@@ -38,6 +38,7 @@ const setupDatabase = () => {
                 avatar TEXT,
                 email TEXT,
                 api_token TEXT,
+                is_admin INTEGER DEFAULT 0,
                 created_at TEXT NOT NULL
             )`, (err) => {
                 if (err) {

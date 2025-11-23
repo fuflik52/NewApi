@@ -1,16 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Server, Settings, LogOut, Rocket, X, Image } from 'lucide-react';
+import { LayoutDashboard, Server, Settings, LogOut, Rocket, X, Image, Users } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+      const checkAdmin = async () => {
+          try {
+            const token = localStorage.getItem('auth_token');
+            if (!token) return;
+            const res = await fetch('/api/user/me', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = await res.json();
+            if (data.success && data.user.is_admin) setIsAdmin(true);
+          } catch(e) { console.error(e); }
+      };
+      checkAdmin();
+  }, []);
 
   const menuItems = [
     { icon: LayoutDashboard, label: 'Обзор', path: '/dashboard' },
     { icon: Server, label: 'API Центр', path: '/dashboard/api' },
     { icon: Image, label: 'Галерея', path: '/dashboard/gallery' },
+    ...(isAdmin ? [{ icon: Users, label: 'Все пользователи', path: '/dashboard/users' }] : []),
     { icon: Settings, label: 'Настройки', path: '/dashboard/settings' },
   ];
 

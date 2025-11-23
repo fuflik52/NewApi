@@ -61,11 +61,14 @@ const CircularGauge = ({ value, title, icon: Icon }) => {
 };
 
 const Dashboard = () => {
+  const [stats, setStats] = useState({ users: 0, uploads: 0, storage_bytes: 0, requests: 0 });
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
+
   // Real data state
   const [chartData, setChartData] = useState([]);
   const [endpointData, setEndpointData] = useState([]);
   const [statusData, setStatusData] = useState([]);
-  const [totalRequests, setTotalRequests] = useState(0);
   
   // Live simulation state
   const [cpu, setCpu] = useState(42);
@@ -73,6 +76,40 @@ const Dashboard = () => {
   const [uptime, setUptime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
+    const checkUser = async () => {
+        try {
+            const token = localStorage.getItem('auth_token');
+            if (!token) return;
+
+            const res = await fetch('/api/user/me', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success && data.user.is_admin) {
+                setIsAdmin(true);
+            }
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
+    };
+    checkUser();
+  }, []);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    const fetchStats = async () => {
+        try {
+            const res = await fetch('/api/stats');
+            const data = await res.json();
+            setStats(data);
+        } catch (e) { console.error(e); }
+    };
+    fetchStats();
+
+    // Mock chart data for now
     const fetchData = async () => {
         const stats = await dbService.getUsageStats(30);
         setChartData(stats);
@@ -82,24 +119,23 @@ const Dashboard = () => {
 
         const statuses = await dbService.getStatusDistribution();
         setStatusData(statuses);
-
-        const total = await dbService.getTotalRequests();
-        setTotalRequests(total);
     };
     fetchData();
-  }, []);
+  }, [isAdmin]);
 
   // Simulate fluctuating server stats (CPU/RAM only)
   useEffect(() => {
+    if (!isAdmin) return;
     const interval = setInterval(() => {
       setCpu(prev => Math.max(30, Math.min(80, prev + (Math.random() * 10 - 5))));
       setRam(prev => Math.max(50, Math.min(90, prev + (Math.random() * 6 - 3))));
     }, 2000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isAdmin]);
 
   // Real Uptime from consistent start time
   useEffect(() => {
+    if (!isAdmin) return;
     const updateUptime = () => {
         const start = dbService.getUptimeStart();
         const now = new Date();
@@ -117,7 +153,18 @@ const Dashboard = () => {
     updateUptime(); // Initial call
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isAdmin]);
+
+  if (loading) return <div className="p-8">Loading...</div>;
+
+  if (!isAdmin) {
+      return (
+          <div className="glass-panel p-8 rounded-2xl text-center">
+              <h2 className="text-2xl font-bold text-text-main mb-4">Доступ ограничен</h2>
+              <p className="text-text-muted">Эта панель доступна только администраторам.</p>
+          </div>
+      );
+  }
 
   return (
     <div className="space-y-8">
@@ -126,24 +173,24 @@ const Dashboard = () => {
         <p className="text-text-muted">Добро пожаловать на борт, Командор.</p>
       </header>
 
-      {/* Top Stats - Now Linked to DB */}
+      {/* Top Stats - Real DB Data */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard 
           title="Всего запросов" 
-          value={totalRequests.toLocaleString()} 
-          change="+12.5%" // This could be calculated if we had previous period data
+          value={stats.requests.toLocaleString()} 
+          change="+0%" 
           icon={Activity} 
         />
         <StatCard 
           title="Пользователи" 
-          value="1" 
+          value={stats.users.toString()} 
           change="+0%" 
           icon={Users} 
         />
         <StatCard 
           title="База данных" 
-          value="24 MB" 
-          change="+0.1%" 
+          value={`${(stats.storage_bytes / (1024 * 1024)).toFixed(2)} MB`} 
+          change="+0%" 
           icon={Database} 
         />
         <StatCard 

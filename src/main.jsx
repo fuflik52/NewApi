@@ -8,6 +8,7 @@ import ApiDocs from './pages/ApiDocs';
 import Settings from './pages/Settings';
 import Gallery from './pages/Gallery';
 import ApiTest from './pages/ApiTest'; // Import ApiTest
+import AdminUsers from './pages/AdminUsers'; // Import AdminUsers
 import Layout from './layouts/Layout';
 import { ThemeProvider } from './context/ThemeContext';
 import './index.css';
@@ -24,6 +25,7 @@ function App() {
             <Route path="api/docs" element={<ApiDocs />} />
             <Route path="api/test" element={<ApiTest />} /> {/* New Test Route */}
             <Route path="gallery" element={<Gallery />} />
+            <Route path="users" element={<AdminUsers />} />
             <Route path="settings" element={<Settings />} />
           </Route>
           {/* Catch all */}

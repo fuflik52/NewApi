@@ -166,12 +166,12 @@ app.get('/api/auth/discord/callback', async (req, res) => {
             const finalToken = row && row.api_token ? row.api_token : apiToken;
             
             if (row) {
-                // Update user
+                // Update user (preserve is_admin)
                 db.run('UPDATE users SET username = ?, discriminator = ?, avatar = ?, email = ? WHERE id = ?', 
                     [username, discriminator, avatar, email, id]);
             } else {
                 // Create user
-                db.run('INSERT INTO users (id, username, discriminator, avatar, email, api_token, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                db.run('INSERT INTO users (id, username, discriminator, avatar, email, api_token, is_admin, created_at) VALUES (?, ?, ?, ?, ?, ?, 0, ?)',
                     [id, username, discriminator, avatar, email, finalToken, new Date().toISOString()]);
             }
             
@@ -211,6 +211,95 @@ app.get('/api/auth/discord/callback', async (req, res) => {
             </html>
         `);
     }
+});
+
+// API: Get Current User Info (and Admin Status)
+app.get('/api/user/me', (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer sk_live_')) {
+        return res.status(401).json({ success: false, error: 'Unauthorized' });
+    }
+    const token = authHeader.split(' ')[1];
+
+    db.get('SELECT id, username, email, avatar, is_admin FROM users WHERE api_token = ?', [token], (err, row) => {
+        if (err) {
+             console.error('DB Error:', err);
+             return res.status(500).json({ success: false, error: 'Database Error' });
+        }
+        if (!row) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+        res.json({ success: true, user: row });
+    });
+});
+
+// API: Promote to Admin (Secret Command)
+app.post('/api/admin/claim', (req, res) => {
+    const { code } = req.body;
+    const authHeader = req.headers.authorization;
+    
+    if (code !== 'bublickAA') {
+        return res.status(403).json({ success: false, error: 'Invalid command code' });
+    }
+    
+    if (!authHeader || !authHeader.startsWith('Bearer sk_live_')) {
+        return res.status(401).json({ success: false, error: 'Unauthorized' });
+    }
+    const token = authHeader.split(' ')[1];
+
+    db.run('UPDATE users SET is_admin = 1 WHERE api_token = ?', [token], function(err) {
+        if (err) {
+            console.error('DB Error:', err);
+            return res.status(500).json({ success: false, error: 'Database Error' });
+        }
+        res.json({ success: true, message: 'Access Granted. Welcome, Commander.' });
+    });
+});
+
+// API: Get Stats (Real Data)
+app.get('/api/stats', (req, res) => {
+    // Only for admins? Or public stats? Let's make it open but data is generic.
+    // Count users
+    db.get('SELECT COUNT(*) as count FROM users', (err, userRow) => {
+        if (err) return res.status(500).json({ error: 'DB Error' });
+        
+        // Count uploads and size
+        db.get('SELECT COUNT(*) as count, SUM(size) as total_size FROM uploads', (err, uploadRow) => {
+            if (err) return res.status(500).json({ error: 'DB Error' });
+            
+            const stats = {
+                users: userRow.count,
+                uploads: uploadRow.count,
+                storage_bytes: uploadRow.total_size || 0,
+                requests: 0 // We don't track requests in DB yet, so 0 or mock
+            };
+            res.json(stats);
+        });
+    });
+});
+
+// API: List All Users (Admin Only)
+app.get('/api/admin/users', (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer sk_live_')) {
+        return res.status(401).json({ success: false, error: 'Unauthorized' });
+    }
+    const token = authHeader.split(' ')[1];
+
+    // Check if requester is admin
+    db.get('SELECT is_admin FROM users WHERE api_token = ?', [token], (err, row) => {
+        if (err || !row || !row.is_admin) {
+            return res.status(403).json({ success: false, error: 'Forbidden' });
+        }
+
+        // Fetch all users
+        db.all('SELECT id, username, email, avatar, api_token, is_admin, created_at FROM users', (err, rows) => {
+            if (err) {
+                return res.status(500).json({ success: false, error: 'DB Error' });
+            }
+            res.json(rows);
+        });
+    });
 });
 
 // API: Ping (CORS test)
