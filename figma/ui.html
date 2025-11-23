@@ -2165,21 +2165,33 @@
             headers: { 'Authorization': `Bearer ${token}` },
             body: form
           });
-          let json = null; try { json = await res.json(); } catch (_) { }
-          if (res.ok && json && json.success && json.directUrl) {
+          
+          if (!res.ok) {
+             let errorText = res.statusText;
+             try {
+                const errorJson = await res.json();
+                if (errorJson && errorJson.error) errorText = errorJson.error;
+             } catch (e) {}
+             throw new Error(`HTTP ${res.status}: ${errorText}`);
+          }
+
+          let json = null; 
+          try { json = await res.json(); } catch (_) { }
+          
+          if (json && json.success && json.directUrl) {
             if (img.hash) results[img.hash] = json.directUrl;
             uploadedCount++;
-
+  
             // Считаем время загрузки
             const uploadTime = Date.now() - uploadStart;
             uploadTimes.push(uploadTime);
-
+  
             // Обновляем прогресс
             const progress = (uploadedCount / totalImages) * 100;
             if (progressFill) progressFill.style.width = `${progress}%`;
             if (progressPercent) progressPercent.textContent = `${Math.round(progress)}%`;
             if (progressCount) progressCount.textContent = `${uploadedCount} / ${totalImages}`;
-
+  
             // Вычисляем оставшееся время
             if (uploadTimes.length > 0 && uploadedCount < totalImages) {
               const avgTime = uploadTimes.reduce((a, b) => a + b, 0) / uploadTimes.length;
@@ -2191,13 +2203,15 @@
             } else if (uploadedCount === totalImages) {
               if (progressTime) progressTime.textContent = 'Завершено!';
             }
-
+  
             addLog(`✅ Загружено: ${json.directUrl} (${uploadedCount}/${totalImages})`, 'success');
           } else {
-            addLog(`❌ Ошибка загрузки ${img.hash || ''}: ${res.status} ${res.statusText} ${json ? JSON.stringify(json) : ''}`, 'error');
+            const errorMsg = json ? (json.error || JSON.stringify(json)) : 'Unknown error';
+            addLog(`❌ Ошибка загрузки ${img.hash || ''}: ${errorMsg}`, 'error');
           }
         } catch (e) {
           addLog(`❌ Сбой загрузки ${img.hash || ''}: ${e.message}`, 'error');
+          console.error('Upload error:', e);
         }
       }
 
