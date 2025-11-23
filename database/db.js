@@ -39,8 +39,7 @@ const setupDatabase = () => {
                 email TEXT,
                 api_token TEXT,
                 is_admin INTEGER DEFAULT 0,
-                created_at TEXT NOT NULL,
-                ip_address TEXT
+                created_at TEXT NOT NULL
             )`);
 
             // Create api_tokens table (Multi-token support)
@@ -53,6 +52,20 @@ const setupDatabase = () => {
                 last_used_at TEXT,
                 FOREIGN KEY(user_id) REFERENCES users(id)
             )`);
+
+            // Migrations
+            // 1. Add ip_address to users
+            db.all("PRAGMA table_info(users)", (err, columns) => {
+                if (!err && columns) {
+                    const hasIp = columns.some(col => col.name === 'ip_address');
+                    if (!hasIp) {
+                        db.run("ALTER TABLE users ADD COLUMN ip_address TEXT", (err) => {
+                            if (err) console.error("Migration Error: Failed to add ip_address column", err);
+                            else console.log("Migration Success: Added ip_address column to users");
+                        });
+                    }
+                }
+            });
 
             // Check if we need to migrate data from JSON
             const jsonPath = path.join(__dirname, 'uploads_metadata.json');
