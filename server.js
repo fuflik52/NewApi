@@ -181,7 +181,35 @@ app.get('/api/auth/discord/callback', async (req, res) => {
 
     } catch (error) {
         console.error('Discord Auth Error:', error.response?.data || error.message);
-        res.status(500).send('Authentication failed. Check server logs.');
+        
+        // Show user-friendly error page
+        const errorMessage = error.response?.data?.error_description || error.message || 'Authentication failed';
+        res.status(500).send(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Ошибка входа | CosmoSpace</title>
+                <meta charset="UTF-8">
+                <style>
+                    body { background: #030014; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+                    .card { background: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: 1rem; border: 1px solid rgba(255, 255, 255, 0.1); text-align: center; max-width: 400px; }
+                    h1 { color: #FF4D4D; margin-top: 0; }
+                    p { opacity: 0.8; margin-bottom: 1.5rem; }
+                    a { background: #7042f88b; color: white; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: 0.2s; }
+                    a:hover { background: #7042f8; }
+                    code { background: rgba(0,0,0,0.3); padding: 4px; border-radius: 4px; display: block; margin: 10px 0; font-size: 12px; }
+                </style>
+            </head>
+            <body>
+                <div class="card">
+                    <h1>Ошибка входа</h1>
+                    <p>Не удалось войти через Discord.</p>
+                    <code>${errorMessage}</code>
+                    <a href="/">Вернуться на главную</a>
+                </div>
+            </body>
+            </html>
+        `);
     }
 });
 
