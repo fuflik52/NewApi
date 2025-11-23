@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Image as ImageIcon, HardDrive, Loader2, AlertCircle, X, Calendar, Copy, Check, Link as LinkIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { dbService } from '../services/mockDatabase';
@@ -11,16 +11,34 @@ const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [copied, setCopied] = useState(false);
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    if (!apiKey.trim()) return;
+  // Pre-fill API Key if user has one
+  useEffect(() => {
+      const loadKey = async () => {
+          try {
+              const tokens = await dbService.getApiTokens();
+              if (tokens && tokens.length > 0) {
+                  setApiKey(tokens[0].token);
+                  // Auto-load images if key found
+                  handleSearch(null, tokens[0].token);
+              }
+          } catch (e) { console.error(e); }
+      };
+      loadKey();
+  }, []);
+
+  const handleSearch = async (e, overrideKey = null) => {
+    if (e) e.preventDefault();
+    const keyToUse = overrideKey || apiKey;
+    
+    if (!keyToUse || !keyToUse.trim()) return;
 
     setLoading(true);
     setError('');
-    setImages(null);
+    // Only reset images if explicit search
+    if (e) setImages(null); 
 
     try {
-      const result = await dbService.getImagesByToken(apiKey);
+      const result = await dbService.getImagesByToken(keyToUse);
       setImages(result);
       if (result.length === 0) {
         setError('Изображения не найдены или неверный ключ.');
