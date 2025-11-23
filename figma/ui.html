@@ -780,7 +780,10 @@
         // container.innerHTML = '<div style="...Loading...">...</div>'; // Optional loading state
 
         try {
-            const res = await fetch(`https://bublickrust.ru/api/user/analytics?range=${range}`, {
+            // Pass file name if possible (requires getting it from code.js first, but we can at least try)
+            // For now, just basic range
+            const fileName = encodeURIComponent(document.title || 'Unknown Project');
+            const res = await fetch(`https://bublickrust.ru/api/user/analytics?range=${range}&file_name=${fileName}`, {
                 headers: { 'Authorization': `Bearer ${currentToken}` }
             });
             

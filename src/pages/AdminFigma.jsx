@@ -8,42 +8,19 @@ const AdminFigma = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate fetching data
     const loadData = async () => {
       try {
-        await new Promise(resolve => setTimeout(resolve, 1500)); // Fake delay
+        const token = localStorage.getItem('auth_token');
+        const res = await fetch('/api/admin/figma/users', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         
-        // Mock data based on Figma plugin context
-        // In a real app, this would come from an API that tracks plugin usage
-        setUsers([
-          {
-            id: 1,
-            username: 'bublick',
-            avatar: 'https://cdn.discordapp.com/avatars/448868832488652800/181a454149531965e635d05405290366.png',
-            usage_count: 154,
-            last_active: new Date().toISOString(),
-            figma_file_id: '12345abcde',
-            figma_file_name: 'Rust UI Kit'
-          },
-          {
-            id: 2,
-            username: 'kuro',
-            avatar: 'https://cdn.discordapp.com/embed/avatars/0.png',
-            usage_count: 42,
-            last_active: new Date(Date.now() - 86400000).toISOString(),
-            figma_file_id: '67890fghij',
-            figma_file_name: 'Inventory System'
-          },
-           {
-            id: 3,
-            username: 'alex_dev',
-            avatar: 'https://cdn.discordapp.com/embed/avatars/2.png',
-            usage_count: 12,
-            last_active: new Date(Date.now() - 172800000).toISOString(),
-            figma_file_id: 'xyz789',
-            figma_file_name: 'Shop Interface'
-          }
-        ]);
+        if (res.ok) {
+            const data = await res.json();
+            setUsers(data);
+        } else {
+            console.error('Failed to load figma users');
+        }
       } catch (e) {
         console.error(e);
       } finally {

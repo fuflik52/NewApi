@@ -515,6 +515,78 @@ app.get('/api/stats', verifyToken, async (req, res) => {
     }
 });
 
+// --- NEW: Figma Admin Endpoint ---
+app.get('/api/admin/figma/users', verifyToken, async (req, res) => {
+    if (!req.user.is_admin) return res.status(403).json({ error: 'Forbidden' });
+
+    try {
+        // 1. Identify users who used the plugin
+        // We look for requests to '/api/user/analytics' which is specific to the plugin dashboard
+        // OR requests with a specific header if we had one.
+        // For now, endpoint detection is best.
+        
+        const { data: logs, error } = await supabase
+            .from('request_logs')
+            .select('user_id, created_at, endpoint')
+            .eq('endpoint', '/api/user/analytics')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        const userMap = {};
+
+        // Process logs to aggregate stats
+        for (const log of logs) {
+            if (!log.user_id) continue;
+            
+            if (!userMap[log.user_id]) {
+                userMap[log.user_id] = {
+                    user_id: log.user_id,
+                    last_active: log.created_at,
+                    usage_count: 0,
+                    // We can try to parse query params from endpoint if we stored them full path
+                    // e.g. /api/user/analytics?range=24h&file=...
+                    figma_file_name: 'Unknown Project' 
+                };
+            }
+            userMap[log.user_id].usage_count++;
+            
+            // Try to extract file name if present in URL (future proofing)
+            if (log.endpoint.includes('file_name=')) {
+                try {
+                    const match = log.endpoint.match(/file_name=([^&]+)/);
+                    if (match) userMap[log.user_id].figma_file_name = decodeURIComponent(match[1]);
+                } catch (e) {}
+            }
+        }
+
+        const userIds = Object.keys(userMap);
+        
+        // Fetch User Details
+        const { data: users } = await supabase
+            .from('users')
+            .select('id, username, avatar')
+            .in('id', userIds);
+
+        // Merge
+        const result = users.map(u => ({
+            id: u.id,
+            username: u.username,
+            avatar: u.avatar ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png` : '',
+            usage_count: userMap[u.id].usage_count,
+            last_active: userMap[u.id].last_active,
+            figma_file_name: userMap[u.id].figma_file_name,
+            figma_file_id: '?' // Not stored yet
+        }));
+
+        res.json(result);
+
+    } catch (err) {
+        console.error('Figma Users Error:', err);
+        res.status(500).json({ error: 'Failed to fetch figma users' });
+    }
+});
+
 // NEW: User Analytics Endpoint (For Figma Plugin)
 app.get('/api/user/analytics', verifyToken, async (req, res) => {
     const { range } = req.query; // '24h', '7d', '30d'
