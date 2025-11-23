@@ -60,7 +60,7 @@ app.use(cors({
 }));
 
 // Handle preflight specifically if needed (though middleware above should cover it)
-app.options('*', cors({ origin: true, credentials: true }));
+// app.options('*', cors({ origin: true, credentials: true })); // REMOVED: causing path-to-regexp error with newer express
 
 app.use(session({
     secret: 'super_secret_steam_key',
@@ -135,6 +135,8 @@ const verifyToken = async (req, res, next) => {
 
     try {
         // 1. Find token in api_keys
+        // Check if token starts with "Bearer ", strip it if so, although split(' ') above handles it
+        
         const { data: keyData, error: keyError } = await supabase
             .from('api_keys')
             .select('id, user_id, requests_count')
@@ -142,7 +144,7 @@ const verifyToken = async (req, res, next) => {
             .single();
 
         if (keyError || !keyData) {
-            console.log(`[Auth] Failed: Token not found in DB. Token: ${token.substring(0, 15)}...`);
+            console.log(`[Auth] Failed: Token not found in DB. Token: ${token ? token.substring(0, 10) + '...' : 'null'}`);
             return res.status(401).json({ success: false, error: 'Invalid Token' });
         }
 
