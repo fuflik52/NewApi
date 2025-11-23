@@ -1007,13 +1007,20 @@
             throw new Error('Invalid response');
         } catch (e) {
             console.error(e);
-            showAuthScreen();
+            // Don't force show auth screen immediately if we were just verifying stored token
+            // But if login button was clicked (loginBtn exists and disabled), then yes.
+            const loginBtn = document.getElementById('btn-login');
+            const isManualLogin = loginBtn && loginBtn.disabled;
             
-            // Only show toast if we actually have a token we were trying
-            if(token) showToast(e.message || 'Неверный ключ API', 'error');
-            
-            // Clear invalid token from storage to prevent loops
-            parent.postMessage({ pluginMessage: { type: 'save-token', apiToken: '' } }, '*');
+            if (isManualLogin) {
+                showAuthScreen();
+                if(token) showToast(e.message || 'Неверный ключ API', 'error');
+                // Clear invalid token from storage to prevent loops
+                parent.postMessage({ pluginMessage: { type: 'save-token', apiToken: '' } }, '*');
+            } else {
+                // Silent failure on init - just show auth screen
+                showAuthScreen();
+            }
             
             return false;
         } finally {

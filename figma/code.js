@@ -183,6 +183,7 @@ async function generateCode() {
     const fileKey = figma.fileKey || 'local_draft';
     const fileName = figma.root.name || 'Untitled';
 
+    // Also send fileName and fileKey separately in the message so UI can use them directly
     figma.ui.postMessage({ 
         type: 'code-generated', 
         cui: cuiCode, 
@@ -194,6 +195,7 @@ async function generateCode() {
     
     // Log debug info
     console.log('Generated Code for:', fileName, fileKey);
+    // Trigger analytics directly from plugin side if possible? No, UI handles network.
   } catch (error) {
     figma.ui.postMessage({ type: 'error', message: `❌ Ошибка: ${error.message}` });
   }
