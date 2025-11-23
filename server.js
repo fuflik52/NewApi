@@ -14,7 +14,11 @@ const PORT = 3000;
 const CUSTOM_DOMAIN = 'https://bublickrust.ru/img';
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: '*', // Allow all origins (including null for local files/plugins)
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 // Static files from React build
