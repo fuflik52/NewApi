@@ -101,41 +101,35 @@
     .page { display: none; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
     .page.active { display: block; }
 
-    /* HEADER / TOP BAR */
-    .top-header {
-        position: fixed; top: 0; left: 0; right: 0;
-        height: 50px;
-        background: rgba(5, 5, 5, 0.8);
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid var(--glass-border);
-        display: flex; align-items: center; justify-content: space-between;
-        padding: 0 16px;
-        z-index: 100;
-    }
-    .app-title {
-        font-weight: 700; font-size: 12px; letter-spacing: 0.05em;
-        color: var(--text-muted);
-    }
-    
-    /* User Pill in Header */
-    .user-pill {
+    /* USER PROFILE CORNER */
+    .user-profile-corner {
+        position: fixed; top: 20px; right: 20px;
         display: none; /* Hidden by default */
         align-items: center; gap: 8px;
-        padding: 4px 8px 4px 4px;
+        padding: 4px 12px 4px 4px;
         background: var(--glass-panel);
-        border: 1px solid var(--glass-border);
-        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        border-radius: 30px;
         transition: all 0.2s;
-        cursor: pointer;
+        z-index: 1000; cursor: pointer;
+        border: 1px solid transparent;
     }
-    .user-pill.visible { display: flex; }
-    .user-pill:hover { border-color: var(--accent-color); }
+    .user-profile-corner.visible { display: flex; }
+    .user-profile-corner:hover { 
+        background: rgba(255,255,255,0.1); 
+        border-color: var(--glass-border);
+    }
     
-    .pill-avatar {
-        width: 20px; height: 20px; border-radius: 50%;
+    .corner-avatar {
+        width: 28px; height: 28px; border-radius: 50%;
         background: rgba(255,255,255,0.1); object-fit: cover;
     }
-    .pill-name { font-size: 10px; font-weight: 600; color: var(--text-main); max-width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .corner-name { 
+        font-size: 11px; font-weight: 600; 
+        color: var(--text-main); 
+        max-width: 100px; white-space: nowrap; 
+        overflow: hidden; text-overflow: ellipsis; 
+    }
 
     /* Auth Screen Specifics */
     #page-auth {
@@ -322,13 +316,10 @@
 
 <body>
 
-  <!-- FIXED TOP HEADER -->
-  <div class="top-header">
-      <div class="app-title">BUBLICK RUST</div>
-      <div class="user-pill" id="header-user-pill" onclick="if(confirm('Выйти из аккаунта?')) logout();">
-          <img src="" class="pill-avatar" id="header-user-avatar" alt="">
-          <div class="pill-name" id="header-user-name">User</div>
-      </div>
+  <!-- USER PROFILE CORNER -->
+  <div class="user-profile-corner" id="user-profile-corner" onclick="if(confirm('Выйти из аккаунта?')) logout();">
+      <img src="" class="corner-avatar" id="header-user-avatar" alt="">
+      <div class="corner-name" id="header-user-name">User</div>
   </div>
 
   <div id="toast-container"></div>
@@ -538,7 +529,7 @@
                     }
                     
                     // Show Pill
-                    document.getElementById('header-user-pill').classList.add('visible');
+                    document.getElementById('user-profile-corner').classList.add('visible');
 
                     // Switch to Main App
                     showMainApp();
@@ -581,7 +572,7 @@
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById('page-auth').classList.add('active');
         document.getElementById('main-navbar').classList.add('hidden');
-        document.getElementById('header-user-pill').classList.remove('visible');
+        document.getElementById('user-profile-corner').classList.remove('visible');
     }
 
     function showMainApp() {
