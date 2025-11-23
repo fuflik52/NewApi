@@ -33,13 +33,13 @@ const Sidebar = ({ isOpen, onClose }) => {
   const isActive = (path) => location.pathname === path;
 
   const SidebarContent = () => (
-    <div className="h-full flex flex-col">
-      <div className="p-6 flex items-center justify-between">
+    <div className="h-full flex flex-col overflow-hidden">
+      <div className="p-6 flex items-center justify-between min-h-[88px]">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-accent-primary text-accent-secondary flex items-center justify-center shadow-lg shadow-accent-primary/10">
+          <div className="w-10 h-10 min-w-[40px] rounded-lg bg-accent-primary text-accent-secondary flex items-center justify-center shadow-lg shadow-accent-primary/10">
             <Rocket className="w-6 h-6" />
           </div>
-          <span className="font-bold text-xl tracking-wider text-text-main">Cosmo</span>
+          <span className="font-bold text-xl tracking-wider text-text-main md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">Cosmo</span>
         </div>
         {/* Close button for mobile only */}
         <button onClick={onClose} className="md:hidden p-2 text-text-muted hover:text-text-main">
@@ -47,23 +47,23 @@ const Sidebar = ({ isOpen, onClose }) => {
         </button>
       </div>
 
-      <nav className="flex-1 px-4 py-6 space-y-2">
+      <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto overflow-x-hidden">
         {menuItems.map((item) => (
           <Link
             key={item.path}
             to={item.path}
             onClick={onClose}
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group relative overflow-hidden ${
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 relative overflow-hidden whitespace-nowrap ${
               isActive(item.path) 
                 ? 'bg-accent-primary text-accent-secondary shadow-lg' 
                 : 'text-text-muted hover:bg-bg-main hover:text-text-main'
             }`}
           >
-            <item.icon className={`w-5 h-5 ${isActive(item.path) ? 'text-accent-secondary' : 'group-hover:text-text-main transition-colors'}`} />
-            <span className="font-medium">{item.label}</span>
+            <item.icon className={`w-5 h-5 min-w-[20px] ${isActive(item.path) ? 'text-accent-secondary' : 'group-hover:text-text-main transition-colors'}`} />
+            <span className="font-medium md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">{item.label}</span>
             
             {item.badge && (
-                <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse shadow-[0_0_8px_#ef4444]">
+                <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse shadow-[0_0_8px_#ef4444] md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
                     {item.badge}
                 </span>
             )}
@@ -77,10 +77,10 @@ const Sidebar = ({ isOpen, onClose }) => {
               localStorage.removeItem('auth_token');
               navigate('/');
           }}
-          className="flex items-center gap-3 px-4 py-3 text-text-muted hover:text-text-main hover:bg-bg-main w-full rounded-xl transition-all"
+          className="flex items-center gap-3 px-4 py-3 text-text-muted hover:text-text-main hover:bg-bg-main w-full rounded-xl transition-all whitespace-nowrap overflow-hidden"
         >
-          <LogOut className="w-5 h-5" />
-          <span>Выход</span>
+          <LogOut className="w-5 h-5 min-w-[20px]" />
+          <span className="md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">Выход</span>
         </button>
       </div>
     </div>
@@ -89,7 +89,7 @@ const Sidebar = ({ isOpen, onClose }) => {
   return (
     <>
       {/* Desktop Sidebar - Always Visible */}
-      <div className="hidden md:flex w-64 h-screen glass-panel border-r border-border-color flex-col fixed left-0 top-0 z-50">
+      <div className="hidden md:flex w-20 hover:w-64 h-screen glass-panel border-r border-border-color flex-col fixed left-0 top-0 z-50 transition-all duration-300 ease-in-out group overflow-hidden">
         <SidebarContent />
       </div>
 

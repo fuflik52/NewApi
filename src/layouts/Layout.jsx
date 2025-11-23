@@ -45,7 +45,7 @@ const Layout = () => {
       </div>
 
       {/* Main Content Area */}
-      <div className="md:pl-64 min-h-screen relative">
+      <div className="md:pl-20 min-h-screen relative transition-all duration-300">
         <main className="p-4 md:p-8 max-w-7xl mx-auto animate-in fade-in duration-500 pt-24 md:pt-32">
           <Outlet />
         </main>
