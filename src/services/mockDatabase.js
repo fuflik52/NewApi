@@ -190,13 +190,35 @@ class MockDatabase {
             // Ensure url is absolute if needed or use as is.
             
             // Map server URLs to be usable from frontend
-            const mappedData = data.map(img => ({
-                ...img,
-                // If server returns http://bublickrust/..., and we can't resolve it locally without hosts file,
-                // we might want to fallback to a proxied URL for display?
-                // For now, trust the server URL or replace with localhost for preview if it's bublickrust
-                url: img.url.replace('http://bublickrust', 'http://localhost:3000') 
-            }));
+            const mappedData = data.map(img => {
+                let safeUrl = img.url;
+                
+                // If we are on HTTPS, we can't load HTTP resources directly
+                // Replace the custom domain with the current origin if it matches our logic
+                if (window.location.protocol === 'https:' && img.url.startsWith('http://')) {
+                    if (img.url.includes('bublickrust')) {
+                         // Option 1: Proxy through the current origin (assuming nginx/vite proxy is set up)
+                         // If the image is 'http://bublickrust/123', we want '/123' relative to current site
+                         // Or if running locally via vite proxy:
+                         const id = img.url.split('/').pop();
+                         
+                         // If we are in production (bublickrust.ru), we can try to fetch relative to root if we have a route
+                         // But server.js has route '/:id'.
+                         // So 'https://bublickrust.ru/12345' should work if it hits the express server.
+                         
+                         // Construct a safe URL relative to the current window location
+                         safeUrl = `${window.location.origin}/${id}`;
+                    }
+                } else if (img.url.includes('bublickrust')) {
+                    // Fallback for local dev (http) -> localhost:3000
+                    safeUrl = img.url.replace('http://bublickrust', 'http://localhost:3000');
+                }
+
+                return {
+                    ...img,
+                    url: safeUrl
+                };
+            });
 
             // Also sync these to local storage for backup/persistence
             // Filter out old entries for this token first to avoid duplicates
