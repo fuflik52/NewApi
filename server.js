@@ -51,15 +51,16 @@ const STORAGE_BUCKET = 'images';
 const SERVER_START_TIME = new Date();
 
 // Middleware
+// CORS: Allow all origins dynamically, including 'null' for Figma plugins
 app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin || origin === 'null') return callback(null, true);
-        return callback(null, true);
-    },
+    origin: true, 
     methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
     credentials: true
 }));
+
+// Handle preflight specifically if needed (though middleware above should cover it)
+app.options('*', cors({ origin: true, credentials: true }));
 
 app.use(session({
     secret: 'super_secret_steam_key',
@@ -71,14 +72,8 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.options(/.*/, cors({
-// ... existing code ...
-    origin: function (origin, callback) {
-        if (!origin || origin === 'null') return callback(null, true);
-        return callback(null, true);
-    },
-    credentials: true
-}));
+// REMOVED: Duplicate app.options that might conflict
+// app.options(/.*/, cors({...})); 
 
 app.use(express.json());
 
