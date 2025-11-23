@@ -184,7 +184,11 @@ const ApiTest = () => {
 
               {response.directUrl && (
                 <div className="rounded-xl overflow-hidden border border-border-color bg-bg-main">
-                  <img src={response.directUrl} alt="Uploaded" className="w-full h-auto max-h-[300px] object-contain" />
+                  <img 
+                    src={response.directUrl.replace('http://bublickrust', window.location.hostname === 'localhost' ? 'http://localhost:3000' : window.location.origin)} 
+                    alt="Uploaded" 
+                    className="w-full h-auto max-h-[300px] object-contain" 
+                  />
                 </div>
               )}
             </motion.div>
