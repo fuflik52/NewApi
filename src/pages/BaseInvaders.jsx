@@ -113,17 +113,6 @@ const BaseInvaders = () => {
                 >
                     <div className="absolute top-4 text-accent-primary"><Shield className="w-6 h-6" /></div>
                     
-                    {/* Leave Button for Member */}
-                    {!state.is_captain && (
-                        <button 
-                            onClick={leaveTeam}
-                            className="absolute top-4 right-4 p-2 hover:bg-red-500/20 text-red-500 rounded-full transition-colors"
-                            title="Покинуть команду"
-                        >
-                            <LogOut className="w-5 h-5" />
-                        </button>
-                    )}
-
                     <div className="w-32 h-32 rounded-full border-4 border-accent-primary p-1 mb-6">
                         {captain?.avatar ? (
                             <img src={`https://cdn.discordapp.com/avatars/${captain.id}/${captain.avatar}.png`} className="w-full h-full rounded-full object-cover" />
