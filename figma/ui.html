@@ -131,6 +131,50 @@
         overflow: hidden; text-overflow: ellipsis; 
     }
 
+    /* LOGS CORNER */
+    .logs-corner {
+        position: fixed; top: 20px; left: 20px;
+        display: flex; align-items: center; justify-content: center;
+        width: 32px; height: 32px;
+        background: var(--glass-panel);
+        backdrop-filter: blur(10px);
+        border: 1px solid transparent;
+        border-radius: 50%;
+        cursor: pointer; z-index: 1000;
+        transition: all 0.2s;
+    }
+    .logs-corner:hover { 
+        background: rgba(255,255,255,0.1); 
+        border-color: var(--glass-border);
+    }
+
+    /* Log Window Fixed */
+    #log-window {
+        position: fixed; top: 60px; left: 20px; width: 280px;
+        max-height: 300px; overflow-y: auto;
+        background: rgba(5, 5, 5, 0.95);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        z-index: 2000;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        display: none; /* Managed by toggle */
+    }
+    #log-window.visible { display: block; }
+    
+    /* Progress Bar */
+    .progress-wrapper {
+        position: fixed; top: 0; left: 0; right: 0; height: 4px;
+        background: transparent; z-index: 9999;
+        display: none; pointer-events: none;
+    }
+    .progress-wrapper.visible { display: block; }
+    .progress-fill {
+        height: 100%; background: var(--accent-color);
+        width: 0%; transition: width 0.3s ease;
+        box-shadow: 0 0 10px var(--accent-color);
+    }
+
     /* Auth Screen Specifics */
     #page-auth {
         display: none;
@@ -316,6 +360,19 @@
 
 <body>
 
+  <!-- PROGRESS BAR -->
+  <div class="progress-wrapper" id="progress-wrapper">
+      <div class="progress-fill" id="progress-fill"></div>
+  </div>
+
+  <!-- LOGS CORNER -->
+  <div class="logs-corner" onclick="toggleLogs()" title="Логи">
+     📜
+  </div>
+
+  <!-- LOG WINDOW -->
+  <div class="log-box" id="log-window"></div>
+
   <!-- USER PROFILE CORNER -->
   <div class="user-profile-corner" id="user-profile-corner" onclick="if(confirm('Выйти из аккаунта?')) logout();">
       <img src="" class="corner-avatar" id="header-user-avatar" alt="">
@@ -399,12 +456,7 @@
         СГЕНЕРИРОВАТЬ C#
       </button>
 
-      <div class="log-box" id="log-window"></div>
-      <div style="text-align:center; margin-top:10px;">
-          <button class="btn-secondary" style="width:auto; padding:6px 12px; font-size:10px; display:inline-flex;" onclick="toggleLogs()">
-             📜 Логи
-          </button>
-      </div>
+      <!-- LOGS REMOVED FROM HERE -->
 
       <div class="code-wrapper" id="code-window">
         <button class="btn-copy" onclick="copyCode()">COPY</button>
@@ -747,7 +799,17 @@
 
     async function uploadImagesToAPI(images, token) {
         addLog(`Загрузка ${images.length} изображений...`, 'info');
+        
+        // Progress Init
+        const progressWrap = document.getElementById('progress-wrapper');
+        const progressFill = document.getElementById('progress-fill');
+        progressWrap.classList.add('visible');
+        progressFill.style.width = '0%';
+
         const results = {};
+        let count = 0;
+        const total = images.length;
+
         for (const img of images) {
             try {
                 const bytes = new Uint8Array(img.bytes || img.data || []);
@@ -763,7 +825,18 @@
                     }
                 } else { addLog(`Ошибка: ${res.status}`, 'error'); }
             } catch(e) { addLog(`Сбой: ${e.message}`, 'error'); }
+            
+            // Update Progress
+            count++;
+            const pct = Math.round((count / total) * 100);
+            progressFill.style.width = `${pct}%`;
         }
+        
+        setTimeout(() => { 
+            progressWrap.classList.remove('visible'); 
+            progressFill.style.width = '0%';
+        }, 1000);
+
         parent.postMessage({ pluginMessage: { type: 'upload-complete', results } }, '*');
     }
 
