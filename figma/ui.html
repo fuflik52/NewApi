@@ -189,11 +189,11 @@
     .auth-logo {
         font-size: 24px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.03em;
         background: linear-gradient(to right, #fff, rgba(255,255,255,0.5));
-        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
     }
     [data-theme="monokai"] .auth-logo {
         background: linear-gradient(to right, #f92672, #fff);
-        -webkit-background-clip: text;
+        -webkit-background-clip: text; background-clip: text;
     }
 
     /* Section Headers */
@@ -519,7 +519,7 @@
 
       <!-- LOGS REMOVED FROM HERE -->
 
-      <div class="code-wrapper" id="code-window">
+      <div class="code-wrapper" id="code-window" style="display: none;">
         <button class="btn-copy" onclick="copyCode()">COPY CODE</button>
         
         <div class="editor-container">
