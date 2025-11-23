@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, Users, Database, Globe, Server, Cpu, Zap } from 'lucide-react';
+import { Activity, Users, Database, Globe, Server, Cpu } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend } from 'recharts';
 import { motion } from 'framer-motion';
-import { useTheme } from '../context/ThemeContext';
-import { dbService } from '../services/mockDatabase';
 import { useNavigate } from 'react-router-dom';
 
 const StatCard = ({ title, value, change, icon: Icon }) => (
@@ -20,9 +18,11 @@ const StatCard = ({ title, value, change, icon: Icon }) => (
       </div>
       <div className="flex items-end gap-4">
         <span className="text-3xl font-bold text-text-main">{value}</span>
-        <span className={`text-sm font-medium px-2 py-1 rounded-full bg-bg-main ${change.startsWith('+') ? 'text-emerald-400' : 'text-red-400'}`}>
-          {change}
-        </span>
+        {change && (
+            <span className={`text-sm font-medium px-2 py-1 rounded-full bg-bg-main ${change.toString().startsWith('+') ? 'text-emerald-400' : 'text-red-400'}`}>
+            {change}
+            </span>
+        )}
       </div>
     </div>
   </div>
@@ -72,67 +72,73 @@ const Dashboard = () => {
   const [endpointData, setEndpointData] = useState([]);
   const [statusData, setStatusData] = useState([]);
   
-  // Live simulation state
-  const [cpu, setCpu] = useState(42);
-  const [ram, setRam] = useState(68);
+  // Server stats
   const [uptime, setUptime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [cpu, setCpu] = useState(45); // Simulated for now
+  const [ram, setRam] = useState(60); // Simulated for now
 
   useEffect(() => {
-    const checkUser = async () => {
+    const loadDashboard = async () => {
         try {
             const token = localStorage.getItem('auth_token');
-            if (!token) return;
+            if (!token) {
+                navigate('/');
+                return;
+            }
 
-            const res = await fetch('/api/user/me', {
+            // 1. Check User Role
+            const userRes = await fetch('/api/user/me', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            const data = await res.json();
-            if (data.success && data.user.is_admin) {
-                setIsAdmin(true);
-            } else {
-                // Not admin? Redirect to API page
+            const userData = await userRes.json();
+            
+            if (!userData.success || !userData.user.is_admin) {
                 navigate('/dashboard/api', { replace: true });
+                return;
             }
+            
+            setIsAdmin(true);
+
+            // 2. Fetch Stats & Uptime
+            const statsRes = await fetch('/api/stats', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const statsData = await statsRes.json();
+            setStats(statsData);
+            if (statsData.uptime) {
+                setUptime(statsData.uptime);
+            }
+
+            // 3. Fetch Analytics for Charts
+            const analyticsRes = await fetch('/api/analytics', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const analyticsData = await analyticsRes.json();
+            
+            setChartData(analyticsData.history || []);
+            
+            // Format Status Data for Pie Chart
+            const statusColors = { 200: '#10B981', 400: '#F59E0B', 401: '#F59E0B', 403: '#EF4444', 404: '#6366F1', 500: '#EF4444' };
+            const formattedStatus = (analyticsData.status || []).map(s => ({
+                name: s.name,
+                value: s.value,
+                color: statusColors[s.name] || '#888888'
+            }));
+            setStatusData(formattedStatus);
+
+            setEndpointData(analyticsData.endpoints || []);
+
         } catch (e) {
-            console.error(e);
-            navigate('/dashboard/api', { replace: true });
+            console.error("Dashboard Load Error:", e);
         } finally {
             setLoading(false);
         }
     };
-    checkUser();
+
+    loadDashboard();
   }, [navigate]);
 
-  useEffect(() => {
-    if (!isAdmin) return;
-
-    const fetchStats = async () => {
-        try {
-            const token = localStorage.getItem('auth_token');
-            const res = await fetch('/api/stats', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = await res.json();
-            setStats(data);
-        } catch (e) { console.error(e); }
-    };
-    fetchStats();
-
-    // Mock chart data for now
-    const fetchData = async () => {
-        const stats = await dbService.getUsageStats(30);
-        setChartData(stats);
-
-        const endpoints = await dbService.getEndpointStats();
-        setEndpointData(endpoints);
-
-        const statuses = await dbService.getStatusDistribution();
-        setStatusData(statuses);
-    };
-    fetchData();
-  }, [isAdmin]);
-
-  // Simulate fluctuating server stats (CPU/RAM only)
+  // Live simulation for CPU/RAM (since we can't get real OS stats from Supabase easily via client)
   useEffect(() => {
     if (!isAdmin) return;
     const interval = setInterval(() => {
@@ -142,31 +148,8 @@ const Dashboard = () => {
     return () => clearInterval(interval);
   }, [isAdmin]);
 
-  // Real Uptime from consistent start time
-  useEffect(() => {
-    if (!isAdmin) return;
-    const updateUptime = () => {
-        const start = dbService.getUptimeStart();
-        const now = new Date();
-        const diff = now - start;
-        
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-        const minutes = Math.floor((diff / 1000 / 60) % 60);
-        const seconds = Math.floor((diff / 1000) % 60);
-
-        setUptime({ days, hours, minutes, seconds });
-    };
-
-    const interval = setInterval(updateUptime, 1000);
-    updateUptime(); // Initial call
-
-    return () => clearInterval(interval);
-  }, [isAdmin]);
-
   if (loading) return <div className="p-8">Loading...</div>;
-
-  if (!isAdmin) return null; // Should have redirected already
+  if (!isAdmin) return null;
 
   return (
     <div className="space-y-8">
@@ -175,30 +158,30 @@ const Dashboard = () => {
         <p className="text-text-muted">Добро пожаловать на борт, Командор.</p>
       </header>
 
-      {/* Top Stats - Real DB Data */}
+      {/* Top Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard 
-          title="Всего запросов" 
-          value={stats.requests.toLocaleString()} 
-          change="+0%" 
+          title="Всего запросов (24ч)" 
+          value={chartData.reduce((acc, curr) => acc + curr.requests, 0).toLocaleString()} 
+          change="+Live" 
           icon={Activity} 
         />
         <StatCard 
           title="Пользователи" 
           value={stats.users.toString()} 
-          change="+0%" 
+          change={`+${stats.users}`} 
           icon={Users} 
         />
         <StatCard 
           title="База данных" 
           value={`${(stats.storage_bytes / (1024 * 1024)).toFixed(2)} MB`} 
-          change="+0%" 
+          change="Supabase" 
           icon={Database} 
         />
         <StatCard 
           title="Статус сети" 
           value="100%" 
-          change="Stable" 
+          change="Online" 
           icon={Globe} 
         />
       </div>
@@ -211,10 +194,10 @@ const Dashboard = () => {
         className="glass-panel rounded-2xl p-8"
       >
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-text-main">Общая активность</h2>
+          <h2 className="text-xl font-semibold text-text-main">Общая активность (Запросы за 24ч)</h2>
           <div className="flex gap-2">
             <span className="w-3 h-3 rounded-full bg-accent-primary"></span>
-            <span className="text-sm text-text-muted">Трафик (запросы)</span>
+            <span className="text-sm text-text-muted">Трафик</span>
           </div>
         </div>
         <div className="h-[350px] w-full">
@@ -222,8 +205,8 @@ const Dashboard = () => {
             <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="colorTraffic" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--chart-color)" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="var(--chart-color)" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="var(--accent-primary)" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="var(--accent-primary)" stopOpacity={0}/>
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
@@ -231,9 +214,9 @@ const Dashboard = () => {
               <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 12 }} />
               <Tooltip 
                 contentStyle={{ backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--text-main)' }}
-                itemStyle={{ color: 'var(--chart-color)' }}
+                itemStyle={{ color: 'var(--accent-primary)' }}
               />
-              <Area type="monotone" dataKey="requests" stroke="var(--chart-color)" strokeWidth={2} fillOpacity={1} fill="url(#colorTraffic)" />
+              <Area type="monotone" dataKey="requests" stroke="var(--accent-primary)" strokeWidth={2} fillOpacity={1} fill="url(#colorTraffic)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -249,7 +232,7 @@ const Dashboard = () => {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="glass-panel rounded-2xl p-6 flex flex-col"
         >
-          <h3 className="text-lg font-semibold text-text-main mb-4">Распределение статусов</h3>
+          <h3 className="text-lg font-semibold text-text-main mb-4">Распределение ответов</h3>
           <div className="flex-1 min-h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -293,9 +276,9 @@ const Dashboard = () => {
                   <Tooltip 
                     cursor={{ fill: 'var(--bg-main)' }}
                     contentStyle={{ backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--text-main)' }}
-                    itemStyle={{ color: 'var(--chart-color)' }}
+                    itemStyle={{ color: 'var(--accent-primary)' }}
                   />
-                  <Bar dataKey="requests" fill="var(--chart-color)" radius={[0, 4, 4, 0]} barSize={20} />
+                  <Bar dataKey="requests" fill="var(--accent-primary)" radius={[0, 4, 4, 0]} barSize={20} />
                 </BarChart>
              </ResponsiveContainer>
           </div>
@@ -322,8 +305,8 @@ const Dashboard = () => {
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-text-muted">Last Backup</span>
-                  <span className="text-emerald-400">2 hours ago</span>
+                  <span className="text-text-muted">Started at</span>
+                  <span className="text-emerald-400">Server Start</span>
                 </div>
              </div>
           </div>

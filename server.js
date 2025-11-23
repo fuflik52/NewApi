@@ -13,11 +13,16 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 const CUSTOM_DOMAIN = process.env.CUSTOM_DOMAIN || `https://bublickrust.ru/img`; 
+// Hardcode redirect URI to avoid environment confusion
+const DISCORD_REDIRECT_URI = 'https://bublickrust.ru/api/auth/discord/callback';
 
 // IMPORTANT: Set this to your Supabase Project URL
 const SUPABASE_PROJECT_URL = process.env.SUPABASE_URL; 
 // Bucket name we agreed on
 const STORAGE_BUCKET = 'images'; 
+
+// SERVER START TIME for Uptime
+const SERVER_START_TIME = new Date();
 
 // Middleware
 app.use(cors({
@@ -50,6 +55,39 @@ const upload = multer({
     limits: { fileSize: 15 * 1024 * 1024 } // 15MB
 });
 
+// --- LOGGING MIDDLEWARE ---
+app.use((req, res, next) => {
+    // Skip logging for static files to keep DB clean
+    if (req.path.startsWith('/assets') || req.path.startsWith('/uploads') || req.path === '/favicon.ico') {
+        return next();
+    }
+
+    const start = Date.now();
+    
+    // Intercept response finish to log
+    res.on('finish', () => {
+        const duration = Date.now() - start;
+        const userId = req.user ? req.user.id : null;
+        
+        // Don't await this, let it run in background
+        if (req.path.startsWith('/api')) {
+             // Try to find token ID if possible (complex without passing it from verifyToken)
+             // For now, just log the basics
+             supabase.from('request_logs').insert({
+                 user_id: userId,
+                 endpoint: req.path,
+                 method: req.method,
+                 status: res.statusCode,
+                 duration: duration
+             }).then(({ error }) => {
+                 if (error) console.error('Log Error:', error);
+             });
+        }
+    });
+    
+    next();
+});
+
 // --- AUTH MIDDLEWARE (Supabase Version) ---
 const verifyToken = async (req, res, next) => {
     const authHeader = req.headers.authorization;
@@ -62,7 +100,7 @@ const verifyToken = async (req, res, next) => {
         // 1. Find token in api_keys
         const { data: keyData, error: keyError } = await supabase
             .from('api_keys')
-            .select('user_id, requests_count')
+            .select('id, user_id, requests_count')
             .eq('token', token)
             .single();
 
@@ -106,6 +144,41 @@ const verifyToken = async (req, res, next) => {
 };
 
 // --- API ROUTES ---
+
+// NEW: Public System Stats (Global Health)
+app.get('/api/system/stats', async (req, res) => {
+    try {
+        // Basic public stats - no token required or flexible
+        // Parallel requests
+        const [uploadsRes] = await Promise.all([
+            supabase.from('uploads').select('*', { count: 'exact', head: true })
+        ]);
+        
+        // Calculate Total Size (rough estimate or from cache/RPC if optimized)
+        const { data: sizes } = await supabase.from('uploads').select('size');
+        const totalSize = sizes ? sizes.reduce((acc, row) => acc + (row.size || 0), 0) : 0;
+
+        // Calculate Uptime
+        const uptimeMs = new Date() - SERVER_START_TIME;
+        const uptimeDays = Math.floor(uptimeMs / (1000 * 60 * 60 * 24));
+        const uptimeHours = Math.floor((uptimeMs / (1000 * 60 * 60)) % 24);
+        const uptimeMinutes = Math.floor((uptimeMs / (1000 * 60)) % 60);
+
+        res.json({
+            status: 'online',
+            version: '1.0.0',
+            base_url: 'https://bublickrust.ru/api',
+            stats: {
+                total_images: uploadsRes.count || 0,
+                total_storage_bytes: totalSize,
+                uptime: `${uptimeDays}d ${uptimeHours}h ${uptimeMinutes}m`
+            }
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'System Stats Error' });
+    }
+});
 
 // Test Login
 app.post('/api/auth/test-login', async (req, res) => {
@@ -159,7 +232,10 @@ app.post('/api/auth/test-login', async (req, res) => {
 // Discord Auth Redirect
 app.get('/api/auth/discord', (req, res) => {
     const clientId = process.env.DISCORD_CLIENT_ID;
-    const redirectUri = process.env.DISCORD_REDIRECT_URI || `http://localhost:${PORT}/api/auth/discord/callback`;
+    const redirectUri = DISCORD_REDIRECT_URI;
+    
+    console.log('Redirecting to Discord with URI:', redirectUri); // Debug log
+
     if (!clientId) return res.status(500).send('Missing Discord Client ID');
     const url = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=identify%20email`;
     res.redirect(url);
@@ -171,7 +247,9 @@ app.get('/api/auth/discord/callback', async (req, res) => {
     if (!code) return res.status(400).send('No code');
 
     try {
-        const redirectUri = process.env.DISCORD_REDIRECT_URI || `http://localhost:${PORT}/api/auth/discord/callback`;
+        const redirectUri = DISCORD_REDIRECT_URI;
+        console.log('Callback with URI:', redirectUri); // Debug log
+
         const tokenResponse = await axios.post('https://discord.com/api/oauth2/token', new URLSearchParams({
             client_id: process.env.DISCORD_CLIENT_ID,
             client_secret: process.env.DISCORD_CLIENT_SECRET,
@@ -218,8 +296,8 @@ app.get('/api/auth/discord/callback', async (req, res) => {
         res.redirect(`/?token=${finalToken}`);
 
     } catch (error) {
-        console.error('Discord Auth Error:', error);
-        res.status(500).send('Authentication Failed');
+        console.error('Discord Auth Error:', error.response?.data || error.message);
+        res.status(500).send('Authentication Failed: ' + (error.response?.data?.error_description || 'Unknown error'));
     }
 });
 
@@ -317,9 +395,79 @@ app.get('/api/stats', verifyToken, async (req, res) => {
         const { data: sizes } = await supabase.from('uploads').select('size');
         const totalSize = sizes ? sizes.reduce((acc, row) => acc + (row.size || 0), 0) : 0;
 
-        res.json({ users: usersRes.count || 0, uploads: uploadsRes.count || 0, storage_bytes: totalSize, requests: 0 });
+        // Calculate Uptime
+        const uptimeMs = new Date() - SERVER_START_TIME;
+        const uptimeDays = Math.floor(uptimeMs / (1000 * 60 * 60 * 24));
+        const uptimeHours = Math.floor((uptimeMs / (1000 * 60 * 60)) % 24);
+        const uptimeMinutes = Math.floor((uptimeMs / (1000 * 60)) % 60);
+        const uptimeSeconds = Math.floor((uptimeMs / 1000) % 60);
+
+        res.json({ 
+            users: usersRes.count || 0, 
+            uploads: uploadsRes.count || 0, 
+            storage_bytes: totalSize, 
+            requests: 0,
+            uptime: {
+                days: uptimeDays,
+                hours: uptimeHours,
+                minutes: uptimeMinutes,
+                seconds: uptimeSeconds
+            }
+        });
     } catch (err) {
         res.status(500).json({ error: 'Stats Error' });
+    }
+});
+
+// NEW: Analytics Endpoint for Graphs
+app.get('/api/analytics', verifyToken, async (req, res) => {
+    if (!req.user.is_admin) return res.status(403).json({ error: 'Forbidden' });
+    
+    try {
+        // 1. Requests History (Last 24h grouped by hour) - Requires logs table
+        const { data: logs, error } = await supabase
+            .from('request_logs')
+            .select('created_at, status')
+            .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+
+        // Aggregate locally (easier than SQL group by for now)
+        const history = {};
+        const statusDist = {};
+
+        if (logs) {
+            logs.forEach(log => {
+                // History
+                const hour = new Date(log.created_at).getHours() + ':00';
+                history[hour] = (history[hour] || 0) + 1;
+
+                // Status
+                statusDist[log.status] = (statusDist[log.status] || 0) + 1;
+            });
+        }
+
+        // 2. Endpoint stats
+        const { data: endpointLogs } = await supabase
+            .from('request_logs')
+            .select('endpoint');
+        
+        const endpointStats = {};
+        if (endpointLogs) {
+            endpointLogs.forEach(log => {
+                endpointStats[log.endpoint] = (endpointStats[log.endpoint] || 0) + 1;
+            });
+        }
+
+        res.json({
+            history: Object.entries(history).map(([name, requests]) => ({ name, requests })),
+            status: Object.entries(statusDist).map(([name, value]) => ({ name, value })),
+            endpoints: Object.entries(endpointStats)
+                .map(([name, requests]) => ({ name, requests }))
+                .sort((a, b) => b.requests - a.requests)
+                .slice(0, 5)
+        });
+    } catch (err) {
+        console.error(err);
+        res.json({ history: [], status: [], endpoints: [] });
     }
 });
 

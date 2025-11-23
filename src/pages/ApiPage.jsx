@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Key, Copy, Check, Terminal, Shield, Zap, ChevronDown, Eye, EyeOff, RefreshCw, Plus, Trash2, AlertCircle } from 'lucide-react';
+import { Key, Copy, Check, Terminal, Shield, Zap, ChevronDown, Eye, EyeOff, RefreshCw, Plus, Trash2, AlertCircle, BarChart2, Database, Server, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { dbService } from '../services/mockDatabase';
 
@@ -10,25 +10,48 @@ const ApiPage = () => {
   const [error, setError] = useState('');
   const [copiedId, setCopiedId] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
-  const [visibleKeys, setVisibleKeys] = useState({}); // Map of id -> boolean
+  const [visibleKeys, setVisibleKeys] = useState({}); 
   
   // Charts state
-  const [timeRange, setTimeRange] = useState(30);
-  const [showTimeMenu, setShowTimeMenu] = useState(false);
   const [chartData, setChartData] = useState([]);
-  const [totalRequests, setTotalRequests] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(false);
 
-  const loadTokens = async () => {
+  // System Stats State
+  const [systemStats, setSystemStats] = useState(null);
+
+  // Code snippets state
+  const [activeTab, setActiveTab] = useState('curl');
+
+  const loadData = async () => {
       try {
-          const data = await dbService.getApiTokens();
-          setTokens(data);
-          // Load stats for first token if exists
-          if (data.length > 0) {
-              // Mock stats loading
-              const stats = await dbService.getUsageStats(timeRange, data[0].id);
-              setChartData(stats);
-              const total = await dbService.getTotalRequests(data[0].id);
-              setTotalRequests(total);
+          const token = localStorage.getItem('auth_token');
+          const [tokensRes, userRes, statsRes] = await Promise.all([
+              fetch('/api/tokens', { headers: { 'Authorization': `Bearer ${token}` } }),
+              fetch('/api/user/me', { headers: { 'Authorization': `Bearer ${token}` } }),
+              fetch('/api/system/stats', { headers: { 'Authorization': `Bearer ${token}` } })
+          ]);
+
+          if (tokensRes.ok) {
+              const data = await tokensRes.json();
+              setTokens(data);
+          }
+          
+          if (statsRes.ok) {
+              const data = await statsRes.json();
+              setSystemStats(data);
+          }
+          
+          if (userRes.ok) {
+              const userData = await userRes.json();
+              if (userData.success && userData.user.is_admin) {
+                  setIsAdmin(true);
+                  // Load Analytics if admin
+                  const analyticsRes = await fetch('/api/analytics', { headers: { 'Authorization': `Bearer ${token}` } });
+                  if (analyticsRes.ok) {
+                      const analytics = await analyticsRes.json();
+                      setChartData(analytics.history || []);
+                  }
+              }
           }
       } catch (e) {
           console.error(e);
@@ -38,8 +61,8 @@ const ApiPage = () => {
   };
 
   useEffect(() => {
-    loadTokens();
-  }, [timeRange]);
+    loadData();
+  }, []);
 
   const handleCreateToken = async () => {
       if (tokens.length >= 3) {
@@ -50,8 +73,21 @@ const ApiPage = () => {
 
       setIsCreating(true);
       try {
-          await dbService.createToken(`Key ${tokens.length + 1}`);
-          await loadTokens();
+          const token = localStorage.getItem('auth_token');
+          const res = await fetch('/api/tokens', {
+              method: 'POST',
+              headers: { 
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json'
+              }
+          });
+          
+          if (res.ok) {
+              await loadData();
+          } else {
+              const data = await res.json();
+              throw new Error(data.error);
+          }
       } catch (e) {
           setError(e.message);
           setTimeout(() => setError(''), 3000);
@@ -62,8 +98,12 @@ const ApiPage = () => {
 
   const handleDeleteToken = async (id) => {
       if (confirm('Are you sure you want to delete this token? This action cannot be undone.')) {
-          await dbService.deleteToken(id);
-          await loadTokens();
+          const token = localStorage.getItem('auth_token');
+          await fetch(`/api/tokens/${id}`, {
+              method: 'DELETE',
+              headers: { 'Authorization': `Bearer ${token}` }
+          });
+          await loadData();
       }
   };
 
@@ -77,7 +117,37 @@ const ApiPage = () => {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const primaryKey = tokens.length > 0 ? tokens[0].token : 'sk_live...';
+  const primaryKey = tokens.length > 0 ? tokens[0].token : 'sk_live_...';
+  const baseUrl = systemStats?.base_url || 'https://bublickrust.ru/api';
+
+  const codeSnippets = {
+      curl: `curl -X POST ${baseUrl}/images/upload \\
+  -H "Authorization: Bearer ${primaryKey}" \\
+  -F "image=@your-file.png"`,
+      node: `const fs = require('fs');
+const FormData = require('form-data');
+const axios = require('axios');
+
+const form = new FormData();
+form.append('image', fs.createReadStream('image.png'));
+
+axios.post('${baseUrl}/images/upload', form, {
+  headers: {
+    'Authorization': 'Bearer ${primaryKey}',
+    ...form.getHeaders()
+  }
+})
+.then(res => console.log(res.data))
+.catch(err => console.error(err));`,
+      python: `import requests
+
+url = "${baseUrl}/images/upload"
+headers = {"Authorization": "Bearer ${primaryKey}"}
+files = {"image": open("image.png", "rb")}
+
+response = requests.post(url, headers=headers, files=files)
+print(response.json())`
+  };
 
   return (
     <div className="space-y-8 pb-10">
@@ -104,6 +174,83 @@ const ApiPage = () => {
              </button>
         </div>
       </div>
+
+      {/* System Status (Global) */}
+      {systemStats && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="glass-panel p-4 rounded-xl flex items-center gap-4 border border-border-color">
+                <div className="p-3 rounded-full bg-emerald-500/10 text-emerald-500">
+                    <Server className="w-6 h-6" />
+                </div>
+                <div>
+                    <div className="text-xs text-text-muted uppercase font-bold">Статус API</div>
+                    <div className="text-lg font-bold text-text-main flex items-center gap-2">
+                        {systemStats.status === 'online' ? 'Online' : 'Offline'}
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    </div>
+                </div>
+            </div>
+            <div className="glass-panel p-4 rounded-xl flex items-center gap-4 border border-border-color">
+                <div className="p-3 rounded-full bg-accent-primary/10 text-accent-primary">
+                    <Database className="w-6 h-6" />
+                </div>
+                <div>
+                    <div className="text-xs text-text-muted uppercase font-bold">Всего файлов</div>
+                    <div className="text-lg font-bold text-text-main">
+                        {systemStats.stats.total_images.toLocaleString()} 
+                        <span className="text-sm text-text-muted ml-1 font-normal">
+                            ({(systemStats.stats.total_storage_bytes / (1024 * 1024)).toFixed(1)} MB)
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div className="glass-panel p-4 rounded-xl flex items-center gap-4 border border-border-color">
+                <div className="p-3 rounded-full bg-blue-500/10 text-blue-500">
+                    <Clock className="w-6 h-6" />
+                </div>
+                <div>
+                    <div className="text-xs text-text-muted uppercase font-bold">Аптайм</div>
+                    <div className="text-lg font-bold text-text-main">
+                        {systemStats.stats.uptime}
+                    </div>
+                </div>
+            </div>
+        </div>
+      )}
+
+      {/* API Requests Chart (Only visible if Admin or if we implement user stats) */}
+      {chartData.length > 0 && (
+        <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass-panel rounded-2xl p-6"
+        >
+            <div className="flex items-center gap-2 mb-6">
+                <BarChart2 className="text-accent-primary w-5 h-5" />
+                <h2 className="text-xl font-semibold text-text-main">Активность API (24ч)</h2>
+            </div>
+            <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={chartData}>
+                        <defs>
+                            <linearGradient id="colorApi" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="var(--accent-primary)" stopOpacity={0.3}/>
+                                <stop offset="95%" stopColor="var(--accent-primary)" stopOpacity={0}/>
+                            </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
+                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 12 }} dy={10} />
+                        <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 12 }} />
+                        <Tooltip 
+                            contentStyle={{ backgroundColor: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--text-main)' }}
+                            itemStyle={{ color: 'var(--accent-primary)' }}
+                        />
+                        <Area type="monotone" dataKey="requests" stroke="var(--accent-primary)" strokeWidth={2} fillOpacity={1} fill="url(#colorApi)" />
+                    </AreaChart>
+                </ResponsiveContainer>
+            </div>
+        </motion.div>
+      )}
 
       {/* Error Message */}
       <AnimatePresence>
@@ -153,6 +300,9 @@ const ApiPage = () => {
                                 <span className="text-xs text-text-muted px-2 py-0.5 rounded-full bg-bg-main border border-border-color">
                                     {new Date(token.created_at).toLocaleDateString()}
                                 </span>
+                                <span className="text-xs text-text-muted px-2 py-0.5 rounded-full bg-bg-main border border-border-color ml-auto md:ml-0">
+                                    Запросов: {token.requests_count || 0}
+                                </span>
                             </div>
                             <div className="relative flex items-center bg-bg-main rounded-xl border border-border-color overflow-hidden">
                                 <div className="px-4 py-3 font-mono text-text-muted flex-1 truncate">
@@ -190,44 +340,87 @@ const ApiPage = () => {
       </div>
 
       {/* Instructions using primary key */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="glass-panel p-8 rounded-2xl">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 glass-panel p-8 rounded-2xl">
           <div className="flex items-center gap-3 mb-6">
             <Terminal className="w-6 h-6 text-accent-primary" />
-            <h2 className="text-xl font-semibold text-text-main">Как подключиться</h2>
+            <h2 className="text-xl font-semibold text-text-main">Документация API</h2>
           </div>
-          <div className="space-y-4">
-            <p className="text-text-muted">
-              Используйте ключ в заголовке <code className="text-text-main">Authorization</code>.
-            </p>
-            
-            <div className="bg-bg-main rounded-xl overflow-hidden border border-border-color">
-              <div className="flex items-center gap-2 px-4 py-2 bg-accent-primary/10 border-b border-border-color">
-                <span className="text-xs text-text-muted">Example Request</span>
+          
+          <div className="mb-6">
+              <div className="text-xs text-text-muted uppercase font-bold mb-2">Base URL</div>
+              <div className="p-3 bg-bg-main rounded-lg border border-border-color font-mono text-sm text-text-main flex items-center justify-between">
+                  <span>{baseUrl}</span>
+                  <button 
+                    onClick={() => copyToClipboard(baseUrl, 'url')}
+                    className="text-text-muted hover:text-text-main"
+                  >
+                    {copiedId === 'url' ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                  </button>
+              </div>
+          </div>
+
+          {/* Tabs */}
+          <div className="flex gap-2 mb-4">
+              {['curl', 'node', 'python'].map(tab => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        activeTab === tab 
+                        ? 'bg-accent-primary text-accent-secondary' 
+                        : 'bg-bg-main text-text-muted hover:text-text-main'
+                    }`}
+                  >
+                      {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  </button>
+              ))}
+          </div>
+
+          <div className="bg-bg-main rounded-xl overflow-hidden border border-border-color relative">
+              <div className="flex items-center justify-between px-4 py-2 bg-black/20 border-b border-border-color">
+                <span className="text-xs text-text-muted font-mono">POST {baseUrl}/images/upload</span>
+                <button 
+                    onClick={() => copyToClipboard(codeSnippets[activeTab], 'code')}
+                    className="text-text-muted hover:text-text-main"
+                >
+                    {copiedId === 'code' ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                </button>
               </div>
               <div className="p-4 overflow-x-auto">
-                <pre className="font-mono text-sm text-text-muted">
-{`curl -X POST https://bublickrust.ru/api/images/upload \\
-  -H "Authorization: Bearer ${primaryKey.substring(0, 12)}..." \\
-  -F "image=@your-image.png"`}
+                <pre className="font-mono text-sm text-text-muted leading-relaxed">
+                    {codeSnippets[activeTab]}
                 </pre>
               </div>
-            </div>
           </div>
         </div>
 
-        <div className="glass-panel p-8 rounded-2xl flex flex-col justify-center">
-           <h3 className="text-lg font-semibold text-text-main mb-4">Доступные методы</h3>
-           <ul className="space-y-3">
-             <li className="flex items-center justify-between p-3 rounded-lg bg-bg-main border border-border-color">
-               <span className="font-mono text-text-main">POST /api/images/upload</span>
-               <span className="text-text-muted text-sm">Загрузка изображений</span>
-             </li>
-             <li className="flex items-center justify-between p-3 rounded-lg bg-bg-main border border-border-color">
-               <span className="font-mono text-text-main">POST /api/gradient-role</span>
-               <span className="text-text-muted text-sm">Градиентные роли</span>
-             </li>
-           </ul>
+        <div className="glass-panel p-8 rounded-2xl flex flex-col">
+           <h3 className="text-lg font-semibold text-text-main mb-4">Параметры запроса</h3>
+           <div className="space-y-4">
+               <div>
+                   <div className="text-xs text-text-muted uppercase font-bold mb-1">Header</div>
+                   <div className="p-2 bg-bg-main rounded border border-border-color font-mono text-sm text-text-main break-all">
+                       Authorization: Bearer TOKEN
+                   </div>
+               </div>
+               <div>
+                   <div className="text-xs text-text-muted uppercase font-bold mb-1">Body (Multipart)</div>
+                   <div className="p-2 bg-bg-main rounded border border-border-color font-mono text-sm text-text-main">
+                       image: (File)
+                   </div>
+               </div>
+               <div className="mt-4 pt-4 border-t border-border-color">
+                   <div className="text-xs text-text-muted uppercase font-bold mb-1">Response (JSON)</div>
+                   <pre className="text-xs text-emerald-400 font-mono">
+{`{
+  "success": true,
+  "directUrl": "...",
+  "file": { ... }
+}`}
+                   </pre>
+               </div>
+           </div>
         </div>
       </div>
     </div>
