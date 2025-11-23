@@ -25,12 +25,13 @@ const BaseInvaders = () => {
 
             if (userData.success) {
                 setCurrentUser(userData.user);
-                if (!userData.user.steam_id) {
-                    setHasSteam(false);
-                    setLoading(false);
-                    return;
-                }
+                // if (!userData.user.steam_id) {
+                //     setHasSteam(false);
+                //     setLoading(false);
+                //     return;
+                // }
             }
+            setHasSteam(true); // Bypass Steam check for now
 
             const res = await fetch('/api/invaders/state', { headers: { Authorization: `Bearer ${token}` } });
             const data = await res.json();
