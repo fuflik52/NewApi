@@ -455,6 +455,17 @@ app.post('/api/tokens', verifyToken, async (req, res) => {
 
 app.delete('/api/tokens/:id', verifyToken, async (req, res) => {
     try {
+        // Check if trying to delete the current token
+        const { data: currentKey } = await supabase
+            .from('api_keys')
+            .select('token')
+            .eq('id', req.params.id)
+            .single();
+
+        if (currentKey && currentKey.token === req.user.token) {
+            return res.status(400).json({ success: false, error: 'Cannot delete the currently active token.' });
+        }
+
         const { error } = await supabase.from('api_keys').delete().eq('id', req.params.id).eq('user_id', req.user.id);
         if (error) throw error;
         res.json({ success: true });
@@ -691,7 +702,8 @@ app.get('/api/analytics', verifyToken, async (req, res) => {
         const { data: logs, error } = await supabase
             .from('request_logs')
             .select('created_at, status')
-            .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+            .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+            .limit(100000); // Increased limit from default 1000
 
         // Aggregate locally (easier than SQL group by for now)
         const history = {};
