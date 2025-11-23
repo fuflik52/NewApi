@@ -510,17 +510,6 @@ app.get('/api/user/analytics', verifyToken, async (req, res) => {
     }
 });
 
-        res.json({
-            data: chartData,
-            total: total
-        });
-
-    } catch (err) {
-        console.error('User Analytics Error:', err);
-        res.status(500).json({ error: 'Analytics failed' });
-    }
-});
-
 // --- BASE INVADERS API ---
 
 // Search Users
