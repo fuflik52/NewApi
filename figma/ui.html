@@ -69,7 +69,7 @@
 
     /* Toast Notifications */
     #toast-container {
-        position: fixed; top: 20px; left: 0; right: 0;
+        position: fixed; top: 50px; left: 0; right: 0;
         display: flex; flex-direction: column; align-items: center; gap: 8px;
         z-index: 1000; pointer-events: none;
     }
@@ -94,11 +94,48 @@
     /* Content */
     .content-container {
         flex: 1; overflow-y: auto; padding: 24px; padding-bottom: 90px;
+        padding-top: 60px; /* Space for header */
         position: relative;
     }
 
     .page { display: none; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
     .page.active { display: block; }
+
+    /* HEADER / TOP BAR */
+    .top-header {
+        position: fixed; top: 0; left: 0; right: 0;
+        height: 50px;
+        background: rgba(5, 5, 5, 0.8);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--glass-border);
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0 16px;
+        z-index: 100;
+    }
+    .app-title {
+        font-weight: 700; font-size: 12px; letter-spacing: 0.05em;
+        color: var(--text-muted);
+    }
+    
+    /* User Pill in Header */
+    .user-pill {
+        display: none; /* Hidden by default */
+        align-items: center; gap: 8px;
+        padding: 4px 8px 4px 4px;
+        background: var(--glass-panel);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+    .user-pill.visible { display: flex; }
+    .user-pill:hover { border-color: var(--accent-color); }
+    
+    .pill-avatar {
+        width: 20px; height: 20px; border-radius: 50%;
+        background: rgba(255,255,255,0.1); object-fit: cover;
+    }
+    .pill-name { font-size: 10px; font-weight: 600; color: var(--text-main); max-width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     /* Auth Screen Specifics */
     #page-auth {
@@ -120,21 +157,6 @@
         background: linear-gradient(to right, #f92672, #fff);
         -webkit-background-clip: text;
     }
-
-    /* User Profile Card */
-    .user-profile {
-        display: flex; align-items: center; gap: 12px;
-        padding: 12px; background: var(--glass-panel);
-        border: 1px solid var(--glass-border); border-radius: 12px;
-        margin-bottom: 24px;
-    }
-    .user-avatar {
-        width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.1);
-        object-fit: cover;
-    }
-    .user-info { flex: 1; text-align: left; }
-    .user-name { font-weight: 600; font-size: 12px; color: var(--text-main); }
-    .user-role { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
 
     /* Section Headers */
     .section-header {
@@ -300,6 +322,15 @@
 
 <body>
 
+  <!-- FIXED TOP HEADER -->
+  <div class="top-header">
+      <div class="app-title">BUBLICK RUST</div>
+      <div class="user-pill" id="header-user-pill" onclick="if(confirm('Выйти из аккаунта?')) logout();">
+          <img src="" class="pill-avatar" id="header-user-avatar" alt="">
+          <div class="pill-name" id="header-user-name">User</div>
+      </div>
+  </div>
+
   <div id="toast-container"></div>
 
   <div class="content-container">
@@ -307,7 +338,7 @@
     <!-- PAGE: AUTH (LOGIN) -->
     <div id="page-auth" class="page active">
         <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; width: 100%;">
-            <div class="auth-logo">BUBLICK RUST</div>
+            <div class="auth-logo">ВХОД</div>
             <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 24px;">Подключите аккаунт для работы</div>
 
             <div class="input-wrapper">
@@ -408,20 +439,6 @@
 
     <!-- PAGE: SETTINGS -->
     <div id="page-settings" class="page">
-        <div class="section-header"><span class="section-title">Аккаунт</span></div>
-        
-        <!-- User Profile -->
-        <div class="user-profile" id="user-profile-container">
-            <img src="" class="user-avatar" id="user-avatar" alt="">
-            <div class="user-info">
-                <div class="user-name" id="user-name">Загрузка...</div>
-                <div class="user-role" id="user-role">Пользователь</div>
-            </div>
-            <button onclick="logout()" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; padding:8px;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-            </button>
-        </div>
-
         <div class="section-header"><span class="section-title">API Ключ</span></div>
         <div class="input-wrapper">
             <input type="password" id="api-token" class="input-field" placeholder="sk_live_..." readonly>
@@ -450,7 +467,7 @@
         
         <div style="margin-top:24px; padding:16px; background:var(--glass-panel); border-radius:12px; text-align:center;">
             <div style="font-size:14px; font-weight:700; color:var(--text-main);">Bublick UI Exporter</div>
-            <div style="font-size:10px; color:var(--text-muted); margin-top:4px;">Version 3.4.0</div>
+            <div style="font-size:10px; color:var(--text-muted); margin-top:4px;">Version 3.5.0</div>
         </div>
     </div>
 
@@ -504,15 +521,24 @@
                     // Save to Figma Storage
                     parent.postMessage({ pluginMessage: { type: 'save-token', apiToken: token } }, '*');
                     
-                    // Update UI
+                    // Update UI in Settings
                     document.getElementById('api-token').value = token;
-                    document.getElementById('user-name').textContent = currentUser.username || 'User';
-                    document.getElementById('user-role').textContent = currentUser.is_admin ? 'ADMIN' : 'Пользователь';
-                    if (currentUser.avatar) {
-                        document.getElementById('user-avatar').src = `https://cdn.discordapp.com/avatars/${currentUser.id}/${currentUser.avatar}.png`;
+                    
+                    // Update Header Pill
+                    document.getElementById('header-user-name').textContent = currentUser.username || 'User';
+                    const avatarUrl = currentUser.avatar ? `https://cdn.discordapp.com/avatars/${currentUser.id}/${currentUser.avatar}.png` : '';
+                    
+                    const avatarImg = document.getElementById('header-user-avatar');
+                    if (avatarUrl) {
+                        avatarImg.src = avatarUrl;
+                        avatarImg.style.backgroundColor = 'transparent';
                     } else {
-                        document.getElementById('user-avatar').style.backgroundColor = '#777';
+                        avatarImg.src = '';
+                        avatarImg.style.backgroundColor = '#777';
                     }
+                    
+                    // Show Pill
+                    document.getElementById('header-user-pill').classList.add('visible');
 
                     // Switch to Main App
                     showMainApp();
@@ -555,6 +581,7 @@
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById('page-auth').classList.add('active');
         document.getElementById('main-navbar').classList.add('hidden');
+        document.getElementById('header-user-pill').classList.remove('visible');
     }
 
     function showMainApp() {
@@ -636,9 +663,16 @@
     }
 
     function saveSettings() {
-        const assetMode = document.querySelector('input[name="asset-mode"]:checked').value;
-        const anchorMode = document.querySelector('input[name="anchor-mode"]:checked').value;
-        const theme = document.querySelector('input[name="theme"]:checked').value;
+        // SAFE CHECK FOR ELEMENTS EXISTENCE
+        const assetEl = document.querySelector('input[name="asset-mode"]:checked');
+        const anchorEl = document.querySelector('input[name="anchor-mode"]:checked');
+        const themeEl = document.querySelector('input[name="theme"]:checked');
+
+        if (!assetEl || !anchorEl || !themeEl) return; // Prevent error if elements not ready
+
+        const assetMode = assetEl.value;
+        const anchorMode = anchorEl.value;
+        const theme = themeEl.value;
         
         parent.postMessage({ 
             pluginMessage: { 
@@ -747,9 +781,13 @@
         const msg = event.data.pluginMessage;
         if (msg.type === 'init') {
             if (msg.settings) {
-                if(msg.settings.assetMode) document.querySelector(`input[name="asset-mode"][value="${msg.settings.assetMode}"]`).checked = true;
-                if(msg.settings.anchorMode) document.querySelector(`input[name="anchor-mode"][value="${msg.settings.anchorMode}"]`).checked = true;
-                if(msg.settings.theme) {
+                if(msg.settings.assetMode && document.querySelector(`input[name="asset-mode"][value="${msg.settings.assetMode}"]`)) {
+                    document.querySelector(`input[name="asset-mode"][value="${msg.settings.assetMode}"]`).checked = true;
+                }
+                if(msg.settings.anchorMode && document.querySelector(`input[name="anchor-mode"][value="${msg.settings.anchorMode}"]`)) {
+                    document.querySelector(`input[name="anchor-mode"][value="${msg.settings.anchorMode}"]`).checked = true;
+                }
+                if(msg.settings.theme && document.querySelector(`input[name="theme"][value="${msg.settings.theme}"]`)) {
                     document.querySelector(`input[name="theme"][value="${msg.settings.theme}"]`).checked = true;
                     changeTheme(msg.settings.theme);
                 }

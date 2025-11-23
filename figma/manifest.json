@@ -7,8 +7,8 @@
   "editorType": ["figma"],
   "networkAccess": {
     "allowedDomains": [
-      "https://bublickrust.ru"
+      "https://bublickrust.ru",
+      "https://cdn.discordapp.com"
     ]
   }
 }
-
