@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Rocket, Terminal } from 'lucide-react';
+import { Rocket, Terminal, Check } from 'lucide-react';
 import StarBackground from '../components/StarBackground';
 
 const Auth = () => {
   const navigate = useNavigate();
   const [secretCode, setSecretCode] = useState('');
+  const [isCodeValid, setIsCodeValid] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -33,7 +34,23 @@ const Auth = () => {
             }
         }
         
-        navigate('/dashboard');
+        // Determine redirect based on role
+        try {
+            const res = await fetch('/api/user/me', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            
+            if (data.success && data.user.is_admin) {
+                 navigate('/dashboard');
+            } else {
+                 // Non-admin users go to API page by default
+                 navigate('/dashboard/api');
+            }
+        } catch (e) {
+            console.error("Auth check failed", e);
+            navigate('/dashboard/api');
+        }
     };
 
     if (token) {
@@ -46,8 +63,10 @@ const Auth = () => {
       setSecretCode(code);
       if (code === 'bublickAA') {
           localStorage.setItem('admin_claim_code', code);
+          setIsCodeValid(true);
       } else {
           localStorage.removeItem('admin_claim_code');
+          setIsCodeValid(false);
       }
   };
 
@@ -89,16 +108,29 @@ const Auth = () => {
 
             <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Terminal className="h-4 w-4 text-text-muted" />
+                    <Terminal className={`h-4 w-4 ${isCodeValid ? 'text-emerald-400' : 'text-text-muted'}`} />
                 </div>
                 <input 
                     type="text" 
                     placeholder="Консольная команда (op)"
                     value={secretCode}
                     onChange={handleSecretCodeChange}
-                    className="w-full bg-bg-main/50 border border-border-color rounded-lg py-2 pl-10 pr-4 text-sm text-text-main focus:outline-none focus:border-accent-primary transition-colors placeholder-text-muted/50"
+                    className={`w-full bg-bg-main/50 border rounded-lg py-2 pl-10 pr-10 text-sm text-text-main focus:outline-none transition-colors placeholder-text-muted/50 ${
+                        isCodeValid ? 'border-emerald-500/50 focus:border-emerald-500' : 'border-border-color focus:border-accent-primary'
+                    }`}
                 />
+                {isCodeValid && (
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <Check className="h-4 w-4 text-emerald-400" />
+                    </div>
+                )}
             </div>
+            
+            {isCodeValid && (
+                <p className="text-xs text-emerald-400 text-center animate-pulse">
+                    Код принят. Доступ администратора будет выдан.
+                </p>
+            )}
 
           </div>
         </div>
