@@ -10,6 +10,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = 3000;
+const CUSTOM_DOMAIN = 'http://bublickrust';
 
 // Middleware
 app.use(cors());
@@ -25,7 +26,25 @@ if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-// Serve uploads statically
+// Metadata storage (Simple JSON file for demo purposes)
+const METADATA_FILE = path.join(__dirname, 'uploads_metadata.json');
+let uploadsMetadata = [];
+
+// Load metadata on start
+if (fs.existsSync(METADATA_FILE)) {
+    try {
+        uploadsMetadata = JSON.parse(fs.readFileSync(METADATA_FILE, 'utf8'));
+    } catch (e) {
+        console.error("Failed to load metadata", e);
+        uploadsMetadata = [];
+    }
+}
+
+function saveMetadata() {
+    fs.writeFileSync(METADATA_FILE, JSON.stringify(uploadsMetadata, null, 2));
+}
+
+// Serve uploads statically (keep this for backward compatibility or debugging)
 app.use('/uploads', express.static(uploadsDir));
 
 // Configure Multer
@@ -34,12 +53,11 @@ const storage = multer.diskStorage({
         cb(null, uploadsDir);
     },
     filename: function (req, file, cb) {
-        // Use original name or timestamp + name to avoid collisions, 
-        // but for this use case, keeping original name is often preferred for the plugin logic
-        // providing it doesn't overwrite unintentionally.
-        // Let's prepend a unique suffix.
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + '-' + file.originalname);
+        // Generate 10-digit random number
+        const id = Math.floor(1000000000 + Math.random() * 9000000000).toString();
+        const ext = path.extname(file.originalname);
+        // Save as 10digits.ext
+        cb(null, id + ext);
     }
 });
 
@@ -56,16 +74,34 @@ app.post('/api/images/upload', upload.single('image'), (req, res) => {
     if (!authHeader || !authHeader.startsWith('Bearer sk_live_')) {
         return res.status(401).json({ success: false, error: 'Unauthorized' });
     }
+    const token = authHeader.split(' ')[1];
 
     if (!req.file) {
         return res.status(400).json({ success: false, error: 'No image file provided' });
     }
 
-    const protocol = req.protocol;
-    const host = req.get('host');
-    const directUrl = `${protocol}://${host}/uploads/${req.file.filename}`;
+    // Extract ID from filename (filename is 1234567890.ext)
+    const fileId = req.file.filename.split('.')[0];
+    
+    // Use custom domain as requested
+    const directUrl = `${CUSTOM_DOMAIN}/${fileId}`;
 
-    console.log(`[UPLOAD] File saved: ${req.file.filename} (${req.file.size} bytes)`);
+    const fileData = {
+        id: fileId,
+        filename: req.file.filename,
+        originalname: req.file.originalname,
+        size: req.file.size,
+        mimetype: req.file.mimetype,
+        url: directUrl,
+        uploaded_at: new Date().toISOString(),
+        token: token // Store which token uploaded this
+    };
+
+    // Save metadata
+    uploadsMetadata.push(fileData);
+    saveMetadata();
+
+    console.log(`[UPLOAD] File saved: ${req.file.filename} -> ${directUrl} (${req.file.size} bytes)`);
 
     res.json({
         success: true,
@@ -74,6 +110,65 @@ app.post('/api/images/upload', upload.single('image'), (req, res) => {
             name: req.file.originalname,
             size: req.file.size,
             mime: req.file.mimetype
+        }
+    });
+});
+
+// API: List Images by Token
+app.get('/api/images/list', (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer sk_live_')) {
+        // If using query param for easier testing in browser
+        if (req.query.key && req.query.key.startsWith('sk_live_')) {
+             // proceed
+        } else {
+            return res.status(401).json({ success: false, error: 'Unauthorized' });
+        }
+    }
+    
+    const token = authHeader ? authHeader.split(' ')[1] : req.query.key;
+    
+    // Filter images by token
+    const userImages = uploadsMetadata.filter(img => img.token === token);
+    
+    // Map to frontend expected format if needed, or return as is
+    // The frontend expects: { id, url, size (MB), name, uploaded_at }
+    const responseImages = userImages.map(img => ({
+        id: img.id,
+        url: img.url,
+        // Convert bytes to MB with 1 decimal
+        size: parseFloat((img.size / (1024 * 1024)).toFixed(2)), 
+        name: img.originalname,
+        uploaded_at: img.uploaded_at
+    }));
+
+    res.json(responseImages);
+});
+
+
+// Route: Serve image by 10-digit ID
+app.get('/:id', (req, res, next) => {
+    const { id } = req.params;
+    
+    // Check if ID is exactly 10 digits
+    if (!/^\d{10}$/.test(id)) {
+        return next();
+    }
+
+    // Find file starting with this ID in uploads directory
+    fs.readdir(uploadsDir, (err, files) => {
+        if (err) {
+            console.error('[READ DIR ERROR]', err);
+            return next();
+        }
+
+        const file = files.find(f => f.startsWith(id + '.'));
+        if (file) {
+            const filePath = path.join(uploadsDir, file);
+            res.sendFile(filePath);
+        } else {
+            // Not found in uploads, proceed to next route (maybe React route)
+            next();
         }
     });
 });
@@ -91,10 +186,6 @@ app.use((err, req, res, next) => {
     next();
 });
 
-// API: Generic mock for other endpoints
-// Removing wildcard route temporarily to fix path-to-regexp issues in Express 5 environment
-// app.post('/api/:path*', (req, res) => { ... });
-
 // Catch-all: Serve index.html for React Router (SPA)
 // Note: Using RegExp for compatibility with newer Express/path-to-regexp where strings are strict
 app.get(/.*/, (req, res) => {
@@ -110,6 +201,6 @@ app.listen(PORT, '0.0.0.0', () => {
 🚀 Server running on http://0.0.0.0:${PORT}
 📂 Serving static files from ${distPath}
 📂 Uploads directory: ${uploadsDir}
+🔗 Custom Domain Base: ${CUSTOM_DOMAIN}
     `);
 });
-

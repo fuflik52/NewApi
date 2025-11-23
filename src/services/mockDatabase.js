@@ -168,6 +168,40 @@ class MockDatabase {
   async getImagesByToken(token) {
     await new Promise(resolve => setTimeout(resolve, 800)); // Simulate network
 
+    try {
+        // Try fetching from real backend API first if running in browser
+        const apiUrl = '/api/images/list'; // Relative path works if proxied or same origin
+        
+        // Determine full URL if needed (dev environment)
+        const fullUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+           ? 'http://localhost:3000/api/images/list'
+           : apiUrl;
+
+        const res = await fetch(`${fullUrl}?key=${token}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            // Transform data to match existing frontend format if server structure differs slightly
+            // Server returns: { id, url, size (MB), name, uploaded_at } which matches well.
+            // Ensure url is absolute if needed or use as is.
+            
+            // Map server URLs to be usable from frontend
+            return data.map(img => ({
+                ...img,
+                // If server returns http://bublickrust/..., and we can't resolve it locally without hosts file,
+                // we might want to fallback to a proxied URL for display?
+                // For now, trust the server URL or replace with localhost for preview if it's bublickrust
+                url: img.url.replace('http://bublickrust', 'http://localhost:3000') 
+            }));
+        }
+    } catch (e) {
+        console.warn("Failed to fetch from real API, falling back to mock", e);
+    }
+
     const existing = this.images.filter(img => img.token === token);
     
     // ONLY generate demo images for the SPECIFIC test key
