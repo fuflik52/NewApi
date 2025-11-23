@@ -21,11 +21,11 @@
     [data-theme="monokai"] {
       /* MONOKAI Theme */
       --bg-color: #272822;
-      --glass-panel: rgba(62, 61, 50, 0.8); /* #3e3d32 */
+      --glass-panel: rgba(62, 61, 50, 0.8);
       --glass-border: #75715e;
       --text-main: #f8f8f2;
       --text-muted: #cfcfc2;
-      --accent-color: #f92672; /* Pink */
+      --accent-color: #f92672;
       --btn-primary-bg: #f92672;
       --btn-primary-text: #ffffff;
     }
@@ -53,7 +53,7 @@
       transition: background 0.3s ease, color 0.3s ease;
     }
 
-    /* Background Stars (Only for Cosmic) */
+    /* Background Stars */
     body:not([data-theme="monokai"])::before {
       content: ''; position: fixed; inset: 0;
       background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.03) 0%, transparent 60%);
@@ -100,6 +100,42 @@
     .page { display: none; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
     .page.active { display: block; }
 
+    /* Auth Screen Specifics */
+    #page-auth {
+        display: none;
+        height: 100%;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    #page-auth.active { display: flex; }
+
+    .auth-logo {
+        font-size: 24px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.03em;
+        background: linear-gradient(to right, #fff, rgba(255,255,255,0.5));
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    [data-theme="monokai"] .auth-logo {
+        background: linear-gradient(to right, #f92672, #fff);
+        -webkit-background-clip: text;
+    }
+
+    /* User Profile Card */
+    .user-profile {
+        display: flex; align-items: center; gap: 12px;
+        padding: 12px; background: var(--glass-panel);
+        border: 1px solid var(--glass-border); border-radius: 12px;
+        margin-bottom: 24px;
+    }
+    .user-avatar {
+        width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.1);
+        object-fit: cover;
+    }
+    .user-info { flex: 1; text-align: left; }
+    .user-name { font-weight: 600; font-size: 12px; color: var(--text-main); }
+    .user-role { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
+
     /* Section Headers */
     .section-header {
       display: flex; align-items: center; gap: 8px;
@@ -128,15 +164,13 @@
     .option-label { font-size: 11px; font-weight: 500; color: var(--text-muted); transition: all 0.2s; }
     
     .option-card input:checked + .option-content {
-      background: rgba(255, 255, 255, 0.1); /* Generic highlight */
+      background: rgba(255, 255, 255, 0.1);
       border-color: var(--accent-color);
       box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     }
-    /* Specific theme override for Monokai checked state */
     [data-theme="monokai"] .option-card input:checked + .option-content {
         background: rgba(249, 38, 114, 0.1);
     }
-
     .option-card input:checked + .option-content .option-icon,
     .option-card input:checked + .option-content .option-label { color: var(--text-main); }
     .option-card input:checked + .option-content .option-icon { 
@@ -154,6 +188,7 @@
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); margin-top: 10px;
     }
     .btn-main:hover { transform: translateY(-2px); filter: brightness(1.1); }
+    .btn-main:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     .btn-main svg { width: 18px; height: 18px; }
 
     .btn-secondary {
@@ -207,7 +242,10 @@
         border: 1px solid var(--glass-border); border-radius: 20px;
         display: flex; justify-content: space-between; padding: 6px;
         box-shadow: 0 10px 40px rgba(0,0,0,0.5); z-index: 100;
+        transition: transform 0.3s ease;
     }
+    .navbar.hidden { transform: translateX(-50%) translateY(100px); }
+
     .nav-btn {
         flex: 1; background: transparent; border: none; color: var(--text-muted);
         padding: 10px; border-radius: 14px; cursor: pointer;
@@ -245,29 +283,17 @@
     .eye-btn svg { width: 16px; height: 16px; }
 
     .help-link {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: var(--glass-panel);
-        border: 1px solid var(--glass-border);
-        border-radius: 12px;
-        padding: 12px 16px;
-        margin-top: 10px;
-        text-decoration: none;
-        font-size: 11px;
-        color: var(--text-muted);
-        transition: all 0.2s;
+        display: flex; align-items: center; justify-content: space-between;
+        background: var(--glass-panel); border: 1px solid var(--glass-border);
+        border-radius: 12px; padding: 12px 16px; margin-top: 10px;
+        text-decoration: none; font-size: 11px; color: var(--text-muted);
+        transition: all 0.2s; width: 100%; box-sizing: border-box;
     }
     .help-link:hover {
-        border-color: var(--accent-color);
-        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--accent-color); background: rgba(255, 255, 255, 0.05);
         color: var(--text-main);
     }
-    .help-link span {
-        color: var(--accent-color);
-        font-weight: 600;
-        text-decoration: none;
-    }
+    .help-link span { color: var(--accent-color); font-weight: 600; text-decoration: none; }
 
   </style>
 </head>
@@ -278,8 +304,29 @@
 
   <div class="content-container">
     
+    <!-- PAGE: AUTH (LOGIN) -->
+    <div id="page-auth" class="page active">
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; width: 100%;">
+            <div class="auth-logo">BUBLICK RUST</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 24px;">Подключите аккаунт для работы</div>
+
+            <div class="input-wrapper">
+                <input type="password" id="auth-token" class="input-field" placeholder="Вставьте API Ключ (sk_live_...)">
+            </div>
+
+            <button class="btn-main" id="btn-login" onclick="login()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+                ВОЙТИ
+            </button>
+
+            <a href="https://bublickrust.ru/dashboard/api" target="_blank" class="help-link">
+                Нет ключа? <span>Получить в Dashboard</span>
+            </a>
+        </div>
+    </div>
+
     <!-- PAGE: GENERATE -->
-    <div id="page-gen" class="page active">
+    <div id="page-gen" class="page">
       
       <div class="section-header">
         <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
@@ -361,19 +408,27 @@
 
     <!-- PAGE: SETTINGS -->
     <div id="page-settings" class="page">
-        <div class="section-header"><span class="section-title">Конфигурация API</span></div>
+        <div class="section-header"><span class="section-title">Аккаунт</span></div>
         
-        <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">API Ключ (BublickRust):</div>
-        
+        <!-- User Profile -->
+        <div class="user-profile" id="user-profile-container">
+            <img src="" class="user-avatar" id="user-avatar" alt="">
+            <div class="user-info">
+                <div class="user-name" id="user-name">Загрузка...</div>
+                <div class="user-role" id="user-role">Пользователь</div>
+            </div>
+            <button onclick="logout()" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; padding:8px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            </button>
+        </div>
+
+        <div class="section-header"><span class="section-title">API Ключ</span></div>
         <div class="input-wrapper">
-            <input type="password" id="api-token" class="input-field" placeholder="sk_live_..." oninput="saveToken()">
+            <input type="password" id="api-token" class="input-field" placeholder="sk_live_..." readonly>
             <button class="eye-btn" onclick="toggleTokenVisibility()">
                 <svg id="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
             </button>
         </div>
-        <a href="https://bublickrust.ru/dashboard/api" target="_blank" class="help-link">
-            Где взять ключ? <span>bublickrust.ru/dashboard/api</span>
-        </a>
 
         <div class="section-header" style="margin-top:30px;"><span class="section-title">Тема Оформления</span></div>
         <div class="options-grid">
@@ -395,14 +450,14 @@
         
         <div style="margin-top:24px; padding:16px; background:var(--glass-panel); border-radius:12px; text-align:center;">
             <div style="font-size:14px; font-weight:700; color:var(--text-main);">Bublick UI Exporter</div>
-            <div style="font-size:10px; color:var(--text-muted); margin-top:4px;">Version 3.3.0</div>
+            <div style="font-size:10px; color:var(--text-muted); margin-top:4px;">Version 3.4.0</div>
         </div>
     </div>
 
   </div>
 
   <!-- NAVBAR -->
-  <div class="navbar">
+  <div class="navbar hidden" id="main-navbar">
     <button class="nav-btn active" onclick="switchTab('gen', this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
         <span class="nav-label">Главная</span>
@@ -422,6 +477,94 @@
     let generatedCSharp = '';
     let frameName = 'Plugin';
     let cachedImages = [];
+    let currentUser = null;
+    let currentToken = '';
+
+    // --- AUTH LOGIC ---
+    
+    async function verifyAndLogin(token) {
+        if (!token) return false;
+        
+        try {
+            // Show loading state if initiating from login button
+            const loginBtn = document.getElementById('btn-login');
+            if(loginBtn) { loginBtn.innerHTML = 'ПРОВЕРКА...'; loginBtn.disabled = true; }
+
+            const res = await fetch('https://bublickrust.ru/api/user/me', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                if (data.success && data.user) {
+                    // SUCCESS
+                    currentUser = data.user;
+                    currentToken = token;
+                    
+                    // Save to Figma Storage
+                    parent.postMessage({ pluginMessage: { type: 'save-token', apiToken: token } }, '*');
+                    
+                    // Update UI
+                    document.getElementById('api-token').value = token;
+                    document.getElementById('user-name').textContent = currentUser.username || 'User';
+                    document.getElementById('user-role').textContent = currentUser.is_admin ? 'ADMIN' : 'Пользователь';
+                    if (currentUser.avatar) {
+                        document.getElementById('user-avatar').src = `https://cdn.discordapp.com/avatars/${currentUser.id}/${currentUser.avatar}.png`;
+                    } else {
+                        document.getElementById('user-avatar').style.backgroundColor = '#777';
+                    }
+
+                    // Switch to Main App
+                    showMainApp();
+                    showToast(`Добро пожаловать, ${currentUser.username}!`, 'success');
+                    return true;
+                }
+            }
+            throw new Error('Invalid token');
+        } catch (e) {
+            console.error(e);
+            showAuthScreen();
+            if(document.getElementById('auth-token').value) showToast('Неверный ключ API', 'error');
+            return false;
+        } finally {
+            const loginBtn = document.getElementById('btn-login');
+            if(loginBtn) { 
+                loginBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg> ВОЙТИ'; 
+                loginBtn.disabled = false; 
+            }
+        }
+    }
+
+    function login() {
+        const token = document.getElementById('auth-token').value.trim();
+        if(!token) { showToast('Введите ключ!', 'error'); return; }
+        verifyAndLogin(token);
+    }
+
+    function logout() {
+        currentUser = null;
+        currentToken = '';
+        document.getElementById('api-token').value = '';
+        document.getElementById('auth-token').value = '';
+        parent.postMessage({ pluginMessage: { type: 'save-token', apiToken: '' } }, '*');
+        showAuthScreen();
+        showToast('Вы вышли из аккаунта');
+    }
+
+    function showAuthScreen() {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById('page-auth').classList.add('active');
+        document.getElementById('main-navbar').classList.add('hidden');
+    }
+
+    function showMainApp() {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById('page-gen').classList.add('active');
+        document.getElementById('main-navbar').classList.remove('hidden');
+        // Reset navbar active state
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.nav-btn')[0].classList.add('active');
+    }
 
     // --- THEME LOGIC ---
     function changeTheme(theme) {
@@ -430,7 +573,6 @@
         } else {
             document.body.removeAttribute('data-theme');
         }
-        // Instead of manual save, we use the unified saveSettings
         saveSettings();
     }
 
@@ -487,6 +629,8 @@
     }
 
     function saveToken() {
+        // This function is now only used if manual editing in settings is allowed
+        // But generally token is managed via login
         const token = document.getElementById('api-token').value;
         parent.postMessage({ pluginMessage: { type: 'save-token', apiToken: token } }, '*');
     }
@@ -505,13 +649,13 @@
     }
 
     function generateCode() {
-        const token = document.getElementById('api-token').value;
+        const token = currentToken; // Use verified token
         const assetMode = document.querySelector('input[name="asset-mode"]:checked').value;
         const anchorMode = document.querySelector('input[name="anchor-mode"]:checked').value;
 
         if (assetMode === 'urls' && !token) {
-            showToast('Введите API токен в настройках!', 'error');
-            switchTab('settings', document.querySelectorAll('.nav-btn')[2]);
+            showToast('Ошибка авторизации!', 'error');
+            logout();
             return;
         }
 
@@ -536,8 +680,8 @@
     function alignTextToRectangles() { parent.postMessage({ pluginMessage: { type: 'align-text-to-rectangles' } }, '*'); }
     function alignTextHeights() { parent.postMessage({ pluginMessage: { type: 'align-text-heights' } }, '*'); }
     function handleTestUpload() { 
-        const token = document.getElementById('api-token').value;
-        if(!token) { showToast('Введите токен!', 'error'); return; }
+        const token = currentToken;
+        if(!token) { showToast('Сначала войдите!', 'error'); return; }
         parent.postMessage({ pluginMessage: { type: 'test-upload', apiToken: token } }, '*'); 
     }
 
@@ -602,10 +746,6 @@
     window.onmessage = (event) => {
         const msg = event.data.pluginMessage;
         if (msg.type === 'init') {
-            if (msg.token) {
-                document.getElementById('api-token').value = msg.token;
-                showToast('Токен загружен', 'success');
-            }
             if (msg.settings) {
                 if(msg.settings.assetMode) document.querySelector(`input[name="asset-mode"][value="${msg.settings.assetMode}"]`).checked = true;
                 if(msg.settings.anchorMode) document.querySelector(`input[name="anchor-mode"][value="${msg.settings.anchorMode}"]`).checked = true;
@@ -613,6 +753,12 @@
                     document.querySelector(`input[name="theme"][value="${msg.settings.theme}"]`).checked = true;
                     changeTheme(msg.settings.theme);
                 }
+            }
+            // Check if token exists and verify it
+            if (msg.token) {
+                verifyAndLogin(msg.token);
+            } else {
+                showAuthScreen();
             }
         }
         else if (msg.type === 'log') { addLog(msg.message); }
