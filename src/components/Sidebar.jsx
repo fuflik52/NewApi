@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Server, Settings, LogOut, Rocket, X, Image, Users } from 'lucide-react';
+import { LayoutDashboard, Server, Settings, LogOut, Rocket, X, Image, Users, Sword } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const Sidebar = ({ isOpen, onClose }) => {
@@ -24,6 +24,7 @@ const Sidebar = ({ isOpen, onClose }) => {
   const menuItems = [
     // Only show Dashboard/Overview to admins
     ...(isAdmin ? [{ icon: LayoutDashboard, label: 'Обзор', path: '/dashboard' }] : []),
+    { icon: Sword, label: 'Base Invaders', path: '/dashboard/base-invaders' },
     { icon: Server, label: 'API Центр', path: '/dashboard/api' },
     { icon: Image, label: 'Галерея', path: '/dashboard/gallery' },
     ...(isAdmin ? [{ icon: Users, label: 'Все пользователи', path: '/dashboard/users' }] : []),

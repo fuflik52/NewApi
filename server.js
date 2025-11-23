@@ -510,6 +510,112 @@ app.get('/api/user/analytics', verifyToken, async (req, res) => {
     }
 });
 
+        res.json({
+            data: chartData,
+            total: total
+        });
+
+    } catch (err) {
+        console.error('User Analytics Error:', err);
+        res.status(500).json({ error: 'Analytics failed' });
+    }
+});
+
+// --- BASE INVADERS API ---
+
+// Search Users
+app.get('/api/users/search', verifyToken, async (req, res) => {
+    const { q } = req.query;
+    if (!q || q.length < 2) return res.json([]);
+
+    try {
+        const { data } = await supabase
+            .from('users')
+            .select('id, username, discriminator, avatar')
+            .ilike('username', `%${q}%`)
+            .neq('id', req.user.id) // Exclude self
+            .limit(5);
+        res.json(data || []);
+    } catch (err) {
+        res.status(500).json({ error: 'Search error' });
+    }
+});
+
+// Get My Team & Invites
+app.get('/api/invaders/state', verifyToken, async (req, res) => {
+    const myId = req.user.id;
+    try {
+        // 1. Get pending invites received (for bell notification)
+        const { data: pendingReceived } = await supabase
+            .from('team_invites')
+            .select('*, sender:users!sender_id(username, avatar)')
+            .eq('receiver_id', myId)
+            .eq('status', 'pending');
+
+        // 2. Get my team slots (people I invited + accepted) OR (team I joined)
+        // Check if I am a captain (sent invites that are accepted)
+        // For MVP: Just show "My Lobby" -> people I invited.
+        
+        const { data: mySentInvites } = await supabase
+            .from('team_invites')
+            .select('*, receiver:users!receiver_id(username, avatar, discriminator)')
+            .eq('sender_id', myId);
+
+        res.json({
+            invites: pendingReceived || [],
+            team: mySentInvites || [] 
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'State error' });
+    }
+});
+
+// Send Invite
+app.post('/api/invaders/invite', verifyToken, async (req, res) => {
+    const { receiver_id } = req.body;
+    const sender_id = req.user.id;
+
+    if(receiver_id === sender_id) return res.status(400).json({ error: 'Cannot invite self' });
+
+    try {
+        // Check duplicates
+        const { data: existing } = await supabase.from('team_invites')
+            .select('*')
+            .eq('sender_id', sender_id)
+            .eq('receiver_id', receiver_id)
+            .single();
+        
+        if(existing) return res.status(400).json({ error: 'Already invited' });
+
+        const { error } = await supabase.from('team_invites').insert({
+            sender_id, receiver_id, status: 'pending'
+        });
+
+        if (error) throw error;
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Invite failed' });
+    }
+});
+
+// Respond to Invite
+app.post('/api/invaders/respond', verifyToken, async (req, res) => {
+    const { invite_id, action } = req.body; // action: 'accept' or 'reject'
+    
+    try {
+        const { error } = await supabase.from('team_invites')
+            .update({ status: action === 'accept' ? 'accepted' : 'rejected' })
+            .eq('id', invite_id)
+            .eq('receiver_id', req.user.id); // Security check
+
+        if (error) throw error;
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Action failed' });
+    }
+});
+
 // NEW: Analytics Endpoint for Graphs (Admin)
 app.get('/api/analytics', verifyToken, async (req, res) => {
     if (!req.user.is_admin) return res.status(403).json({ error: 'Forbidden' });

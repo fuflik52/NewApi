@@ -7,6 +7,7 @@ import ApiPage from './pages/ApiPage';
 import ApiDocs from './pages/ApiDocs';
 import Settings from './pages/Settings';
 import Gallery from './pages/Gallery';
+import BaseInvaders from './pages/BaseInvaders'; // Import BaseInvaders
 import ApiTest from './pages/ApiTest'; // Import ApiTest
 import AdminUsers from './pages/AdminUsers'; // Import AdminUsers
 import Layout from './layouts/Layout';
@@ -21,6 +22,7 @@ function App() {
           <Route path="/" element={<Auth />} />
           <Route path="/dashboard" element={<Layout />}>
             <Route index element={<Dashboard />} />
+            <Route path="base-invaders" element={<BaseInvaders />} /> {/* New Route */}
             <Route path="api" element={<ApiPage />} />
             <Route path="api/docs" element={<ApiDocs />} />
             <Route path="api/test" element={<ApiTest />} /> {/* New Test Route */}
