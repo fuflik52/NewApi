@@ -411,12 +411,17 @@
     .chart-container {
         width: 100%; height: 140px; 
         margin-top: 16px;
-        background: var(--glass-panel);
+        background: rgba(255, 255, 255, 0.02); /* More transparent than glass-panel to show body grid */
         border: 1px solid var(--glass-border);
         border-radius: var(--radius);
         position: relative;
         padding: 0; box-sizing: border-box;
         overflow: hidden;
+    }
+
+    [data-theme="monokai"] .chart-container {
+        background: rgba(62, 61, 50, 0.25); /* Transparent Monokai bg to show grid */
+        border-color: #75715e;
     }
     
     /* Grid Background for Chart REMOVED */
