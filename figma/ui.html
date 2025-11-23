@@ -811,7 +811,10 @@
         const btn = document.getElementById('generate-btn');
         btn.disabled = true; btn.innerHTML = 'ГЕНЕРАЦИЯ...';
         
-        document.getElementById('code-window').classList.remove('visible');
+        const codeWin = document.getElementById('code-window');
+        codeWin.classList.remove('visible');
+        codeWin.style.display = 'none'; // Force hide
+        
         document.getElementById('log-window').innerHTML = '';
         addLog('Начало генерации...', 'info');
         cachedImages = [];
@@ -960,7 +963,10 @@
             for(let i=1; i<=lines; i++) nums += i + '<br>';
             document.getElementById('line-numbers').innerHTML = nums;
 
-            document.getElementById('code-window').classList.add('visible');
+            const win = document.getElementById('code-window');
+            win.style.display = 'block'; // Override inline style
+            win.classList.add('visible');
+            
             showToast('Код успешно сгенерирован!', 'success');
             const btn = document.getElementById('generate-btn');
             btn.disabled = false; btn.innerHTML = 'СГЕНЕРИРОВАТЬ C#';
