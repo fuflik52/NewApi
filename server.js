@@ -85,6 +85,16 @@ setupDatabase().then(() => {
 
 // API Routes
 
+// API: Ping (CORS test)
+app.get('/api/ping', (req, res) => {
+    res.json({ 
+        success: true, 
+        message: 'Pong!', 
+        origin: req.headers.origin || 'no-origin',
+        cors_headers: res.getHeaders ? res.getHeaders() : 'unknown' 
+    });
+});
+
 // API: Upload Image
 app.post('/api/images/upload', upload.single('image'), (req, res) => {
     const authHeader = req.headers.authorization;
