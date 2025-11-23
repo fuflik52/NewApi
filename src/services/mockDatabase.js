@@ -190,13 +190,26 @@ class MockDatabase {
             // Ensure url is absolute if needed or use as is.
             
             // Map server URLs to be usable from frontend
-            return data.map(img => ({
+            const mappedData = data.map(img => ({
                 ...img,
                 // If server returns http://bublickrust/..., and we can't resolve it locally without hosts file,
                 // we might want to fallback to a proxied URL for display?
                 // For now, trust the server URL or replace with localhost for preview if it's bublickrust
                 url: img.url.replace('http://bublickrust', 'http://localhost:3000') 
             }));
+
+            // Also sync these to local storage for backup/persistence
+            // Filter out old entries for this token first to avoid duplicates
+            this.images = this.images.filter(img => img.token !== token);
+            // Add new ones from server
+            const serverImages = mappedData.map(img => ({
+                ...img,
+                token: token
+            }));
+            this.images = [...this.images, ...serverImages];
+            this.saveToStorage('api_images', this.images);
+
+            return mappedData;
         }
     } catch (e) {
         console.warn("Failed to fetch from real API, falling back to mock", e);

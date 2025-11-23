@@ -4,9 +4,13 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import db, { setupDatabase } from './database/db.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Initialize Database
+setupDatabase();
 
 const app = express();
 const PORT = 3000;
@@ -27,6 +31,9 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 // Metadata storage (Simple JSON file for demo purposes)
+// Removed: Using SQLite instead (see database/db.js)
+
+/*
 const METADATA_FILE = path.join(__dirname, 'uploads_metadata.json');
 let uploadsMetadata = [];
 
@@ -43,6 +50,7 @@ if (fs.existsSync(METADATA_FILE)) {
 function saveMetadata() {
     fs.writeFileSync(METADATA_FILE, JSON.stringify(uploadsMetadata, null, 2));
 }
+*/
 
 // Serve uploads statically (keep this for backward compatibility or debugging)
 app.use('/uploads', express.static(uploadsDir));
@@ -86,20 +94,27 @@ app.post('/api/images/upload', upload.single('image'), (req, res) => {
     // Use custom domain as requested
     const directUrl = `${CUSTOM_DOMAIN}/${fileId}`;
 
-    const fileData = {
-        id: fileId,
-        filename: req.file.filename,
-        originalname: req.file.originalname,
-        size: req.file.size,
-        mimetype: req.file.mimetype,
-        url: directUrl,
-        uploaded_at: new Date().toISOString(),
-        token: token // Store which token uploaded this
-    };
-
-    // Save metadata
-    uploadsMetadata.push(fileData);
-    saveMetadata();
+    // Insert into SQLite
+    const stmt = db.prepare('INSERT INTO uploads (id, filename, originalname, size, mimetype, url, token, uploaded_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+    const now = new Date().toISOString();
+    
+    stmt.run(
+        fileId,
+        req.file.filename,
+        req.file.originalname,
+        req.file.size,
+        req.file.mimetype,
+        directUrl,
+        token,
+        now,
+        (err) => {
+            if (err) {
+                console.error('[DB ERROR] Failed to save upload metadata', err);
+                // Don't fail request, but log it
+            }
+            stmt.finalize();
+        }
+    );
 
     console.log(`[UPLOAD] File saved: ${req.file.filename} -> ${directUrl} (${req.file.size} bytes)`);
 
@@ -128,21 +143,25 @@ app.get('/api/images/list', (req, res) => {
     
     const token = authHeader ? authHeader.split(' ')[1] : req.query.key;
     
-    // Filter images by token
-    const userImages = uploadsMetadata.filter(img => img.token === token);
-    
-    // Map to frontend expected format if needed, or return as is
-    // The frontend expects: { id, url, size (MB), name, uploaded_at }
-    const responseImages = userImages.map(img => ({
-        id: img.id,
-        url: img.url,
-        // Convert bytes to MB with 1 decimal
-        size: parseFloat((img.size / (1024 * 1024)).toFixed(2)), 
-        name: img.originalname,
-        uploaded_at: img.uploaded_at
-    }));
+    // Get images from SQLite
+    db.all('SELECT * FROM uploads WHERE token = ? ORDER BY uploaded_at DESC', [token], (err, rows) => {
+        if (err) {
+            console.error('[DB ERROR] Fetch images failed', err);
+            return res.status(500).json({ success: false, error: 'Database Error' });
+        }
 
-    res.json(responseImages);
+        // Map to frontend expected format
+        const responseImages = rows.map(img => ({
+            id: img.id,
+            url: img.url,
+            // Convert bytes to MB with 1 decimal
+            size: parseFloat((img.size / (1024 * 1024)).toFixed(2)), 
+            name: img.originalname,
+            uploaded_at: img.uploaded_at
+        }));
+
+        res.json(responseImages);
+    });
 });
 
 
