@@ -544,15 +544,16 @@ app.get('/api/admin/figma/users', verifyToken, async (req, res) => {
                     user_id: log.user_id,
                     last_active: log.created_at,
                     usage_count: 0,
-                    // We can try to parse query params from endpoint if we stored them full path
-                    // e.g. /api/user/analytics?range=24h&file=...
-                    figma_file_name: 'Unknown Project' 
+                    figma_file_name: null,
+                    figma_file_id: null
                 };
             }
             userMap[log.user_id].usage_count++;
             
+            // Only set file name/id if not already set (because logs are ordered newest first)
+            
             // Try to extract file name if present in URL (future proofing)
-            if (log.endpoint.includes('file_name=')) {
+            if (!userMap[log.user_id].figma_file_name && log.endpoint.includes('file_name=')) {
                 try {
                     const match = log.endpoint.match(/file_name=([^&]+)/);
                     if (match) userMap[log.user_id].figma_file_name = decodeURIComponent(match[1]);
@@ -560,7 +561,7 @@ app.get('/api/admin/figma/users', verifyToken, async (req, res) => {
             }
 
              // Try to extract file key if present
-             if (log.endpoint.includes('file_key=')) {
+             if (!userMap[log.user_id].figma_file_id && log.endpoint.includes('file_key=')) {
                 try {
                     const match = log.endpoint.match(/file_key=([^&]+)/);
                     if (match) userMap[log.user_id].figma_file_id = match[1];
