@@ -28,7 +28,7 @@ app.use(cors({
 }));
 
 // Explicit OPTIONS handler for preflight with the same config
-app.options('*', cors({
+app.options(/.*/, cors({
     origin: function (origin, callback) {
         if (!origin || origin === 'null') return callback(null, true);
         return callback(null, true);
