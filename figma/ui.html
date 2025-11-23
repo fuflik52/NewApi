@@ -626,59 +626,55 @@
     }
     .help-link span { color: var(--accent-color); font-weight: 600; text-decoration: none; }
 
-    /* OFFLINE OVERLAY - 3D STYLE */
+    /* OFFLINE OVERLAY - CLEAN & MODERN */
     #offline-overlay {
         position: fixed; inset: 0; z-index: 99999;
-        background: rgba(0,0,0,0.85); backdrop-filter: blur(15px);
+        background: rgba(0,0,0,0.8); backdrop-filter: blur(12px);
         display: none; align-items: center; justify-content: center;
-        perspective: 1000px;
-        transition: opacity 0.3s;
+        opacity: 0; transition: opacity 0.3s ease;
     }
-    #offline-overlay.visible { display: flex; }
+    #offline-overlay.visible { display: flex; opacity: 1; }
 
     .offline-card {
-        background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
-        padding: 40px 60px;
-        border-radius: 24px;
-        border: 1px solid rgba(255, 77, 77, 0.3);
+        background: #141414;
+        padding: 32px 48px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
         box-shadow: 
-            0 25px 50px -12px rgba(0, 0, 0, 0.5),
-            0 0 30px rgba(255, 77, 77, 0.1),
-            inset 0 0 20px rgba(0, 0, 0, 0.8);
+            0 20px 40px rgba(0,0,0,0.6),
+            0 0 0 1px rgba(0,0,0,0.3); /* Inner sharp border */
         text-align: center;
-        transform-style: preserve-3d;
-        animation: floatCard 6s ease-in-out infinite;
-        position: relative;
+        display: flex; flex-direction: column; align-items: center;
+        transform: translateY(0);
+        animation: floatSimple 4s ease-in-out infinite;
+        min-width: 280px;
+    }
+    
+    .offline-icon-box {
+        width: 56px; height: 56px;
+        background: rgba(255, 77, 77, 0.1);
+        border-radius: 16px;
+        display: flex; align-items: center; justify-content: center;
+        margin-bottom: 16px;
+        color: #ff4d4d;
+        border: 1px solid rgba(255, 77, 77, 0.2);
+    }
+    
+    .offline-icon-box svg { width: 28px; height: 28px; }
+
+    .offline-title {
+        font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 6px;
+        letter-spacing: -0.01em;
+    }
+    
+    .offline-desc {
+        font-size: 12px; color: #888; font-weight: 400;
     }
 
-    /* Red Glow Border Effect */
-    .offline-card::after {
-        content: ''; position: absolute; inset: -2px;
-        border-radius: 26px;
-        background: linear-gradient(45deg, transparent 40%, rgba(255, 77, 77, 0.6), transparent 60%);
-        z-index: -1;
-        filter: blur(5px);
-        animation: borderShine 3s linear infinite;
+    @keyframes floatSimple {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-4px); }
     }
-
-    .offline-icon { 
-        font-size: 48px; margin-bottom: 20px; 
-        filter: drop-shadow(0 0 10px rgba(255, 77, 77, 0.5));
-        animation: pulse 2s infinite; 
-    }
-    
-    @keyframes floatCard {
-        0%, 100% { transform: translateY(0) rotateX(0); }
-        50% { transform: translateY(-10px) rotateX(5deg); }
-    }
-    
-    @keyframes borderShine {
-        0% { opacity: 0.3; }
-        50% { opacity: 0.8; }
-        100% { opacity: 0.3; }
-    }
-    
-    @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
 
   </style>
 </head>
@@ -688,9 +684,11 @@
   <!-- OFFLINE OVERLAY -->
   <div id="offline-overlay">
     <div class="offline-card">
-      <div class="offline-icon">🔌</div>
-      <div style="font-size: 20px; font-weight: 800; color: #ff4d4d; letter-spacing: 0.1em; text-shadow: 0 2px 10px rgba(255,77,77,0.3);">СЕРВЕР НЕДОСТУПЕН</div>
-      <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 8px; font-family: monospace;">Ожидание подключения...</div>
+        <div class="offline-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line><line x1="17.6" y1="17.6" x2="22" y2="22"></line><line x1="6.4" y1="17.6" x2="2" y2="22"></line></svg>
+        </div>
+        <div class="offline-title">Соединение разорвано</div>
+        <div class="offline-desc">Сервер недоступен. Повторное подключение...</div>
     </div>
   </div>
 
