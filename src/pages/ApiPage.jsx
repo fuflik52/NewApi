@@ -271,7 +271,7 @@ print(response.json())`
       {/* Token List */}
       <div className="space-y-4">
         {loading ? (
-            <div className="text-center p-8 text-text-muted">Loading keys...</div>
+            <Loader />
         ) : tokens.length === 0 ? (
             <div className="glass-panel p-12 rounded-2xl text-center">
                 <Key className="w-12 h-12 text-text-muted mx-auto mb-4" />

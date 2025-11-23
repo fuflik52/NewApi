@@ -9,6 +9,7 @@ import Settings from './pages/Settings';
 import Gallery from './pages/Gallery';
 import ApiTest from './pages/ApiTest'; // Import ApiTest
 import AdminUsers from './pages/AdminUsers'; // Import AdminUsers
+import AdminFigma from './pages/AdminFigma'; // Import AdminFigma
 import Layout from './layouts/Layout';
 import { ThemeProvider } from './context/ThemeContext';
 import './index.css';
@@ -26,6 +27,7 @@ function App() {
             <Route path="api/test" element={<ApiTest />} /> {/* New Test Route */}
             <Route path="gallery" element={<Gallery />} />
             <Route path="users" element={<AdminUsers />} />
+            <Route path="figma" element={<AdminFigma />} />
             <Route path="settings" element={<Settings />} />
           </Route>
           {/* Catch all */}

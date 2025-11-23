@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Server, Settings, LogOut, Rocket, X, Image, Users } from 'lucide-react';
+import { LayoutDashboard, Server, Settings, LogOut, Rocket, X, Image, Users, Figma } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const Sidebar = ({ isOpen, onClose }) => {
@@ -27,6 +27,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     { icon: Server, label: 'API Центр', path: '/dashboard/api' },
     { icon: Image, label: 'Галерея', path: '/dashboard/gallery' },
     ...(isAdmin ? [{ icon: Users, label: 'Все пользователи', path: '/dashboard/users' }] : []),
+    ...(isAdmin ? [{ icon: Figma, label: 'Figma', path: '/dashboard/figma' }] : []),
     { icon: Settings, label: 'Настройки', path: '/dashboard/settings' },
   ];
 

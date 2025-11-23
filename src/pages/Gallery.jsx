@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Image as ImageIcon, HardDrive, Loader2, AlertCircle, X, Calendar, Copy, Check, Link as LinkIcon, ArrowUpDown, SortAsc, SortDesc, Filter } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { dbService } from '../services/mockDatabase';
+import Loader from '../components/Loader';
 
 const Gallery = () => {
   const [apiKey, setApiKey] = useState('');
@@ -149,6 +150,8 @@ const Gallery = () => {
             </button>
             </div>
         </form>
+        
+        {loading && <Loader />}
 
         {/* Toolbar (Sort/Filter) - Only show if images exist */}
         {images && images.length > 0 && (
