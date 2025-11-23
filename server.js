@@ -14,16 +14,27 @@ const PORT = 3000;
 const CUSTOM_DOMAIN = 'https://bublickrust.ru/img';
 
 // Middleware
-// Enable CORS first to handle preflight requests
+// Configure CORS specifically for Figma plugins (origin: 'null') and web clients
 app.use(cors({
-    origin: '*', // Allow all origins (including null for local files/plugins)
-    methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps, curl, or Figma "null" origin)
+        if (!origin || origin === 'null') return callback(null, true);
+        // Allow any other origin
+        return callback(null, true);
+    },
+    methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+    credentials: true
 }));
 
-// Explicit OPTIONS handler for preflight
-// Note: regex is needed because Express 5+ doesn't support '*' string for options
-app.options(/.*/, cors());
+// Explicit OPTIONS handler for preflight with the same config
+app.options('*', cors({
+    origin: function (origin, callback) {
+        if (!origin || origin === 'null') return callback(null, true);
+        return callback(null, true);
+    },
+    credentials: true
+}));
 
 app.use(express.json());
 
