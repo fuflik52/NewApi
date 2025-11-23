@@ -892,6 +892,13 @@
     async function verifyAndLogin(token) {
         if (!token) return false;
         
+        // Client-side format check
+        if (!token.startsWith('sk_live_')) {
+             showToast('Неверный формат токена (должен начинаться с sk_live_)', 'error');
+             showAuthScreen();
+             return false;
+        }
+
         try {
             // Show loading state if initiating from login button
             const loginBtn = document.getElementById('btn-login');
@@ -904,7 +911,7 @@
             if (res.ok) {
                 const data = await res.json();
                 if (data.success && data.user) {
-                    // SUCCESS
+                    // SUCCESS logic...
                     currentUser = data.user;
                     currentToken = token;
                     
@@ -937,13 +944,12 @@
                     let roleColor = '#aaa';
                     
                     // Check Admin & Plus
-                    // Support multiple casing: is_admin (DB), isAdmin (legacy), role (explicit)
                     const isAdmin = currentUser.is_admin === true || currentUser.isAdmin === true || currentUser.role === 'admin';
                     const isPlus = currentUser.is_plus === true || currentUser.isPlus === true || currentUser.role === 'plus';
 
                     // Reset Classes
                     profileCorner.classList.remove('is-admin', 'is-plus', 'is-user', 'with-glow');
-                    profileCorner.classList.add('with-glow'); // Enable glow for everyone now (colors differ)
+                    profileCorner.classList.add('with-glow'); 
 
                     if (isAdmin) {
                         roleName = 'ADMIN';
@@ -959,11 +965,8 @@
                          profileCorner.classList.add('is-user');
                     }
                     
-                    // Show Upgrade Button if not Plus (Admins can see it too)
                     const upgradeBtn = document.getElementById('btn-upgrade-menu');
                     if (upgradeBtn) {
-                        // Show if NOT Plus OR if Admin (Admin overrides Plus check if needed, or just always show for admin)
-                        // Logic: Hide only if (isPlus AND NOT isAdmin)
                         upgradeBtn.style.display = (isPlus && !isAdmin) ? 'none' : 'flex';
                     }
                     
@@ -971,7 +974,7 @@
                     roleEl.style.color = roleColor;
                     roleEl.style.borderColor = roleColor;
                     roleEl.style.border = `1px solid ${roleColor}`;
-                    roleEl.style.background = `${roleColor}15`; // Low opacity bg
+                    roleEl.style.background = `${roleColor}15`;
 
                     // Switch to Main App
                     showMainApp();
@@ -982,12 +985,27 @@
                     
                     return true;
                 }
+            } else {
+                // Handle Error Responses
+                if (res.status === 401) {
+                    throw new Error('Токен недействителен (401)');
+                } else if (res.status === 404) {
+                    throw new Error('Пользователь не найден (404)');
+                } else {
+                    throw new Error(`Ошибка сервера: ${res.status}`);
+                }
             }
-            throw new Error('Invalid token');
+            throw new Error('Invalid response');
         } catch (e) {
             console.error(e);
             showAuthScreen();
-            if(document.getElementById('auth-token').value) showToast('Неверный ключ API', 'error');
+            
+            // Only show toast if we actually have a token we were trying
+            if(token) showToast(e.message || 'Неверный ключ API', 'error');
+            
+            // Clear invalid token from storage to prevent loops
+            parent.postMessage({ pluginMessage: { type: 'save-token', apiToken: '' } }, '*');
+            
             return false;
         } finally {
             const loginBtn = document.getElementById('btn-login');
@@ -1320,10 +1338,31 @@
 
     function copyCode() {
         if(!generatedCSharp) return;
+        
         const area = document.getElementById('code-output');
-        area.select();
-        document.execCommand('copy');
-        showToast('Код скопирован!', 'success');
+        
+        // Modern Clipboard API
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(generatedCSharp)
+                .then(() => showToast('Код скопирован!', 'success'))
+                .catch(err => {
+                    console.error('Clipboard API failed:', err);
+                    fallbackCopy(area);
+                });
+        } else {
+            fallbackCopy(area);
+        }
+    }
+
+    function fallbackCopy(area) {
+        try {
+            area.select();
+            const success = document.execCommand('copy');
+            if (success) showToast('Код скопирован!', 'success');
+            else showToast('Ошибка копирования (blocked)', 'error');
+        } catch (e) {
+            showToast('Ошибка копирования: ' + e.message, 'error');
+        }
     }
 
     function downloadCodeFile() {
