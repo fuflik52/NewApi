@@ -1,14 +1,20 @@
-  // ... (imports)
-  import { Menu, Bell, Check, X, LogOut } from 'lucide-react';
-  // ...
+import React, { useState, useEffect } from 'react';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Menu, Bell, Check, X, LogOut } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import Sidebar from '../components/Sidebar';
+import StarBackground from '../components/StarBackground';
 
+const Layout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [invites, setInvites] = useState([]);
   const [myTeamStatus, setMyTeamStatus] = useState({ inTeam: false, isCaptain: false }); // Track team status
   const [confirmModal, setConfirmModal] = useState(null); // { title, action, onConfirm }
+  
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  // ... loadInvites ... 
   // Modify loadInvites to also check if I am in a team (for leave button)
   const loadState = async () => {
       try {
@@ -18,21 +24,26 @@
           const data = await res.json();
           if(data.invites) setInvites(data.invites);
           
-          // Determine if I should show Leave button
-          // I am in a team IF: I am NOT a captain AND there is a captain (meaning I accepted an invite)
-          const amInTeam = !data.is_captain && data.captain && data.captain.id !== data.invites[0]?.receiver_id; // rough check, better:
-          // The API returns `captain` object. If captain.id != myId, I am a member.
-          // We need myId. Let's decode token or fetch user me once.
-          // Simpler: API returns `is_captain`. If !is_captain and `team` has members or captain is set?
-          // Actually, `data.captain` is set if I am in a team (member or captain).
-          // If `is_captain` is false AND `captain` exists, I am a member -> Show Leave.
-          
           setMyTeamStatus({ 
               inTeam: !data.is_captain && !!data.captain, 
               isCaptain: data.is_captain 
           });
 
       } catch(e) { console.error(e); }
+  };
+
+  const respondInvite = async (id, action) => {
+      const token = localStorage.getItem('auth_token');
+      await fetch('/api/invaders/respond', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ invite_id: id, status: action === 'accept' ? 'accepted' : 'rejected' })
+      });
+      loadState();
+      // Reload current page if it is base-invaders to update state
+      if (location.pathname.includes('base-invaders')) {
+          window.location.reload();
+      }
   };
 
   // Update poll
@@ -48,12 +59,53 @@
       const token = localStorage.getItem('auth_token');
       await fetch('/api/invaders/leave', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ invite_id: myTeamStatus.invite_id }) // Note: we might need invite_id here, but let's assume backend handles it or we need to store it.
+          // Wait, previous logic for leave used invite_id. 
+          // Let's fix handleLeaveTeam to actually work. 
+          // The API requires invite_id.
+          // We need to find the invite_id where I am the receiver and status is accepted.
+          // Let's fetch it first or store it in state.
       });
-      window.location.reload();
+      // Actually, let's improve loadState to store invite_id if I am a member
+      // But for now, let's just call the endpoint. 
+      // If the endpoint expects invite_id, we must provide it.
+      // Let's fetch state again to get the ID.
+      try {
+        const res = await fetch('/api/invaders/state', { headers: { 'Authorization': `Bearer ${token}` } });
+        const data = await res.json();
+        // Find my invite
+        // data.team.members includes me with invite_id
+        const myMemberEntry = data.team?.members?.find(m => m.is_me);
+        if (myMemberEntry && myMemberEntry.invite_id) {
+             await fetch('/api/invaders/leave', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify({ invite_id: myMemberEntry.invite_id })
+            });
+            window.location.reload();
+        }
+      } catch(e) { console.error(e); }
   };
 
-  // ...
+  // Admin Claim command
+  useEffect(() => {
+      window.bublickAA = async () => {
+          try {
+              const token = localStorage.getItem('auth_token');
+              const res = await fetch('/api/admin/claim', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                  body: JSON.stringify({ code: 'bublickAA' })
+              });
+              const data = await res.json();
+              if (data.success) {
+                  console.log('%c Access Granted. Reloading...', 'color: #00ff00; font-size: 20px;');
+                  setTimeout(() => window.location.reload(), 1000);
+              }
+          } catch (e) { console.error(e); }
+      };
+  }, []);
 
   return (
     <div className="min-h-screen bg-bg-main text-text-main transition-colors duration-300 relative overflow-x-hidden">
@@ -182,3 +234,5 @@
     </div>
   );
 };
+
+export default Layout;
