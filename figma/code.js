@@ -3181,6 +3181,7 @@ async function uploadImagesForCSS(root, token) {
 
       imagesPayload.push({
         nodeId: node.id,
+        hash: node.id, // Add hash for UI mapping
         bytes: Array.from(bytes),
         filename: finalFileName,
         mime: 'image/png'
@@ -3197,56 +3198,31 @@ async function uploadImagesForCSS(root, token) {
     return emptyMap;
   }
 
-  // Загружаем на сервер по частям (по 5 изображений)
-  const resultMap = new Map();
-  const chunkSize = 5;
-  const totalChunks = Math.ceil(imagesPayload.length / chunkSize);
-
-  figma.ui.postMessage({ type: 'log', message: `📤 Загружаю ${imagesPayload.length} изображений (по ${chunkSize} за раз)...` });
-
-  for (let i = 0; i < imagesPayload.length; i += chunkSize) {
-    const chunk = imagesPayload.slice(i, i + chunkSize);
-    const chunkNum = Math.floor(i / chunkSize) + 1;
-
-    figma.ui.postMessage({ type: 'log', message: `📤 Загружаю пакет ${chunkNum}/${totalChunks} (${chunk.length} изображений)...` });
-
-    try {
-      const response = await fetch(`${API_BASE}/api/upload-images`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ images: chunk })
-      });
-
-      if (!response.ok) {
-        figma.ui.postMessage({ type: 'log', message: `⚠️ Ошибка загрузки пакета ${chunkNum}: ${response.status}` });
-        continue;
+  // Use UI to upload images (delegation to handle CORS and Authorization)
+  figma.ui.postMessage({ type: 'log', message: `📤 Отправляю ${imagesPayload.length} изображений в UI для загрузки...` });
+  
+  // Send to UI and wait for response
+  if (token && token.trim()) {
+    figma.ui.postMessage({ type: 'upload-images', images: imagesPayload, token });
+    
+    // Wait for completion message from UI
+    const results = await new Promise((resolve) => { pendingUploadResolve = resolve; });
+    
+    // Convert results (Map<hash, url>) to resultMap (Map<nodeId, url>)
+    const resultMap = new Map();
+    if (results) {
+      for (const [hash, url] of results.entries()) {
+        // In our case hash IS nodeId
+        resultMap.set(hash, url);
       }
-
-      const result = await response.json();
-
-      if (result.urls && Array.isArray(result.urls)) {
-        for (const item of result.urls) {
-          if (item.nodeId && item.url) {
-            resultMap.set(item.nodeId, item.url);
-          }
-        }
-        figma.ui.postMessage({ type: 'log', message: `✅ Пакет ${chunkNum}/${totalChunks} загружен (${result.urls.length} изображений)` });
-      }
-    } catch (e) {
-      figma.ui.postMessage({ type: 'log', message: `⚠️ Ошибка загрузки пакета ${chunkNum}: ${e.message}` });
     }
-
-    // Небольшая задержка между запросами
-    if (i + chunkSize < imagesPayload.length) {
-      await new Promise(resolve => setTimeout(resolve, 100));
-    }
+    
+    figma.ui.postMessage({ type: 'log', message: `✅ Загружено ${resultMap.size} из ${imagesPayload.length} изображений` });
+    return resultMap;
+  } else {
+    figma.ui.postMessage({ type: 'error', message: '❌ Токен не найден. Загрузка невозможна.' });
+    return new Map();
   }
-
-  figma.ui.postMessage({ type: 'log', message: `✅ Загружено ${resultMap.size} из ${imagesPayload.length} изображений` });
-  return resultMap;
 }
 
 function generateCSSFromFrame(node, imageMap = new Map()) {
