@@ -45,50 +45,14 @@ const BaseInvaders = () => {
 
     const handleSteamConnect = () => {
         const token = localStorage.getItem('auth_token');
-        // Retrieve current token and redirect to steam auth
         // Pass token as query param to link account
-        const apiKey = currentUser?.api_token || token; // Should check how to get the clean token or just use the one we have (sk_live...)
-        // The user/me endpoint returns api_token in response if we implemented it, let's check server.js
-        // Yes: userData.api_token = token;
-        
-        // Actually, 'token' variable holds the Bearer token (sk_live...).
-        // So we can just pass it.
-        window.location.href = `/api/auth/steam?token=${currentUser?.api_token || token.replace('Bearer ', '')}`; 
-        // Wait, token in localStorage is raw sk_live... usually (if saved correctly).
-        // Let's assume token is clean.
+        // Use clean token without Bearer prefix if it exists, or take from api_token if user/me returned it.
+        // localStorage usually stores clean token if we implemented it that way.
+        const cleanToken = token.replace('Bearer ', '');
+        window.location.href = `/api/auth/steam?token=${cleanToken}`;
     };
 
-    // ... rest of functions ...
-
-    const members = state.team?.members || [];
-    // ...
-
-    if (loading) return <div className="text-center py-20">Загрузка лобби...</div>;
-
-    if (!hasSteam) {
-        return (
-            <div className="min-h-[calc(100vh-100px)] flex flex-col items-center justify-center text-center">
-                <motion.div 
-                    initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                    className="glass-panel p-8 rounded-2xl max-w-md border border-accent-primary/30 shadow-[0_0_50px_rgba(0,0,0,0.5)]"
-                >
-                    <div className="w-20 h-20 bg-[#171a21] rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                        <svg viewBox="0 0 24 24" className="w-10 h-10 fill-white" role="img" xmlns="http://www.w3.org/2000/svg"><path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.566-1.055 1.666-1.797 2.94-1.846l4.553-6.747c-.25-.027-.502-.04-.756-.04a7.94 7.94 0 0 0-2.212.312L8.437 1.016A11.954 11.954 0 0 1 11.979 0zM.004 12.06C-.02 12.371 0 12.684 0 13a12 12 0 0 0 12 12c4.41 0 8.266-2.388 10.398-6.012l-5.99-4.17a5.016 5.016 0 0 1-1.94 2.722l1.565 6.033a7.96 7.96 0 0 0 2.965-1.14L21.79 25.4A11.942 11.942 0 0 1 12 24a11.954 11.954 0 0 1-5.54-1.36l1.614-3.87a4.972 4.972 0 0 1-2.68-1.83l-4.88 2.02A11.982 11.982 0 0 1 .004 12.06zm3.95 1.608l3.88 1.6a2.486 2.486 0 0 0 1.678 1.872 2.52 2.52 0 0 0 3.13-2.07l3.89-1.61c-.14.78-.48 1.5-.98 2.11l-2.6-1.81a1.506 1.506 0 0 1-1.28 1.68 1.5 1.5 0 0 1-1.66-1.26 1.484 1.484 0 0 1 .65-1.43l-2.03-4.87a6.483 6.483 0 0 0-4.67 5.788z"/></svg>
-                    </div>
-                    <h2 className="text-2xl font-bold text-white mb-2">Требуется Steam</h2>
-                    <p className="text-text-muted mb-8">Для доступа к Base Invaders необходимо привязать ваш Steam аккаунт.</p>
-                    <button 
-                        onClick={handleSteamConnect}
-                        className="w-full py-3 px-6 bg-[#171a21] hover:bg-[#2a475e] text-white font-bold rounded-xl transition-all flex items-center justify-center gap-3"
-                    >
-                        Войти через Steam
-                    </button>
-                </motion.div>
-            </div>
-        );
-    }
-
-    return (
+    const handleSearch = async (q) => {
         setSearchQuery(q);
         if (q.length < 2) { setSearchResults([]); return; }
         const token = localStorage.getItem('auth_token');
@@ -125,6 +89,29 @@ const BaseInvaders = () => {
     const isCaptain = state.team?.is_captain;
 
     if (loading) return <div className="text-center py-20">Загрузка лобби...</div>;
+
+    if (!hasSteam) {
+        return (
+            <div className="min-h-[calc(100vh-100px)] flex flex-col items-center justify-center text-center">
+                <motion.div 
+                    initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                    className="glass-panel p-8 rounded-2xl max-w-md border border-accent-primary/30 shadow-[0_0_50px_rgba(0,0,0,0.5)]"
+                >
+                    <div className="w-20 h-20 bg-[#171a21] rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                        <svg viewBox="0 0 24 24" className="w-10 h-10 fill-white" role="img" xmlns="http://www.w3.org/2000/svg"><path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.566-1.055 1.666-1.797 2.94-1.846l4.553-6.747c-.25-.027-.502-.04-.756-.04a7.94 7.94 0 0 0-2.212.312L8.437 1.016A11.954 11.954 0 0 1 11.979 0zM.004 12.06C-.02 12.371 0 12.684 0 13a12 12 0 0 0 12 12c4.41 0 8.266-2.388 10.398-6.012l-5.99-4.17a5.016 5.016 0 0 1-1.94 2.722l1.565 6.033a7.96 7.96 0 0 0 2.965-1.14L21.79 25.4A11.942 11.942 0 0 1 12 24a11.954 11.954 0 0 1-5.54-1.36l1.614-3.87a4.972 4.972 0 0 1-2.68-1.83l-4.88 2.02A11.982 11.982 0 0 1 .004 12.06zm3.95 1.608l3.88 1.6a2.486 2.486 0 0 0 1.678 1.872 2.52 2.52 0 0 0 3.13-2.07l3.89-1.61c-.14.78-.48 1.5-.98 2.11l-2.6-1.81a1.506 1.506 0 0 1-1.28 1.68 1.5 1.5 0 0 1-1.66-1.26 1.484 1.484 0 0 1 .65-1.43l-2.03-4.87a6.483 6.483 0 0 0-4.67 5.788z"/></svg>
+                    </div>
+                    <h2 className="text-2xl font-bold text-white mb-2">Требуется Steam</h2>
+                    <p className="text-text-muted mb-8">Для доступа к Base Invaders необходимо привязать ваш Steam аккаунт.</p>
+                    <button 
+                        onClick={handleSteamConnect}
+                        className="w-full py-3 px-6 bg-[#171a21] hover:bg-[#2a475e] text-white font-bold rounded-xl transition-all flex items-center justify-center gap-3"
+                    >
+                        Войти через Steam
+                    </button>
+                </motion.div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-[calc(100vh-100px)] relative">
