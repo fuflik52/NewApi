@@ -197,7 +197,7 @@ const Layout = () => {
             </div>
         </div>
 
-        <main className="p-4 md:p-8 max-w-7xl mx-auto animate-in fade-in duration-500 pt-20">
+        <main className="p-4 md:p-8 max-w-7xl mx-auto animate-in fade-in duration-500 pt-24 md:pt-32">
           <Outlet />
         </main>
       </div>
