@@ -970,6 +970,7 @@
     };
 
     document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('code-window').classList.remove('visible');
         parent.postMessage({ pluginMessage: { type: 'request-init' } }, '*');
     });
   </script>
