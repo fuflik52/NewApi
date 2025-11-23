@@ -14,7 +14,7 @@ setupDatabase();
 
 const app = express();
 const PORT = 3000;
-const CUSTOM_DOMAIN = 'https://bublickrust.ru';
+const CUSTOM_DOMAIN = 'https://bublickrust.ru/img';
 
 // Middleware
 app.use(cors());
@@ -166,7 +166,7 @@ app.get('/api/images/list', (req, res) => {
 
 
 // Route: Serve image by 10-digit ID
-app.get('/:id', (req, res, next) => {
+app.get('/img/:id', (req, res, next) => {
     const { id } = req.params;
     
     // Check if ID is exactly 10 digits

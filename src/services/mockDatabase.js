@@ -207,7 +207,7 @@ class MockDatabase {
                          // So 'https://bublickrust.ru/12345' should work if it hits the express server.
                          
                          // Construct a safe URL relative to the current window location
-                         safeUrl = `${window.location.origin}/${id}`;
+                         safeUrl = `${window.location.origin}/img/${id}`;
                     }
                 }
                 // else if (img.url.includes('bublickrust.ru')) {
