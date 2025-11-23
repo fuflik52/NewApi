@@ -25,9 +25,30 @@ const distPath = path.join(__dirname, 'dist');
 app.use(express.static(distPath));
 
 // Uploads directory
-const uploadsDir = path.join(__dirname, 'dist', 'uploads');
+// Store uploads outside of dist to prevent deletion on rebuilds
+const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Try to migrate old uploads from dist/uploads if they exist
+const oldUploadsDir = path.join(__dirname, 'dist', 'uploads');
+if (fs.existsSync(oldUploadsDir)) {
+    try {
+        const files = fs.readdirSync(oldUploadsDir);
+        if (files.length > 0) {
+            console.log(`[MIGRATION] Moving ${files.length} files from dist/uploads to uploads/`);
+            files.forEach(file => {
+                const oldPath = path.join(oldUploadsDir, file);
+                const newPath = path.join(uploadsDir, file);
+                if (!fs.existsSync(newPath)) {
+                    fs.renameSync(oldPath, newPath);
+                }
+            });
+        }
+    } catch (err) {
+        console.error('[MIGRATION FAILED]', err);
+    }
 }
 
 // Metadata storage (Simple JSON file for demo purposes)
@@ -209,7 +230,7 @@ app.use((err, req, res, next) => {
 // Note: Using RegExp for compatibility with newer Express/path-to-regexp where strings are strict
 app.get(/.*/, (req, res) => {
     // Don't intercept API calls or static assets if they fall through
-    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads') || req.path.startsWith('/img')) {
         return res.status(404).json({ error: 'Not found' });
     }
     res.sendFile(path.join(distPath, 'index.html'));
