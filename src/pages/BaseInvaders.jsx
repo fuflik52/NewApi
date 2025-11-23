@@ -126,7 +126,7 @@ const BaseInvaders = () => {
             </div>
 
             {/* TEAM GRID */}
-            <div className="flex flex-wrap justify-center items-center gap-6 mt-20">
+            <div className="flex flex-nowrap justify-center items-center gap-4 mt-20 overflow-x-auto pb-8 px-4">
                 
                 {/* Left Slots */}
                 {[0, 1].map(i => {
@@ -143,7 +143,7 @@ const BaseInvaders = () => {
                 {/* CENTER CAPTAIN (YOU) */}
                 <motion.div 
                     initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-                    className="w-64 h-96 glass-panel border-2 border-accent-primary rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-[0_0_50px_rgba(255,255,255,0.1)] z-10"
+                    className="min-w-[256px] w-64 h-96 glass-panel border-2 border-accent-primary rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-[0_0_50px_rgba(255,255,255,0.1)] z-10 shrink-0"
                 >
                     <div className="absolute top-4 text-accent-primary"><Shield className="w-6 h-6" /></div>
                     <div className="w-32 h-32 rounded-full border-4 border-accent-primary p-1 mb-6">
@@ -227,7 +227,7 @@ const SlotCard = ({ member, onAdd }) => {
     return (
         <motion.div 
             whileHover={{ y: -5 }}
-            className="w-56 h-80 glass-panel border border-glass-border rounded-xl flex flex-col items-center justify-center relative overflow-hidden hover:border-white/20 transition-colors"
+            className="min-w-[200px] w-52 h-80 glass-panel border border-glass-border rounded-xl flex flex-col items-center justify-center relative overflow-hidden hover:border-white/20 transition-colors shrink-0"
         >
             {member ? (
                 <>
