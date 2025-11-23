@@ -18,7 +18,7 @@ export default defineConfig({
   ],
   server: {
     host: true, // Открывает доступ по сети
-    port: 5173,
+    port: 3000,
     allowedHosts: ['bublickrust.ru', '109.73.198.41', 'all'],
     proxy: {
       '/api': {
