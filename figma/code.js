@@ -179,13 +179,10 @@ async function generateCode() {
     const cuiCode = generateRustCUI(node, imageMap);
     const csharpCode = generateCSharpCode(node, imageMap, currentAssetMode, currentAnchorMode);
 
-    // Debug summary for root
-    const rf = currentRootFrame || getRootFrameFallback(node);
-    if (rf && 'width' in rf && 'height' in rf) {
-      // figma.ui.postMessage({ type: 'log', message: `📐 Root size: ${Math.round(rf.width)} x ${Math.round(rf.height)}` });
-    }
+    // Get File Key (ID)
+    const fileKey = figma.fileKey;
 
-    figma.ui.postMessage({ type: 'code-generated', cui: cuiCode, csharp: csharpCode, frameName: frameName });
+    figma.ui.postMessage({ type: 'code-generated', cui: cuiCode, csharp: csharpCode, frameName: frameName, fileKey: fileKey });
     // figma.ui.postMessage({ type: 'log', message: '🎉 Генерация завершена!' }); // Toast handles this
   } catch (error) {
     figma.ui.postMessage({ type: 'error', message: `❌ Ошибка: ${error.message}` });

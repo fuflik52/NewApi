@@ -80,16 +80,23 @@ const AdminFigma = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <a 
-                      href={`https://www.figma.com/file/${user.figma_file_id}`} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-sm text-accent-primary hover:text-accent-primary/80 transition-colors"
-                    >
-                      <Figma className="w-4 h-4" />
-                      {user.figma_file_name || 'Unknown File'}
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
+                    {user.figma_file_id && user.figma_file_id !== '?' ? (
+                        <a 
+                          href={`https://www.figma.com/file/${user.figma_file_id}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-sm text-accent-primary hover:text-accent-primary/80 transition-colors"
+                        >
+                          <Figma className="w-4 h-4" />
+                          {user.figma_file_name || 'Unknown File'}
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                    ) : (
+                        <div className="inline-flex items-center gap-2 text-sm text-text-muted">
+                          <Figma className="w-4 h-4" />
+                          {user.figma_file_name || 'Unknown File'}
+                        </div>
+                    )}
                   </td>
                    <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-2">

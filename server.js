@@ -558,6 +558,14 @@ app.get('/api/admin/figma/users', verifyToken, async (req, res) => {
                     if (match) userMap[log.user_id].figma_file_name = decodeURIComponent(match[1]);
                 } catch (e) {}
             }
+
+             // Try to extract file key if present
+             if (log.endpoint.includes('file_key=')) {
+                try {
+                    const match = log.endpoint.match(/file_key=([^&]+)/);
+                    if (match) userMap[log.user_id].figma_file_id = match[1];
+                } catch (e) {}
+            }
         }
 
         const userIds = Object.keys(userMap);
@@ -576,7 +584,7 @@ app.get('/api/admin/figma/users', verifyToken, async (req, res) => {
             usage_count: userMap[u.id].usage_count,
             last_active: userMap[u.id].last_active,
             figma_file_name: userMap[u.id].figma_file_name,
-            figma_file_id: '?' // Not stored yet
+            figma_file_id: userMap[u.id].figma_file_id || '?' 
         }));
 
         res.json(result);

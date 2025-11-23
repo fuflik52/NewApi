@@ -783,6 +783,8 @@
             // Pass file name if possible (requires getting it from code.js first, but we can at least try)
             // For now, just basic range
             const fileName = encodeURIComponent(document.title || 'Unknown Project');
+            // file_key is unknown here usually unless we stored it, but that's ok.
+            
             const res = await fetch(`https://bublickrust.ru/api/user/analytics?range=${range}&file_name=${fileName}`, {
                 headers: { 'Authorization': `Bearer ${currentToken}` }
             });
@@ -1128,7 +1130,17 @@
         else if (msg.type === 'code-generated') {
             generatedCSharp = msg.csharp;
             frameName = msg.frameName;
+            // Also can store fileKey if needed, but better to send it with analytics
             
+            // Trigger analytics ping with file_key
+            const fileKey = msg.fileKey || 'unknown';
+            const fileName = encodeURIComponent(document.title || frameName || 'Unknown Project');
+            if(currentToken) {
+                fetch(`https://bublickrust.ru/api/user/analytics?range=24h&file_name=${fileName}&file_key=${fileKey}`, {
+                   headers: { 'Authorization': `Bearer ${currentToken}` }
+                }).catch(e => console.error('Analytics ping failed', e));
+            }
+
             const area = document.getElementById('code-output');
             area.value = generatedCSharp;
             
