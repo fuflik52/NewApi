@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Activity, Users, Database, Globe, Server, Cpu } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend } from 'recharts';
-import ReactECharts from 'echarts-for-react';
-import 'echarts-gl';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../components/Loader';
@@ -151,67 +149,6 @@ const Dashboard = () => {
     return () => clearInterval(interval);
   }, [isAdmin]);
 
-  const get3DChartOption = () => {
-    const hours = chartData.map(d => d.name);
-    const data = chartData.map((d, i) => [i, 0, d.requests]);
-    const maxValue = Math.max(...chartData.map(d => d.requests)) || 10;
-
-    return {
-        backgroundColor: 'transparent',
-        tooltip: {},
-        visualMap: {
-            max: maxValue,
-            inRange: {
-                color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
-            },
-            show: false
-        },
-        xAxis3D: {
-            type: 'category',
-            data: hours,
-            axisLine: { lineStyle: { color: 'rgba(255,255,255,0.3)' } },
-            axisLabel: { textStyle: { color: 'rgba(255,255,255,0.5)' } }
-        },
-        yAxis3D: {
-            type: 'category',
-            data: ['Requests'],
-            axisLine: { lineStyle: { color: 'rgba(255,255,255,0.3)' } },
-            axisLabel: { show: false }
-        },
-        zAxis3D: {
-            type: 'value',
-            axisLine: { lineStyle: { color: 'rgba(255,255,255,0.3)' } },
-            axisLabel: { textStyle: { color: 'rgba(255,255,255,0.5)' } }
-        },
-        grid3D: {
-            boxWidth: 200,
-            boxDepth: 20,
-            viewControl: {
-                autoRotate: true,
-                autoRotateSpeed: 10,
-                alpha: 20,
-                beta: 30
-            },
-            light: {
-                main: {
-                    intensity: 1.2,
-                    shadow: true
-                },
-                ambient: {
-                    intensity: 0.3
-                }
-            }
-        },
-        series: [{
-            type: 'bar3D',
-            data: data,
-            shading: 'lambert',
-            label: { show: false },
-            itemStyle: { opacity: 0.9 }
-        }]
-    };
-  };
-
   if (loading) return <Loader />;
   if (!isAdmin) return null;
 
@@ -259,14 +196,53 @@ const Dashboard = () => {
       >
         <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none" />
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-text-main">Общая активность (3D)</h2>
+          <h2 className="text-xl font-semibold text-text-main">Общая активность</h2>
           <div className="flex gap-2">
             <span className="w-3 h-3 rounded-full bg-accent-primary"></span>
             <span className="text-sm text-text-muted">Трафик</span>
           </div>
         </div>
         <div className="h-[400px] w-full">
-            <ReactECharts option={get3DChartOption()} style={{height: '100%', width: '100%'}} />
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={chartData}>
+              <defs>
+                <linearGradient id="colorRequests" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="var(--accent-primary)" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="var(--accent-primary)" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
+              <XAxis 
+                dataKey="name" 
+                axisLine={false} 
+                tickLine={false} 
+                tick={{ fill: 'var(--text-muted)', fontSize: 12 }} 
+                dy={10} 
+              />
+              <YAxis 
+                axisLine={false} 
+                tickLine={false} 
+                tick={{ fill: 'var(--text-muted)', fontSize: 12 }} 
+              />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: 'var(--bg-main)', 
+                  border: '1px solid var(--border-color)', 
+                  borderRadius: '8px', 
+                  color: 'var(--text-main)' 
+                }}
+                itemStyle={{ color: 'var(--accent-primary)' }}
+              />
+              <Area 
+                type="monotone" 
+                dataKey="requests" 
+                stroke="var(--accent-primary)" 
+                strokeWidth={3} 
+                fillOpacity={1} 
+                fill="url(#colorRequests)" 
+              />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
       </motion.div>
 
