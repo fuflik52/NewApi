@@ -422,6 +422,70 @@ app.get('/api/user/me', async (req, res) => {
     }
 });
 
+// User Analytics (для Figma плагина и личного кабинета)
+app.get('/api/user/analytics', async (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer sk_live_')) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const token = authHeader.split(' ')[1];
+
+    try {
+        // Get user from token
+        const { data: keyData } = await supabase.from('api_keys').select('user_id, requests_count').eq('token', token).single();
+        if (!keyData) return res.status(404).json({ error: 'Token not found' });
+
+        const range = req.query.range || '24h';
+        let timeFilter;
+        
+        if (range === '24h') {
+            timeFilter = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+        } else if (range === '7d') {
+            timeFilter = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+        } else if (range === '30d') {
+            timeFilter = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+        } else {
+            timeFilter = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+        }
+
+        // Get user's request logs
+        const { data: logs, error } = await supabase
+            .from('request_logs')
+            .select('created_at, status, endpoint')
+            .eq('user_id', keyData.user_id)
+            .gte('created_at', timeFilter)
+            .limit(100000);
+
+        if (error) throw error;
+
+        // Aggregate data by hour/day depending on range
+        const history = {};
+        
+        if (logs && logs.length > 0) {
+            logs.forEach(log => {
+                let timeKey;
+                const date = new Date(log.created_at);
+                
+                if (range === '24h') {
+                    timeKey = `${date.getHours()}:00`;
+                } else {
+                    timeKey = `${date.getMonth() + 1}/${date.getDate()}`;
+                }
+                
+                history[timeKey] = (history[timeKey] || 0) + 1;
+            });
+        }
+
+        // Convert to array format
+        const data = Object.entries(history).map(([name, value]) => ({ name, value }));
+        
+        res.json({ data });
+    } catch (err) {
+        console.error('User Analytics Error:', err);
+        res.status(500).json({ error: 'Server Error', data: [] });
+    }
+});
+
 // Token Management
 app.get('/api/tokens', verifyToken, async (req, res) => {
     try {
