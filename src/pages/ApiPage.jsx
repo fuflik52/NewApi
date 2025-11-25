@@ -16,6 +16,7 @@ const ApiPage = () => {
   // Charts state
   const [chartData, setChartData] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [timeRange, setTimeRange] = useState('24h'); // '1h', '24h', '7d', '30d', '365d'
 
   // System Stats State
   const [systemStats, setSystemStats] = useState(null);
@@ -47,7 +48,7 @@ const ApiPage = () => {
               if (userData.success && userData.user.is_admin) {
                   setIsAdmin(true);
                   // Load Analytics if admin
-                  const analyticsRes = await fetch('/api/analytics', { headers: { 'Authorization': `Bearer ${token}` } });
+                  const analyticsRes = await fetch(`/api/analytics?range=${timeRange}`, { headers: { 'Authorization': `Bearer ${token}` } });
                   if (analyticsRes.ok) {
                       const analytics = await analyticsRes.json();
                       setChartData(analytics.history || []);
@@ -63,7 +64,7 @@ const ApiPage = () => {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [timeRange]);
 
   const handleCreateToken = async () => {
       if (tokens.length >= 3) {
@@ -228,9 +229,63 @@ print(response.json())`
             className="glass-panel rounded-2xl p-6 mb-8 relative overflow-hidden"
         >
             <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none" />
-            <div className="flex items-center gap-2 mb-6 relative z-10">
-                <BarChart2 className="text-accent-primary w-5 h-5" />
-                <h2 className="text-xl font-semibold text-text-main">Активность API (24ч)</h2>
+            <div className="flex items-center justify-between mb-6 relative z-10">
+                <div className="flex items-center gap-2">
+                    <BarChart2 className="text-accent-primary w-5 h-5" />
+                    <h2 className="text-xl font-semibold text-text-main">Активность API</h2>
+                </div>
+                <div className="flex gap-2">
+                    <button 
+                        onClick={() => setTimeRange('1h')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                            timeRange === '1h' 
+                                ? 'bg-accent-primary text-white' 
+                                : 'bg-bg-secondary text-text-muted hover:text-text-main hover:bg-bg-hover'
+                        }`}
+                    >
+                        1Ч
+                    </button>
+                    <button 
+                        onClick={() => setTimeRange('24h')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                            timeRange === '24h' 
+                                ? 'bg-accent-primary text-white' 
+                                : 'bg-bg-secondary text-text-muted hover:text-text-main hover:bg-bg-hover'
+                        }`}
+                    >
+                        24Ч
+                    </button>
+                    <button 
+                        onClick={() => setTimeRange('7d')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                            timeRange === '7d' 
+                                ? 'bg-accent-primary text-white' 
+                                : 'bg-bg-secondary text-text-muted hover:text-text-main hover:bg-bg-hover'
+                        }`}
+                    >
+                        НЕДЕЛЯ
+                    </button>
+                    <button 
+                        onClick={() => setTimeRange('30d')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                            timeRange === '30d' 
+                                ? 'bg-accent-primary text-white' 
+                                : 'bg-bg-secondary text-text-muted hover:text-text-main hover:bg-bg-hover'
+                        }`}
+                    >
+                        МЕСЯЦ
+                    </button>
+                    <button 
+                        onClick={() => setTimeRange('365d')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                            timeRange === '365d' 
+                                ? 'bg-accent-primary text-white' 
+                                : 'bg-bg-secondary text-text-muted hover:text-text-main hover:bg-bg-hover'
+                        }`}
+                    >
+                        ГОД
+                    </button>
+                </div>
             </div>
             <div className="h-[300px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
