@@ -1615,15 +1615,19 @@
             </button>
         </div>
 
-        <div class="section-header" style="margin-top:30px;"><span class="section-title">Активность API</span></div>
-        <div class="chart-container" id="activity-chart">
-            <!-- Bars will be injected here -->
-            <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:10px;">Загрузка...</div>
+        <div class="section-header" style="margin-top:30px;">
+            <span class="section-title">Активность API</span>
         </div>
-        <div class="time-toggles">
+        <div class="time-toggles" style="margin-bottom: 12px;">
+            <button class="time-btn" onclick="loadAnalytics('1h', this)">1Ч</button>
             <button class="time-btn active" onclick="loadAnalytics('24h', this)">24Ч</button>
-            <button class="time-btn" onclick="loadAnalytics('7d', this)">7Д</button>
-            <button class="time-btn" onclick="loadAnalytics('30d', this)">30Д</button>
+            <button class="time-btn" onclick="loadAnalytics('7d', this)">НЕДЕЛЯ</button>
+            <button class="time-btn" onclick="loadAnalytics('30d', this)">МЕСЯЦ</button>
+            <button class="time-btn" onclick="loadAnalytics('1y', this)">ГОД</button>
+        </div>
+        <div class="chart-container" id="activity-chart">
+            <!-- Chart will be injected here -->
+            <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:10px;">Загрузка...</div>
         </div>
 
         <div class="section-header" style="margin-top:30px;"><span class="section-title">Тема Оформления</span></div>

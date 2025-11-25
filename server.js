@@ -437,15 +437,27 @@ app.get('/api/user/analytics', async (req, res) => {
 
         const range = req.query.range || '24h';
         let timeFilter;
+        let groupBy = 'hour'; // 'minute', 'hour', 'day', 'month'
         
-        if (range === '24h') {
+        // Determine time filter and grouping based on range
+        if (range === '1h') {
+            timeFilter = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+            groupBy = 'minute';
+        } else if (range === '24h') {
             timeFilter = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+            groupBy = 'hour';
         } else if (range === '7d') {
             timeFilter = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+            groupBy = 'day';
         } else if (range === '30d') {
             timeFilter = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+            groupBy = 'day';
+        } else if (range === '1y') {
+            timeFilter = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString();
+            groupBy = 'month';
         } else {
             timeFilter = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+            groupBy = 'hour';
         }
 
         // Get user's request logs
@@ -458,7 +470,7 @@ app.get('/api/user/analytics', async (req, res) => {
 
         if (error) throw error;
 
-        // Aggregate data by hour/day depending on range
+        // Aggregate data based on grouping
         const history = {};
         
         if (logs && logs.length > 0) {
@@ -466,18 +478,38 @@ app.get('/api/user/analytics', async (req, res) => {
                 let timeKey;
                 const date = new Date(log.created_at);
                 
-                if (range === '24h') {
-                    timeKey = `${date.getHours()}:00`;
-                } else {
+                if (groupBy === 'minute') {
+                    // Format: HH:MM
+                    const hours = String(date.getHours()).padStart(2, '0');
+                    const minutes = String(date.getMinutes()).padStart(2, '0');
+                    timeKey = `${hours}:${minutes}`;
+                } else if (groupBy === 'hour') {
+                    // Format: HH:00
+                    timeKey = `${String(date.getHours()).padStart(2, '0')}:00`;
+                } else if (groupBy === 'day') {
+                    // Format: MM/DD
                     timeKey = `${date.getMonth() + 1}/${date.getDate()}`;
+                } else if (groupBy === 'month') {
+                    // Format: Month Name
+                    const monthNames = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
+                    timeKey = monthNames[date.getMonth()];
                 }
                 
                 history[timeKey] = (history[timeKey] || 0) + 1;
             });
         }
 
-        // Convert to array format
-        const data = Object.entries(history).map(([name, value]) => ({ name, value }));
+        // Convert to array format and sort
+        let data = Object.entries(history).map(([name, value]) => ({ name, value }));
+        
+        // Sort data chronologically
+        if (groupBy === 'minute' || groupBy === 'hour') {
+            data.sort((a, b) => {
+                const [aHour, aMin] = a.name.split(':').map(Number);
+                const [bHour, bMin] = b.name.split(':').map(Number);
+                return (aHour * 60 + (aMin || 0)) - (bHour * 60 + (bMin || 0));
+            });
+        }
         
         res.json({ data });
     } catch (err) {
