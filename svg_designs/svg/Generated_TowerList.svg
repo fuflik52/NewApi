@@ -1,0 +1,149 @@
+<svg width="1000" height="600" viewBox="0 0 1000 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&amp;family=JetBrains+Mono:wght@700&amp;display=swap');
+            .font-main { font-family: 'Roboto Condensed', sans-serif; }
+            .font-mono { font-family: 'JetBrains Mono', monospace; }
+            
+            .hex-cell { transition: all 0.3s ease; }
+            .hex-cell:hover polygon { stroke: #FFF; stroke-width: 2; filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); }
+        </style>
+        
+        <pattern id="hex-bg" x="0" y="0" width="20" height="34.6" patternUnits="userSpaceOnUse" patternTransform="scale(3)">
+            <path d="M10 0 L20 5.77 V17.32 L10 23.09 L0 17.32 V5.77 Z" fill="none" stroke="#222" stroke-width="1"/>
+        </pattern>
+
+        <filter id="glow-active">
+            <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#718B44" flood-opacity="0.6"/>
+        </filter>
+        <filter id="glow-vip">
+            <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#E6C85E" flood-opacity="0.6"/>
+        </filter>
+    </defs>
+
+    <!-- Background -->
+    <rect width="1000" height="600" fill="#0f0f0f"/>
+    <rect width="1000" height="600" fill="url(#hex-bg)" opacity="0.3"/>
+
+    <!-- ========================================== -->
+    <!-- HIVE LAYOUT (Fixed & Cleaned) -->
+    <!-- ========================================== -->
+    
+    <!-- Группа сот (Центрирована слева) -->
+    <g transform="translate(250, 300)">
+        
+        <!-- Линии связи (Connectors) -->
+        <path d="M0 0 L-100 -60" stroke="#333" stroke-width="2"/> <!-- Center to Top-Left -->
+        <path d="M0 0 L100 -60" stroke="#718B44" stroke-width="2"/> <!-- Center to Top-Right -->
+        <path d="M0 0 L0 120" stroke="#333" stroke-width="2"/>    <!-- Center to Bottom -->
+        <path d="M100 -60 L200 0" stroke="#E6C85E" stroke-width="2" stroke-dasharray="5 5"/> <!-- Right to Far-Right -->
+
+        <!-- CENTER: TAX CORE (Главный узел) -->
+        <g class="hex-cell">
+            <polygon points="0,-60 52,-30 52,30 0,60 -52,30 -52,-30" fill="#1A1A1A" stroke="#E6C85E" stroke-width="2"/>
+            <circle cx="0" cy="-15" r="12" stroke="#E6C85E" stroke-width="2"/>
+            <path d="M0 -22 V-8 M-7 -15 H7" stroke="#E6C85E" stroke-width="2"/> <!-- Plus Icon -->
+            
+            <text x="0" y="15" fill="#E6C85E" font-size="14" font-weight="700" text-anchor="middle" class="font-main">TAX CORE</text>
+            <text x="0" y="35" fill="#666" font-size="10" text-anchor="middle" class="font-mono">STATUS: ONLINE</text>
+        </g>
+
+        <!-- TOP LEFT: TOWER #1 (Neutral) -->
+        <g transform="translate(-100, -60)" class="hex-cell">
+            <polygon points="0,-50 43,-25 43,25 0,50 -43,25 -43,-25" fill="#161616" stroke="#444" stroke-width="1"/>
+            <text x="0" y="-5" fill="#888" font-size="12" font-weight="700" text-anchor="middle" class="font-main">TOWER #1</text>
+            <rect x="-20" y="10" width="40" height="14" rx="2" fill="#CD5C5C" fill-opacity="0.2"/>
+            <text x="0" y="21" fill="#CD5C5C" font-size="10" font-weight="700" text-anchor="middle" class="font-mono">04:39</text>
+        </g>
+
+        <!-- TOP RIGHT: TOWER #2 (Owned/Active) -->
+        <g transform="translate(100, -60)" class="hex-cell">
+            <!-- Glow Effect -->
+            <polygon points="0,-50 43,-25 43,25 0,50 -43,25 -43,-25" fill="#1F251F" stroke="#718B44" stroke-width="2" filter="url(#glow-active)"/>
+            <text x="0" y="-10" fill="#FFF" font-size="12" font-weight="700" text-anchor="middle" class="font-main">TOWER #2</text>
+            <text x="0" y="5" fill="#718B44" font-size="10" font-weight="700" text-anchor="middle" class="font-main">OWNED</text>
+            <text x="0" y="25" fill="#FFF" font-size="12" font-weight="700" text-anchor="middle" class="font-mono">+500</text>
+        </g>
+
+        <!-- BOTTOM: TOWER #3 (Neutral) -->
+        <g transform="translate(0, 120)" class="hex-cell">
+            <polygon points="0,-50 43,-25 43,25 0,50 -43,25 -43,-25" fill="#161616" stroke="#444" stroke-width="1"/>
+            <text x="0" y="-5" fill="#888" font-size="12" font-weight="700" text-anchor="middle" class="font-main">TOWER #3</text>
+             <rect x="-20" y="10" width="40" height="14" rx="2" fill="#CD5C5C" fill-opacity="0.2"/>
+            <text x="0" y="21" fill="#CD5C5C" font-size="10" font-weight="700" text-anchor="middle" class="font-mono">04:39</text>
+        </g>
+        
+        <!-- FAR RIGHT: TOWER #4 (VIP) -->
+        <g transform="translate(200, 0)" class="hex-cell">
+             <polygon points="0,-50 43,-25 43,25 0,50 -43,25 -43,-25" fill="#1F1D16" stroke="#E6C85E" stroke-width="2" filter="url(#glow-vip)"/>
+            <text x="0" y="-10" fill="#E6C85E" font-size="12" font-weight="700" text-anchor="middle" class="font-main">TOWER #4</text>
+            <text x="0" y="5" fill="#FFF" font-size="10" font-weight="700" text-anchor="middle" class="font-main">VIP SLOT</text>
+             <text x="0" y="25" fill="#E6C85E" font-size="10" font-weight="700" text-anchor="middle" class="font-mono">TIPIDOR</text>
+        </g>
+
+    </g>
+    
+    <!-- ========================================== -->
+    <!-- INVENTORY PANEL (Right Side) -->
+    <!-- ========================================== -->
+    <g transform="translate(600, 50)">
+        <!-- Panel Container -->
+        <rect width="350" height="500" fill="#161616" stroke="#333" stroke-width="1" rx="4"/>
+        
+        <!-- Header -->
+        <rect x="1" y="1" width="348" height="60" fill="#1A1A1A" rx="4"/>
+        <text x="20" y="38" fill="#E6C85E" font-size="20" font-weight="700" class="font-main">INVENTORY</text>
+        <text x="250" y="38" fill="#666" font-size="14" class="font-mono">24/30</text>
+
+        <!-- Inventory Grid -->
+        <g transform="translate(25, 80)">
+            <!-- Slot Definition -->
+            <defs>
+                <g id="slot-hex">
+                    <path d="M0 20 L20 0 H50 L70 20 V50 L50 70 H20 L0 50 Z" fill="#222" stroke="#333" stroke-width="1"/>
+                </g>
+            </defs>
+            
+            <!-- Row 1 -->
+            <use href="#slot-hex" x="0" y="0"/>
+            <use href="#slot-hex" x="75" y="0"/>
+            <use href="#slot-hex" x="150" y="0"/>
+            <use href="#slot-hex" x="225" y="0"/>
+
+            <!-- Row 2 -->
+            <use href="#slot-hex" x="0" y="75"/>
+            <use href="#slot-hex" x="75" y="75"/>
+            <use href="#slot-hex" x="150" y="75"/>
+            <use href="#slot-hex" x="225" y="75"/>
+
+            <!-- Row 3 -->
+            <use href="#slot-hex" x="0" y="150"/>
+            <use href="#slot-hex" x="75" y="150"/>
+            <use href="#slot-hex" x="150" y="150"/>
+            <use href="#slot-hex" x="225" y="150"/>
+            
+            <!-- Row 4 -->
+            <use href="#slot-hex" x="0" y="225"/>
+            <use href="#slot-hex" x="75" y="225"/>
+            <use href="#slot-hex" x="150" y="225"/>
+            <use href="#slot-hex" x="225" y="225"/>
+            
+             <!-- Row 5 -->
+            <use href="#slot-hex" x="0" y="300"/>
+            <use href="#slot-hex" x="75" y="300"/>
+            <use href="#slot-hex" x="150" y="300"/>
+            <use href="#slot-hex" x="225" y="300"/>
+        </g>
+
+        <!-- Claim Button -->
+        <g transform="translate(25, 430)" cursor="pointer">
+            <path d="M0 10 L10 0 H290 L300 10 V40 L290 50 H10 L0 40 Z" fill="#718B44"/>
+            <text x="150" y="32" fill="#FFF" font-size="18" font-weight="700" text-anchor="middle" class="font-main" letter-spacing="1">CLAIM RESOURCES</text>
+        </g>
+    </g>
+    
+    <!-- Connecting Line from Hive to Inventory -->
+    <path d="M500 300 L550 300 L580 250 L600 250" stroke="#E6C85E" stroke-width="2" stroke-dasharray="5 5" fill="none"/>
+    <circle cx="600" cy="250" r="4" fill="#E6C85E"/>
+
+</svg>

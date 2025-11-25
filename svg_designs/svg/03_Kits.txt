@@ -1,0 +1,106 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&amp;family=JetBrains+Mono:wght@700&amp;display=swap');
+            .font-main { font-family: 'Roboto Condensed', sans-serif; }
+            .font-mono { font-family: 'JetBrains Mono', monospace; }
+            .btn-hover:hover rect.bg { stroke: #8FAE58; fill-opacity: 0.1; }
+            .btn-hover:hover text.label { fill: #FFFFFF; }
+            .cat-hover:hover rect { fill: #222; }
+            .cat-hover:hover text { fill: #FFF; }
+        </style>
+        <pattern id="tech-grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#FFFFFF" stroke-opacity="0.03" stroke-width="1"/>
+        </pattern>
+        <pattern id="stripes-blocked" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="4" stroke-opacity="0.5"/>
+        </pattern>
+        <filter id="drop-shadow"><feDropShadow dx="0" dy="4" stdDeviation="12" flood-color="#000" flood-opacity="0.9"/></filter>
+        <clipPath id="clip-panel"><rect width="1200" height="700"/></clipPath>
+    </defs>
+    <rect width="1920" height="1080" fill="#0f0f0f" fill-opacity="0.95"/>
+    <rect width="1920" height="1080" fill="url(#tech-grid)"/>
+    <g transform="translate(360, 190)">
+        <rect width="1200" height="700" fill="#161616" stroke="#2A2A2A" stroke-width="1" filter="url(#drop-shadow)"/>
+        <g clip-path="url(#clip-panel)">
+             <g transform="translate(450, 350) rotate(-10) scale(2.5)" opacity="0.03">
+                <path d="M0 50 L100 50 L120 20 L300 20 L300 60 L140 60 L140 100 L100 100 L80 80 L0 80 Z" stroke="#FFFFFF" stroke-width="2" fill="none"/>
+                <rect x="150" y="60" width="40" height="60" rx="0" stroke="#FFFFFF" stroke-width="2" fill="none"/>
+                <line x1="300" y1="40" x2="380" y2="40" stroke="#FFFFFF" stroke-width="2"/>
+             </g>
+             <g transform="translate(-50, 400)" opacity="0.02">
+                <rect x="0" y="0" width="300" height="300" stroke="#FFFFFF" stroke-width="4" fill="none"/>
+                <line x1="0" y1="0" x2="300" y2="300" stroke="#FFFFFF" stroke-width="2"/>
+                <line x1="300" y1="0" x2="0" y2="300" stroke="#FFFFFF" stroke-width="2"/>
+                <rect x="100" y="100" width="100" height="100" stroke="#FFFFFF" stroke-width="4" fill="none"/>
+             </g>
+        </g>
+        <line x1="0" y1="70" x2="1200" y2="70" stroke="#2A2A2A" stroke-width="1"/>
+        <text x="40" y="45" fill="#8FAE58" font-size="24" font-weight="700" class="font-main" letter-spacing="1">KIT LOADOUTS</text>
+        <text x="1160" y="45" fill="#444" font-size="16" font-weight="700" class="font-main" text-anchor="end">AVAILABLE: 5 KITS</text>
+        <g transform="translate(0, 70)">
+            <rect width="280" height="630" fill="#131313" stroke-right="#2A2A2A"/>
+            <g transform="translate(0, 20)" class="cat-hover">
+                <rect width="280" height="60" fill="#1F1F1F"/>
+                <rect width="4" height="60" fill="#8FAE58"/>
+                <text x="30" y="38" fill="#FFFFFF" font-size="18" font-weight="700" class="font-main" letter-spacing="1">COMBAT</text>
+            </g>
+            <g transform="translate(0, 80)" class="cat-hover">
+                <rect width="280" height="60" fill="none"/>
+                <text x="30" y="38" fill="#666" font-size="18" font-weight="700" class="font-main" letter-spacing="1">RESOURCES</text>
+            </g>
+            <g transform="translate(0, 140)" class="cat-hover">
+                <rect width="280" height="60" fill="none"/>
+                <text x="30" y="38" fill="#666" font-size="18" font-weight="700" class="font-main" letter-spacing="1">CONSTRUCTION</text>
+            </g>
+             <g transform="translate(0, 200)" class="cat-hover">
+                <rect width="280" height="60" fill="none"/>
+                <text x="30" y="38" fill="#E6C85E" font-size="18" font-weight="700" class="font-main" letter-spacing="1">VIP EXCLUSIVE</text>
+                <path d="M240 30 L250 30 L245 40 Z" fill="#E6C85E"/>
+            </g>
+        </g>
+        <g transform="translate(320, 110)">
+            <g class="btn-hover">
+                <rect class="bg" width="260" height="260" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+                <g transform="translate(130, 100) scale(1.5)" opacity="0.8">
+                     <path d="M-30 0 L30 0 L40 -10 L-40 -10 Z" fill="#555"/>
+                </g>
+                <text x="130" y="100" fill="#555" text-anchor="middle" font-size="12" class="font-main">ICON</text>
+                <text x="130" y="160" fill="#FFFFFF" text-anchor="middle" font-size="22" font-weight="700" class="font-main label">ASSAULT</text>
+                <text x="130" y="180" fill="#888" text-anchor="middle" font-size="14" class="font-main">Full Gear Set + AK</text>
+                <rect x="80" y="210" width="100" height="30" rx="2" fill="#8FAE58" fill-opacity="0.2" stroke="#8FAE58"/>
+                <text x="130" y="230" fill="#8FAE58" font-size="14" font-weight="700" text-anchor="middle" class="font-main">CLAIM</text>
+                <rect x="0" y="0" width="260" height="2" fill="#8FAE58"/>
+            </g>
+            <g transform="translate(290, 0)">
+                <rect width="260" height="260" fill="#1A1A1A" stroke="#CD5C5C" stroke-opacity="0.3" stroke-width="1"/>
+                <rect x="1" y="1" width="258" height="258" fill="url(#stripes-blocked)"/>
+                <text x="130" y="100" fill="#555" text-anchor="middle" font-size="12" class="font-main">ICON</text>
+                <text x="130" y="160" fill="#888" text-anchor="middle" font-size="22" font-weight="700" class="font-main">MEDIC</text>
+                <rect x="80" y="210" width="100" height="30" rx="2" fill="#000" stroke="#CD5C5C"/>
+                <text x="130" y="230" fill="#CD5C5C" font-size="14" font-weight="700" text-anchor="middle" class="font-mono">01:59:20</text>
+                <rect x="0" y="0" width="260" height="2" fill="#CD5C5C"/>
+            </g>
+             <g transform="translate(580, 0)" class="btn-hover">
+                <rect class="bg" width="260" height="260" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+                <text x="130" y="100" fill="#555" text-anchor="middle" font-size="12" class="font-main">ICON</text>
+                <text x="130" y="160" fill="#FFFFFF" text-anchor="middle" font-size="22" font-weight="700" class="font-main label">HUNTER</text>
+                <text x="130" y="180" fill="#888" text-anchor="middle" font-size="14" class="font-main">Bow + Trap Set</text>
+                <rect x="80" y="210" width="100" height="30" rx="2" fill="#8FAE58" fill-opacity="0.2" stroke="#8FAE58"/>
+                <text x="130" y="230" fill="#8FAE58" font-size="14" font-weight="700" text-anchor="middle" class="font-main">CLAIM</text>
+                <rect x="0" y="0" width="260" height="2" fill="#8FAE58"/>
+            </g>
+            <g transform="translate(0, 290)">
+                <rect width="260" height="260" fill="#1A1A1A" stroke="#E6C85E" stroke-opacity="0.3" stroke-width="1"/>
+                <rect x="1" y="1" width="258" height="258" fill="url(#stripes-blocked)" opacity="0.5"/>
+                <text x="130" y="100" fill="#555" text-anchor="middle" font-size="12" class="font-main">ICON</text>
+                <text x="130" y="160" fill="#E6C85E" text-anchor="middle" font-size="22" font-weight="700" class="font-main">RAID KING</text>
+                <text x="130" y="180" fill="#888" text-anchor="middle" font-size="14" class="font-main">C4 + Rockets</text>
+                <rect x="80" y="210" width="100" height="30" rx="2" fill="none" stroke="#E6C85E"/>
+                <text x="130" y="230" fill="#E6C85E" font-size="14" font-weight="700" text-anchor="middle" class="font-main">VIP ONLY</text>
+                <rect x="0" y="0" width="260" height="2" fill="#E6C85E"/>
+            </g>
+        </g>
+    </g>
+    <text x="960" y="940" text-anchor="middle" fill="#444" font-size="14" class="font-main" letter-spacing="1">PRESS [ESC] TO CLOSE</text>
+</svg>

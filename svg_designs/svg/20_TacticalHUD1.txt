@@ -1,0 +1,115 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="grad-panel" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#0F0F0F" stop-opacity="0.9"/>
+            <stop offset="0.7" stop-color="#1a1a1a" stop-opacity="0.7"/>
+            <stop offset="1" stop-color="#0F0F0F" stop-opacity="0"/>
+        </linearGradient>
+    </defs>
+
+    <!-- 1. MEGA BOX EVENT -->
+    <g transform="translate(1700, 169)">
+        <!-- Background: No Stroke, only Fill -->
+        <path d="M0 0 H180 L200 20 V56 H20 L0 36 V0Z" fill="url(#grad-panel)"/>
+        
+        <!-- The "Strip" / Accent - FILLED as requested -->
+        <path d="M0 0 H2 L22 20 V56 H20 L0 36 Z" fill="#E4DAD1" fill-opacity="0.2"/>
+
+        <!-- Icon: Filled Box -->
+        <g transform="translate(20, 8)">
+            <rect width="40" height="40" rx="4" fill="#E4DAD1" fill-opacity="0.05"/>
+            <!-- Converted to Fill -->
+            <path d="M10 12 H30 V30 H10 V12 Z M12 14 V28 H28 V14 H12" fill="#E4DAD1" fill-rule="evenodd"/>
+        </g>
+
+        <text x="70" y="22" fill="#FFFFFF" font-family="Roboto Condensed, sans-serif" font-weight="700" font-size="16" letter-spacing="0.5">MEGA BOX</text>
+        <text x="70" y="38" fill="#E4DAD1" fill-opacity="0.6" font-family="JetBrains Mono, monospace" font-size="11">07:30 REMAINING</text>
+
+        <!-- Progress Bar: Fill -->
+        <rect x="70" y="44" width="110" height="2" fill="#E4DAD1" fill-opacity="0.1"/>
+        <rect x="70" y="44" width="75" height="2" fill="#E4DAD1"/>
+    </g>
+
+    <!-- 2. SULFUR EVENT -->
+    <g transform="translate(1700, 240)">
+        <path d="M0 0 H180 L200 20 V56 H20 L0 36 V0Z" fill="url(#grad-panel)"/>
+        
+        <!-- Strip -->
+        <path d="M0 0 H2 L22 20 V56 H20 L0 36 Z" fill="#E4DAD1" fill-opacity="0.2"/>
+        
+        <g transform="translate(20, 8)">
+             <rect width="40" height="40" rx="4" fill="#E4DAD1" fill-opacity="0.05"/>
+             <!-- Icon: Filled Ore -->
+             <path d="M20 10 L28 18 L24 28 L16 28 L12 18 Z" fill="#E4DAD1"/>
+        </g>
+
+        <text x="70" y="22" fill="#FFFFFF" font-family="Roboto Condensed, sans-serif" font-weight="700" font-size="16" letter-spacing="0.5">SULFUR EVENT</text>
+        <text x="70" y="38" fill="#E4DAD1" fill-opacity="0.6" font-family="JetBrains Mono, monospace" font-size="11">07:30 REMAINING</text>
+        
+        <rect x="70" y="44" width="110" height="2" fill="#E4DAD1" fill-opacity="0.1"/>
+        <rect x="70" y="44" width="45" height="2" fill="#E4DAD1"/>
+    </g>
+
+    <!-- 3. COMBAT BLOCK -->
+    <g transform="translate(1700, 311)">
+        <path d="M0 0 H180 L200 20 V56 H20 L0 36 V0Z" fill="url(#grad-panel)"/>
+        
+        <!-- Strip -->
+        <path d="M0 0 H2 L22 20 V56 H20 L0 36 Z" fill="#E4DAD1" fill-opacity="0.2"/>
+        
+        <g transform="translate(20, 8)">
+             <rect width="40" height="40" rx="4" fill="#E4DAD1" fill-opacity="0.05"/>
+             <!-- Icon: Filled Swords (Expanded strokes to paths) -->
+             <path d="M13 30 L11 28 L27 12 L29 14 Z M27 30 L29 28 L13 12 L11 14 Z" fill="#E4DAD1"/>
+        </g>
+
+        <text x="70" y="22" fill="#FFFFFF" font-family="Roboto Condensed, sans-serif" font-weight="700" font-size="16" letter-spacing="0.5">COMBAT BLOCK</text>
+        <text x="70" y="38" fill="#E4DAD1" fill-opacity="0.6" font-family="JetBrains Mono, monospace" font-size="11">07:30 LOCKED</text>
+        
+        <rect x="70" y="44" width="110" height="2" fill="#E4DAD1" fill-opacity="0.1"/>
+        <rect x="70" y="44" width="90" height="2" fill="#E4DAD1"/>
+    </g>
+
+    <!-- 4. RAID BLOCK -->
+    <g transform="translate(1700, 382)">
+        <path d="M0 0 H180 L200 20 V56 H20 L0 36 V0Z" fill="url(#grad-panel)"/>
+        
+        <!-- Strip -->
+        <path d="M0 0 H2 L22 20 V56 H20 L0 36 Z" fill="#E4DAD1" fill-opacity="0.2"/>
+        
+        <g transform="translate(20, 8)">
+             <rect width="40" height="40" rx="4" fill="#E4DAD1" fill-opacity="0.05"/>
+             <!-- Icon: Filled Skull/Hazard -->
+             <path d="M20 10 L30 15 V22 C30 28 20 32 20 32 C20 32 10 28 10 22 V15 L20 10Z" fill="#E4DAD1"/>
+        </g>
+
+        <text x="70" y="22" fill="#FFFFFF" font-family="Roboto Condensed, sans-serif" font-weight="700" font-size="16" letter-spacing="0.5">RAID BLOCK</text>
+        <text x="70" y="38" fill="#E4DAD1" fill-opacity="0.6" font-family="JetBrains Mono, monospace" font-size="11">07:30 LOCKED</text>
+        
+        <rect x="70" y="44" width="110" height="2" fill="#E4DAD1" fill-opacity="0.1"/>
+        <rect x="70" y="44" width="105" height="2" fill="#E4DAD1"/>
+    </g>
+
+    <!-- 5. MONEY CRATE (Featured) -->
+    <g transform="translate(1680, 453)">
+        <path d="M0 0 H200 L220 20 V80 H20 L0 60 V0Z" fill="url(#grad-panel)"/>
+        
+        <!-- Large Accent Strip -->
+        <path d="M200 0 H220 L220 20 L200 0 Z" fill="#E4DAD1" fill-opacity="0.4"/> 
+        <!-- Left Side Strip -->
+        <path d="M0 0 H2 L22 20 V80 H20 L0 60 Z" fill="#E4DAD1" fill-opacity="0.2"/>
+
+        <g transform="translate(25, 20)">
+             <circle cx="20" cy="20" r="18" fill="#E4DAD1" fill-opacity="0.1"/>
+             <text x="20" y="26" text-anchor="middle" fill="#E4DAD1" font-weight="bold" font-size="20">$</text>
+        </g>
+
+        <text x="80" y="30" fill="#FFFFFF" font-family="Roboto Condensed, sans-serif" font-weight="700" font-size="20" letter-spacing="1">MONEY CRATE</text>
+        <text x="80" y="50" fill="#E4DAD1" font-family="JetBrains Mono, monospace" font-weight="bold" font-size="14">REWARD: 200 RUB</text>
+        <text x="80" y="65" fill="#E4DAD1" fill-opacity="0.5" font-family="JetBrains Mono, monospace" font-size="12">TIME: 13:30</text>
+        
+        <rect x="20" y="75" width="180" height="2" fill="#E4DAD1" fill-opacity="0.1"/>
+        <rect x="20" y="75" width="140" height="2" fill="#E4DAD1"/>
+    </g>
+
+</svg>

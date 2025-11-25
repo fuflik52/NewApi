@@ -1,0 +1,200 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&amp;display=swap');
+            .font-main { font-family: 'Roboto Condensed', sans-serif; }
+            
+            /* Hover Effects */
+            .card-hover { transition: opacity 0.2s; cursor: pointer; }
+            .card-hover:hover { opacity: 0.9; }
+            
+            /* Scrollbar styling simulation */
+            .scrollbar { fill: #FFFFFF; fill-opacity: 0.1; }
+        </style>
+        
+        <!-- Drop Shadow for Cards -->
+        <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="120%">
+            <feDropShadow dx="0" dy="4" stdDeviation="10" flood-color="black" flood-opacity="0.5"/>
+        </filter>
+    </defs>
+
+    <!-- 1. Background Layer (Darkened Game World) -->
+    <rect width="1920" height="1080" fill="#0F0F0F" fill-opacity="0.95"/>
+    
+    <!-- 2. Header Title -->
+    <g transform="translate(960, 180)" text-anchor="middle">
+        <text y="0" fill="white" font-size="42" font-weight="700" class="font-main" letter-spacing="1">СЕРВЕРНЫЕ КИТЫ</text>
+        <text y="30" fill="#AAAAAA" font-size="18" font-weight="400" class="font-main">Наши наборы можно пролистывать колесиком мыши</text>
+    </g>
+
+    <!-- 3. Cards Container -->
+    <g transform="translate(385, 320)">
+        
+        <!-- CARD 1: UNAVAILABLE (Grey) -->
+        <g transform="translate(0, 0)" class="card-hover">
+            <!-- Card Background: Semi-transparent Grey -->
+            <rect width="280" height="380" fill="white" fill-opacity="0.05" filter="url(#card-shadow)"/>
+            
+            <!-- Image Placeholder Area (Top) -->
+            <rect width="280" height="200" fill="none"/> 
+            <!-- Placeholder Image Icon -->
+            <g transform="translate(140, 100)" opacity="0.2">
+                <rect x="-30" y="-25" width="60" height="50" rx="2" stroke="white" stroke-width="2" fill="none"/>
+                <circle cx="0" cy="0" r="10" stroke="white" stroke-width="2"/>
+            </g>
+
+            <!-- Content Container (Middle) -->
+            <g transform="translate(140, 230)" text-anchor="middle">
+                <text y="0" fill="white" font-size="24" font-weight="700" class="font-main" letter-spacing="0.5">НАБОР РЕЦЕПТОВ</text>
+                <text y="25" fill="#AAAAAA" font-size="14" font-weight="400" class="font-main">Хочешь крутые рецепты?</text>
+                <text y="42" fill="#AAAAAA" font-size="14" font-weight="400" class="font-main">Открывай данный набор</text>
+            </g>
+            
+            <!-- Bottom Button (Full Width) -->
+            <rect y="330" width="280" height="50" fill="white" fill-opacity="0.05"/>
+            <text x="140" y="362" text-anchor="middle" fill="#AAAAAA" font-size="16" font-weight="700" class="font-main" letter-spacing="1">НЕТ ДОСТУПНЫХ</text>
+            
+            <!-- Help Icon (?) Top Right -->
+            <rect x="250" y="10" width="20" height="20" fill="none"/>
+            <text x="260" y="25" text-anchor="middle" fill="white" fill-opacity="0.5" font-size="14" font-weight="700" class="font-main">?</text>
+        </g>
+
+
+        <!-- CARD 2: AVAILABLE (Green Highlight) -->
+        <g transform="translate(305, 0)" class="card-hover">
+            <!-- Card Background: Green Tint for Available -->
+            <rect width="280" height="380" fill="#708D4D" fill-opacity="0.9" filter="url(#card-shadow)"/> <!-- "Swamp Green" like screenshot -->
+            
+            <!-- Image Placeholder Area -->
+            <rect width="280" height="200" fill="none"/>
+            <g transform="translate(140, 100)" opacity="0.4">
+                <rect x="-30" y="-25" width="60" height="50" rx="2" stroke="black" stroke-width="2" fill="none"/>
+                <circle cx="0" cy="0" r="10" stroke="black" stroke-width="2"/>
+            </g>
+
+            <!-- Content -->
+            <g transform="translate(140, 230)" text-anchor="middle">
+                <text y="0" fill="white" font-size="22" font-weight="700" class="font-main" letter-spacing="0.5">ФЕРМЕРСКИЙ НАБОР</text>
+                <text y="25" fill="#E0E0E0" font-size="14" font-weight="400" class="font-main">Нужны крутые гены? Ооо, ты по</text>
+                <text y="42" fill="#E0E0E0" font-size="14" font-weight="400" class="font-main">адресу</text>
+            </g>
+            
+            <!-- Bottom Button (Darker Green) -->
+            <rect y="330" width="280" height="50" fill="#5A753A"/> 
+            <text x="140" y="362" text-anchor="middle" fill="white" font-size="16" font-weight="700" class="font-main" letter-spacing="1">ДОСТУПНЫЕ КИТЫ</text>
+
+            <!-- Help Icon -->
+            <text x="260" y="25" text-anchor="middle" fill="white" fill-opacity="0.8" font-size="14" font-weight="700" class="font-main">?</text>
+        </g>
+
+
+        <!-- CARD 3: AVAILABLE (Green Highlight - Variant) -->
+        <g transform="translate(610, 0)" class="card-hover">
+            <!-- Background -->
+            <rect width="280" height="380" fill="#708D4D" fill-opacity="0.9" filter="url(#card-shadow)"/>
+            
+            <!-- Image Placeholder -->
+            <rect width="280" height="200" fill="none"/>
+            <g transform="translate(140, 100)" opacity="0.4">
+                <rect x="-30" y="-25" width="60" height="50" rx="2" stroke="black" stroke-width="2" fill="none"/>
+                <circle cx="0" cy="0" r="10" stroke="black" stroke-width="2"/>
+            </g>
+
+            <!-- Cooldown/Count Label Top Left -->
+            <text x="15" y="25" fill="white" font-size="14" font-weight="700" class="font-main">1/5</text>
+
+            <!-- Content -->
+            <g transform="translate(140, 230)" text-anchor="middle">
+                <text y="0" fill="white" font-size="22" font-weight="700" class="font-main" letter-spacing="0.5">ФЕРМЕРСКИЙ НАБОР</text>
+                 <text y="25" fill="#E0E0E0" font-size="14" font-weight="400" class="font-main">Нужны крутые гены? Ооо, ты по</text>
+                <text y="42" fill="#E0E0E0" font-size="14" font-weight="400" class="font-main">адресу</text>
+            </g>
+            
+            <!-- Button -->
+            <rect y="330" width="280" height="50" fill="#5A753A"/>
+            <text x="140" y="362" text-anchor="middle" fill="white" font-size="16" font-weight="700" class="font-main" letter-spacing="1">ДОСТУПНЫЕ КИТЫ</text>
+
+             <!-- Help Icon -->
+            <text x="260" y="25" text-anchor="middle" fill="white" fill-opacity="0.8" font-size="14" font-weight="700" class="font-main">?</text>
+        </g>
+
+
+        <!-- CARD 4: UNAVAILABLE (Grey) -->
+        <g transform="translate(915, 0)" class="card-hover">
+             <!-- Card Background -->
+            <rect width="280" height="380" fill="white" fill-opacity="0.05" filter="url(#card-shadow)"/>
+            
+            <!-- Image Placeholder -->
+            <rect width="280" height="200" fill="none"/>
+            <g transform="translate(140, 100)" opacity="0.2">
+                <rect x="-30" y="-25" width="60" height="50" rx="2" stroke="white" stroke-width="2" fill="none"/>
+                <circle cx="0" cy="0" r="10" stroke="white" stroke-width="2"/>
+            </g>
+
+            <!-- Content -->
+            <g transform="translate(140, 230)" text-anchor="middle">
+                <text y="0" fill="white" font-size="24" font-weight="700" class="font-main" letter-spacing="0.5">НАБОР РЕЦЕПТОВ</text>
+                 <text y="25" fill="#AAAAAA" font-size="14" font-weight="400" class="font-main">Хочешь крутые рецепты?</text>
+                <text y="42" fill="#AAAAAA" font-size="14" font-weight="400" class="font-main">Открывай данный набор</text>
+            </g>
+            
+            <!-- Button -->
+            <rect y="330" width="280" height="50" fill="white" fill-opacity="0.05"/>
+            <text x="140" y="362" text-anchor="middle" fill="#AAAAAA" font-size="16" font-weight="700" class="font-main" letter-spacing="1">НЕТ ДОСТУПНЫХ</text>
+
+             <!-- Help Icon -->
+            <text x="260" y="25" text-anchor="middle" fill="white" fill-opacity="0.5" font-size="14" font-weight="700" class="font-main">?</text>
+        </g>
+
+    </g>
+    
+    <!-- 4. Bottom List (Individual Items) -->
+    <g transform="translate(660, 740)">
+        <!-- Available Item -->
+        <g transform="translate(0, 0)">
+            <rect width="300" height="50" fill="#708D4D" fill-opacity="0.8"/> <!-- Green bg -->
+            <rect width="300" height="50" fill="none" stroke="#708D4D" stroke-width="1"/>
+            
+            <text x="15" y="20" fill="#FFFFFF" font-size="14" font-weight="700" class="font-main">ВКУСНАЯ ЕДА</text>
+            <text x="15" y="38" fill="#CDDCB6" font-size="12" class="font-main">Уже доступно!</text>
+            
+            <!-- Download Icon Box -->
+            <rect x="250" y="0" width="50" height="50" fill="#000000" fill-opacity="0.2"/>
+            <g transform="translate(275, 25)">
+                 <!-- Simple Arrow Down -->
+                 <path d="M-6 -2 L6 -2 L0 6 Z" fill="white"/>
+                 <rect x="-2" y="-8" width="4" height="6" fill="white"/>
+            </g>
+        </g>
+        
+        <!-- Cooldown Item 1 -->
+        <g transform="translate(0, 55)">
+            <rect width="300" height="50" fill="white" fill-opacity="0.1"/> <!-- Grey bg -->
+            
+            <text x="15" y="20" fill="#FFFFFF" font-size="14" font-weight="700" class="font-main">ФАКЕЛ</text>
+            <text x="15" y="38" fill="#AAAAAA" font-size="12" class="font-main">12:00:00</text>
+             
+             <!-- Icon Box -->
+            <rect x="250" y="0" width="50" height="50" fill="white" fill-opacity="0.05"/>
+            <g transform="translate(275, 25)" opacity="0.5">
+                 <path d="M-6 -2 L6 -2 L0 6 Z" fill="white"/>
+                 <rect x="-2" y="-8" width="4" height="6" fill="white"/>
+            </g>
+        </g>
+
+        <!-- Cooldown Item 2 -->
+        <g transform="translate(0, 110)">
+             <rect width="300" height="50" fill="white" fill-opacity="0.1"/> <!-- Grey bg -->
+            
+            <text x="15" y="20" fill="#FFFFFF" font-size="14" font-weight="700" class="font-main">ФАКЕЛ</text>
+            <text x="15" y="38" fill="#AAAAAA" font-size="12" class="font-main">12:00:00</text>
+             
+            <rect x="250" y="0" width="50" height="50" fill="white" fill-opacity="0.05"/>
+            <g transform="translate(275, 25)" opacity="0.5">
+                 <path d="M-6 -2 L6 -2 L0 6 Z" fill="white"/>
+                 <rect x="-2" y="-8" width="4" height="6" fill="white"/>
+            </g>
+        </g>
+    </g>
+
+</svg>

@@ -1,0 +1,179 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&amp;family=JetBrains+Mono:wght@700&amp;display=swap');
+            .font-main { font-family: 'Roboto Condensed', sans-serif; }
+            .font-mono { font-family: 'JetBrains Mono', monospace; }
+            
+            /* Glass Reflection Animation */
+            @keyframes shine {
+                0% { transform: translateX(-100%) skewX(-20deg); }
+                100% { transform: translateX(200%) skewX(-20deg); }
+            }
+            .shine-effect { fill: url(#grad-shine); animation: shine 4s infinite linear; }
+            
+            .item-card:hover rect.bg { stroke-opacity: 1; fill-opacity: 0.3; }
+        </style>
+
+        <pattern id="tech-grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#FFFFFF" stroke-opacity="0.03" stroke-width="1"/>
+        </pattern>
+        
+        <linearGradient id="grad-plus" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#E6C85E" stop-opacity="0.1"/>
+            <stop offset="100%" stop-color="#FFD700" stop-opacity="0.05"/>
+        </linearGradient>
+        
+        <linearGradient id="grad-shine" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="transparent"/>
+            <stop offset="50%" stop-color="rgba(255,255,255,0.1)"/>
+            <stop offset="100%" stop-color="transparent"/>
+        </linearGradient>
+
+        <filter id="drop-shadow"><feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#000" flood-opacity="0.8"/></filter>
+        <clipPath id="clip-pass"><rect width="1400" height="800"/></clipPath>
+    </defs>
+
+    <rect width="1920" height="1080" fill="#0f0f0f" fill-opacity="0.95"/>
+    <rect width="1920" height="1080" fill="url(#tech-grid)"/>
+
+    <g transform="translate(260, 140)">
+        <rect width="1400" height="800" fill="#161616" stroke="#2A2A2A" stroke-width="1" filter="url(#drop-shadow)"/>
+        
+        <!-- Watermark: Star -->
+        <g clip-path="url(#clip-pass)">
+            <g transform="translate(1100, 400) scale(5)" opacity="0.02">
+                <path d="M0 -50 L15 -15 H50 L20 10 L30 50 L0 30 L-30 50 L-20 10 L-50 -15 H-15 Z" fill="#FFFFFF"/>
+            </g>
+        </g>
+
+        <!-- HEADER -->
+        <g transform="translate(40, 40)">
+            <text x="0" y="30" fill="#FFF" font-size="36" font-weight="700" class="font-main" letter-spacing="2">BATTLE PASS</text>
+            <text x="0" y="55" fill="#888" font-size="16" font-weight="400" class="font-main">SEASON 4: AWAKENING</text>
+            
+            <!-- Progress -->
+            <g transform="translate(1000, 10)">
+                <text x="300" y="0" fill="#E6C85E" text-anchor="end" font-size="14" font-weight="700" class="font-main">LEVEL 14 / 100</text>
+                <rect x="0" y="10" width="300" height="10" rx="5" fill="#222"/>
+                <rect x="0" y="10" width="42" height="10" rx="5" fill="#E6C85E"/>
+            </g>
+        </g>
+
+        <!-- COLUMNS HEADER -->
+        <g transform="translate(40, 100)">
+            <text x="100" y="0" fill="#AAA" font-size="18" font-weight="700" class="font-main" text-anchor="middle">FREE</text>
+            <text x="400" y="0" fill="#E6C85E" font-size="24" font-weight="700" class="font-main" text-anchor="middle">PLUS PASS</text>
+            <!-- Star Icon for Plus -->
+            <path transform="translate(470, -8) scale(0.5)" d="M0 -10 L3 -3 H10 L5 2 L7 10 L0 6 L-7 10 L-5 2 L-10 -3 H-3 Z" fill="#E6C85E"/>
+        </g>
+
+        <!-- LEVELS LIST -->
+        <g transform="translate(40, 140)">
+            
+            <!-- Level 14 (Current) -->
+            <g transform="translate(0, 0)">
+                <!-- Level Indicator (Center) -->
+                <g transform="translate(250, 40)">
+                    <circle cx="0" cy="0" r="20" fill="#E6C85E"/>
+                    <text x="0" y="5" fill="#000" text-anchor="middle" font-size="16" font-weight="700" class="font-mono">14</text>
+                </g>
+                
+                <!-- Line -->
+                <line x1="250" y1="-40" x2="250" y2="20" stroke="#333" stroke-width="2"/>
+                <line x1="250" y1="60" x2="250" y2="140" stroke="#333" stroke-width="2"/>
+
+                <!-- FREE REWARD -->
+                <g transform="translate(0, 0)" class="item-card">
+                    <rect class="bg" width="200" height="80" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+                    <rect x="10" y="10" width="60" height="60" fill="#252525"/>
+                    <text x="80" y="30" fill="#DDD" font-size="14" font-weight="700" class="font-main">WOOD x1000</text>
+                    <text x="80" y="50" fill="#888" font-size="12" class="font-main">Resource</text>
+                    
+                    <!-- Checkmark -->
+                    <circle cx="180" cy="20" r="8" fill="#8FAE58"/>
+                    <path d="M176 20 L179 23 L184 17" stroke="#000" stroke-width="2" fill="none"/>
+                </g>
+
+                <!-- PLUS REWARD (With Shine) -->
+                <g transform="translate(300, 0)" class="item-card">
+                    <!-- Background with Gold Tint -->
+                    <rect class="bg" width="250" height="80" fill="url(#grad-plus)" stroke="#E6C85E" stroke-width="1"/>
+                    
+                    <!-- Shine Overlay (Clipped) -->
+                    <clipPath id="clip-plus-14"><rect width="250" height="80"/></clipPath>
+                    <rect width="250" height="80" class="shine-effect" clip-path="url(#clip-plus-14)"/>
+
+                    <rect x="10" y="10" width="60" height="60" fill="#2A2510" stroke="#E6C85E" stroke-opacity="0.3"/>
+                    <text x="80" y="30" fill="#E6C85E" font-size="16" font-weight="700" class="font-main">AK-47 | GOLD</text>
+                    <text x="80" y="50" fill="#AA8844" font-size="12" class="font-main">Exclusive Skin</text>
+                    
+                    <!-- Lock Icon -->
+                    <path transform="translate(230, 20)" d="M-5 0 V-3 A5 5 0 0 1 5 -3 V0 H6 V10 H-6 V0 Z" fill="#E6C85E" opacity="0.5"/>
+                </g>
+            </g>
+
+            <!-- Level 15 -->
+            <g transform="translate(0, 100)">
+                <g transform="translate(250, 40)">
+                    <circle cx="0" cy="0" r="15" fill="#333"/>
+                    <text x="0" y="5" fill="#888" text-anchor="middle" font-size="12" font-weight="700" class="font-mono">15</text>
+                </g>
+                
+                <!-- FREE REWARD -->
+                <g transform="translate(0, 0)" class="item-card" opacity="0.5">
+                    <rect class="bg" width="200" height="80" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+                    <rect x="10" y="10" width="60" height="60" fill="#252525"/>
+                    <text x="80" y="30" fill="#DDD" font-size="14" font-weight="700" class="font-main">SCRAP x50</text>
+                </g>
+
+                <!-- PLUS REWARD -->
+                <g transform="translate(300, 0)" class="item-card" opacity="0.5">
+                    <rect class="bg" width="250" height="80" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+                    <rect x="10" y="10" width="60" height="60" fill="#252525"/>
+                    <text x="80" y="30" fill="#E6C85E" font-size="14" font-weight="700" class="font-main">C4 x2</text>
+                </g>
+            </g>
+
+            <!-- Level 16 -->
+            <g transform="translate(0, 200)">
+                <g transform="translate(250, 40)">
+                    <circle cx="0" cy="0" r="15" fill="#333"/>
+                    <text x="0" y="5" fill="#888" text-anchor="middle" font-size="12" font-weight="700" class="font-mono">16</text>
+                </g>
+                
+                <!-- FREE REWARD -->
+                <g transform="translate(0, 0)" class="item-card" opacity="0.5">
+                    <rect class="bg" width="200" height="80" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+                    <text x="100" y="45" fill="#555" font-size="14" font-weight="700" text-anchor="middle" class="font-main">EMPTY</text>
+                </g>
+
+                <!-- PLUS REWARD -->
+                <g transform="translate(300, 0)" class="item-card" opacity="0.5">
+                    <rect class="bg" width="250" height="80" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+                    <rect x="10" y="10" width="60" height="60" fill="#252525"/>
+                    <text x="80" y="30" fill="#E6C85E" font-size="14" font-weight="700" class="font-main">KIT: RAID</text>
+                </g>
+            </g>
+
+        </g>
+
+        <!-- BUY PLUS BANNER -->
+        <g transform="translate(700, 140)">
+            <rect width="600" height="500" fill="#131313" stroke="#E6C85E" stroke-width="1"/>
+            <rect x="0" y="0" width="600" height="500" fill="url(#grad-plus)" opacity="0.2"/>
+            
+            <text x="300" y="150" fill="#E6C85E" font-size="48" font-weight="700" text-anchor="middle" class="font-main">GET PLUS PASS</text>
+            <text x="300" y="200" fill="#FFF" font-size="16" text-anchor="middle" class="font-main">Unlock exclusive skins, kits, and x2 rates.</text>
+            
+            <!-- Buy Button -->
+            <rect x="200" y="300" width="200" height="60" rx="4" fill="#E6C85E"/>
+            <text x="300" y="338" fill="#000" font-size="24" font-weight="700" text-anchor="middle" class="font-main">BUY NOW</text>
+        </g>
+
+    </g>
+</svg>
+
+
+
+

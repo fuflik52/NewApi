@@ -1,0 +1,126 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- DEFS: Gradients & Patterns only -->
+    <defs>
+        <linearGradient id="grad-card-active" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#333"/>
+            <stop offset="100%" stop-color="#222"/>
+        </linearGradient>
+        
+        <linearGradient id="grad-card-vip" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#3A3010"/>
+            <stop offset="100%" stop-color="#1F1A0A"/>
+        </linearGradient>
+
+        <filter id="shadow-card">
+            <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity="0.5"/>
+        </filter>
+    </defs>
+
+    <!-- BG (Dark) -->
+    <rect width="1920" height="1080" fill="#121212"/>
+
+    <!-- MAIN CONTAINER -->
+    <g transform="translate(360, 240)">
+        
+        <!-- Header -->
+        <text x="0" y="0" fill="#FFFFFF" font-family="Arial, sans-serif" font-weight="bold" font-size="36">ЕЖЕДНЕВНЫЕ НАГРАДЫ</text>
+        <text x="0" y="30" fill="#888888" font-family="Arial, sans-serif" font-size="16">Заходи каждый день, чтобы получать лучшие призы.</text>
+
+        <!-- GRID OF CARDS -->
+        <g transform="translate(0, 60)">
+            
+            <!-- DAY 1 (Ready to Claim) -->
+            <g transform="translate(0, 0)">
+                <!-- Card Body -->
+                <rect width="220" height="300" rx="12" fill="url(#grad-card-active)" stroke="#E6C85E" stroke-width="2" filter="url(#shadow-card)"/>
+                
+                <!-- Header Pill -->
+                <rect x="10" y="10" width="60" height="24" rx="4" fill="rgba(255,255,255,0.1)"/>
+                <text x="40" y="26" fill="#FFF" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="12">ДЕНЬ 1</text>
+                
+                <!-- Item Image (Placeholder) -->
+                <rect x="35" y="60" width="150" height="150" fill="none"/>
+                <!-- Simple Gun Vector -->
+                <path transform="translate(60, 110) scale(2)" d="M0 0 L40 0 L45 10 L5 10 Z M10 10 L15 20" fill="#E6C85E"/>
+                
+                <text x="110" y="230" fill="#DDD" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">ASSAULT RIFLE</text>
+                
+                <!-- Button: CLAIM -->
+                <rect x="20" y="250" width="180" height="40" rx="6" fill="#E6C85E"/>
+                <text x="110" y="275" fill="#000" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="14">ЗАБРАТЬ</text>
+            </g>
+
+            <!-- DAY 2 (Cooldown) -->
+            <g transform="translate(240, 0)">
+                <rect width="220" height="300" rx="12" fill="#1A1A1A" stroke="#333" stroke-width="1"/>
+                
+                <rect x="10" y="10" width="60" height="24" rx="4" fill="rgba(255,255,255,0.05)"/>
+                <text x="40" y="26" fill="#888" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="12">ДЕНЬ 2</text>
+                
+                <path transform="translate(60, 110) scale(2)" d="M0 0 L40 0 L45 10 L5 10 Z" fill="#444"/>
+                
+                <text x="110" y="230" fill="#666" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">CUSTOM SMG</text>
+                
+                <!-- Button: Timer -->
+                <rect x="20" y="250" width="180" height="40" rx="6" fill="#222" stroke="#333" stroke-width="1"/>
+                <text x="110" y="275" fill="#888" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">12:45:00</text>
+            </g>
+
+            <!-- DAY 3 (Locked) -->
+            <g transform="translate(480, 0)">
+                <rect width="220" height="300" rx="12" fill="#1A1A1A" stroke="#333" stroke-width="1" opacity="0.7"/>
+                
+                <rect x="10" y="10" width="60" height="24" rx="4" fill="rgba(255,255,255,0.05)"/>
+                <text x="40" y="26" fill="#888" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="12">ДЕНЬ 3</text>
+                
+                <!-- Lock Icon -->
+                <g transform="translate(95, 120)">
+                    <rect x="0" y="10" width="30" height="20" fill="#444"/>
+                    <path d="M5 10 V0 A10 10 0 0 1 25 10" stroke="#444" stroke-width="4" fill="none"/>
+                </g>
+                
+                <text x="110" y="230" fill="#666" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">???</text>
+                
+                <rect x="20" y="250" width="180" height="40" rx="6" fill="#222"/>
+                <text x="110" y="275" fill="#555" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">НЕДОСТУПНО</text>
+            </g>
+
+            <!-- DAY 4 (VIP) -->
+            <g transform="translate(720, 0)">
+                <rect width="220" height="300" rx="12" fill="url(#grad-card-vip)" stroke="#FFD700" stroke-width="1"/>
+                
+                <rect x="10" y="10" width="60" height="24" rx="4" fill="#FFD700"/>
+                <text x="40" y="26" fill="#000" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="12">VIP</text>
+                
+                <path transform="translate(60, 110) scale(2)" d="M0 5 L40 5 L40 30 L0 30 Z" fill="#FFD700"/>
+                <text x="110" y="130" fill="#000" text-anchor="middle" font-weight="bold" font-size="14">$</text>
+                
+                <text x="110" y="230" fill="#FFD700" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">1000 MOJITOS</text>
+                
+                <rect x="20" y="250" width="180" height="40" rx="6" fill="none" stroke="#FFD700"/>
+                <text x="110" y="275" fill="#FFD700" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="14">VIP ONLY</text>
+            </g>
+
+            <!-- DAY 5 (Final) -->
+            <g transform="translate(960, 0)">
+                <rect width="220" height="300" rx="12" fill="#1A1A1A" stroke="#333" stroke-width="1" opacity="0.5"/>
+                
+                <rect x="10" y="10" width="60" height="24" rx="4" fill="rgba(255,255,255,0.05)"/>
+                <text x="40" y="26" fill="#888" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="12">ДЕНЬ 5</text>
+                
+                <rect x="85" y="110" width="50" height="50" fill="#333"/>
+                
+                <text x="110" y="230" fill="#666" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">C4 EXPLOSIVE</text>
+                
+                <rect x="20" y="250" width="180" height="40" rx="6" fill="#222"/>
+                <text x="110" y="275" fill="#555" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">НЕДОСТУПНО</text>
+            </g>
+
+        </g>
+        
+        <!-- Bottom Tip -->
+        <text x="600" y="400" fill="#666" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">Прогресс сбрасывается, если пропустить один день.</text>
+
+    </g>
+</svg>
+

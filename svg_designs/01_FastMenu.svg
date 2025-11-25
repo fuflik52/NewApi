@@ -1,0 +1,104 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&amp;family=JetBrains+Mono:wght@700&amp;display=swap');
+            .font-main { font-family: 'Roboto Condensed', sans-serif; }
+            .font-mono { font-family: 'JetBrains Mono', monospace; }
+            .btn-hover:hover rect.bg { stroke: #8FAE58; fill-opacity: 0.2; }
+            .btn-hover:hover text.label { fill: #FFFFFF; }
+        </style>
+        <pattern id="tech-grid" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+            <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#FFFFFF" stroke-opacity="0.02" stroke-width="1"/>
+        </pattern>
+        <pattern id="stripes-blocked" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="4" stroke-opacity="0.5"/>
+        </pattern>
+        <filter id="drop-shadow"><feDropShadow dx="0" dy="4" stdDeviation="12" flood-color="#000" flood-opacity="0.9"/></filter>
+        <clipPath id="clip-panel"><rect width="1200" height="700"/></clipPath>
+    </defs>
+    <rect width="1920" height="1080" fill="#0f0f0f" fill-opacity="0.95"/>
+    <rect width="1920" height="1080" fill="url(#tech-grid)"/>
+    <g transform="translate(360, 190)">
+        <rect width="1200" height="700" fill="#161616" stroke="#2A2A2A" stroke-width="1" filter="url(#drop-shadow)"/>
+        <g clip-path="url(#clip-panel)">
+             <g transform="translate(900, 400)" opacity="0.03">
+                <circle cx="0" cy="0" r="250" stroke="#FFFFFF" stroke-width="2"/>
+                <circle cx="0" cy="0" r="150" stroke="#FFFFFF" stroke-width="1" stroke-dasharray="10 10"/>
+                <line x1="-300" y1="0" x2="300" y2="0" stroke="#FFFFFF" stroke-width="1"/>
+                <line x1="0" y1="-300" x2="0" y2="300" stroke="#FFFFFF" stroke-width="1"/>
+            </g>
+             <g transform="translate(200, 500)" opacity="0.03">
+                <path d="M-200 100 L0 0 L200 100 L400 0" stroke="#FFFFFF" stroke-width="2" fill="none"/>
+                <path d="M-200 150 L0 50 L200 150 L400 50" stroke="#FFFFFF" stroke-width="1" fill="none"/>
+                <path d="M-200 200 L0 100 L200 200 L400 100" stroke="#FFFFFF" stroke-width="1" fill="none"/>
+             </g>
+        </g>
+        <line x1="0" y1="70" x2="1200" y2="70" stroke="#2A2A2A" stroke-width="1"/>
+        <text x="40" y="45" fill="#8FAE58" font-size="24" font-weight="700" class="font-main" letter-spacing="1">RUST TELEPORT SYSTEM</text>
+        <text x="1160" y="45" fill="#444" font-size="16" font-weight="700" class="font-main" text-anchor="end">V.2.0</text>
+        <path d="M0 30 V0 H30" stroke="#8FAE58" stroke-width="2" fill="none"/>
+        <path d="M1170 0 H1200 V30" stroke="#8FAE58" stroke-width="2" fill="none"/>
+        <path d="M0 670 V700 H30" stroke="#8FAE58" stroke-width="2" fill="none"/>
+        <path d="M1170 700 H1200 V670" stroke="#8FAE58" stroke-width="2" fill="none"/>
+        <g transform="translate(40, 110)">
+            <text x="0" y="0" fill="#666" font-size="14" font-weight="700" class="font-main" letter-spacing="1">SAVED LOCATIONS</text>
+            <g transform="translate(0, 30)" class="btn-hover">
+                <rect class="bg" width="420" height="64" fill="#1F1F1F" fill-opacity="0.8" stroke="#333" stroke-width="1"/>
+                <path d="M30 26 L20 34 H24 V44 H36 V34 H40 L30 26 Z" stroke="#AAA" stroke-width="1.5" fill="none"/>
+                <text x="60" y="28" fill="#DDD" font-size="18" font-weight="700" class="font-main label">MAIN BASE</text>
+                <text x="60" y="48" fill="#666" font-size="13" class="font-main">Grid L14 • 100% Decay</text>
+                <rect x="350" y="18" width="50" height="28" rx="2" stroke="#8FAE58" stroke-width="1" fill="none"/>
+                <text x="375" y="36" fill="#8FAE58" font-size="12" font-weight="700" text-anchor="middle" class="font-main">TP</text>
+                <rect x="0" y="0" width="2" height="64" fill="#8FAE58"/>
+            </g>
+            <g transform="translate(0, 104)" class="btn-hover">
+                <rect class="bg" width="420" height="64" fill="#1F1F1F" fill-opacity="0.8" stroke="#333" stroke-width="1"/>
+                <path d="M30 26 L20 34 H24 V44 H36 V34 H40 L30 26 Z" stroke="#AAA" stroke-width="1.5" fill="none"/>
+                <text x="60" y="28" fill="#DDD" font-size="18" font-weight="700" class="font-main label">SNOW FARM</text>
+                <text x="60" y="48" fill="#666" font-size="13" class="font-main">Grid H5 • 4hr Upkeep</text>
+                <rect x="350" y="18" width="50" height="28" rx="2" fill="#CD5C5C" fill-opacity="0.1" stroke="#CD5C5C" stroke-width="1"/>
+                <text x="375" y="36" fill="#CD5C5C" font-size="12" font-weight="700" text-anchor="middle" class="font-mono">30s</text>
+                <rect x="0" y="0" width="2" height="64" fill="#CD5C5C"/>
+            </g>
+             <g transform="translate(0, 178)" opacity="0.5" class="btn-hover">
+                <rect width="420" height="64" fill="none" stroke="#333" stroke-width="1" stroke-dasharray="4 4"/>
+                <text x="210" y="38" fill="#666" font-size="14" font-weight="700" text-anchor="middle" class="font-main">+ SET NEW HOME</text>
+            </g>
+        </g>
+        <line x1="500" y1="110" x2="500" y2="650" stroke="#2A2A2A" stroke-width="1"/>
+        <g transform="translate(540, 110)">
+            <text x="0" y="0" fill="#666" font-size="14" font-weight="700" class="font-main" letter-spacing="1">ACTIVE SQUAD</text>
+            <g transform="translate(0, 30)" class="btn-hover">
+                <rect class="bg" width="200" height="160" fill="#1F1F1F" fill-opacity="0.8" stroke="#333" stroke-width="1"/>
+                <rect x="70" y="30" width="60" height="60" fill="#2A2A2A"/>
+                <text x="100" y="65" fill="#555" text-anchor="middle" font-size="10" class="font-main">IMG</text>
+                <text x="100" y="120" fill="#DDD" font-weight="700" text-anchor="middle" font-size="16" class="font-main label">SPACEX</text>
+                <rect x="0" y="158" width="200" height="2" fill="#8FAE58"/>
+            </g>
+            <g transform="translate(220, 30)" class="btn-hover">
+                <rect class="bg" width="200" height="160" fill="#1F1F1F" fill-opacity="0.8" stroke="#333" stroke-width="1"/>
+                <rect x="70" y="30" width="60" height="60" fill="#2A2A2A"/>
+                <text x="100" y="65" fill="#555" text-anchor="middle" font-size="10" class="font-main">IMG</text>
+                <text x="100" y="120" fill="#DDD" font-weight="700" text-anchor="middle" font-size="16" class="font-main label">VULCAN</text>
+                <rect x="0" y="158" width="200" height="2" fill="#8FAE58"/>
+            </g>
+            <g transform="translate(440, 30)">
+                <rect width="200" height="160" fill="#1A1A1A" fill-opacity="0.9" stroke="#CD5C5C" stroke-opacity="0.3" stroke-width="1"/>
+                <rect x="1" y="1" width="198" height="158" fill="url(#stripes-blocked)"/>
+                <rect x="70" y="30" width="60" height="60" fill="#222"/>
+                <rect x="50" y="65" width="100" height="32" fill="#000" rx="4"/>
+                <text x="100" y="86" fill="#CD5C5C" font-weight="700" text-anchor="middle" font-size="20" class="font-mono">00:45</text>
+                <text x="100" y="120" fill="#777" font-weight="700" text-anchor="middle" font-size="16" class="font-main">NINJA</text>
+                <rect x="0" y="158" width="200" height="2" fill="#CD5C5C"/>
+            </g>
+            <g transform="translate(0, 210)" class="btn-hover">
+                <rect class="bg" width="200" height="160" fill="#1F1F1F" fill-opacity="0.8" stroke="#333" stroke-width="1"/>
+                <rect x="70" y="30" width="60" height="60" fill="#2A2A2A"/>
+                <text x="100" y="65" fill="#555" text-anchor="middle" font-size="10" class="font-main">IMG</text>
+                <text x="100" y="120" fill="#DDD" font-weight="700" text-anchor="middle" font-size="16" class="font-main label">TOXIC</text>
+                <rect x="0" y="158" width="200" height="2" fill="#8FAE58"/>
+            </g>
+        </g>
+    </g>
+    <text x="960" y="940" text-anchor="middle" fill="#444" font-size="14" class="font-main" letter-spacing="1">PRESS [ESC] TO CLOSE</text>
+</svg>

@@ -1,0 +1,143 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&amp;family=JetBrains+Mono:wght@700&amp;display=swap');
+            .font-main { font-family: 'Roboto Condensed', sans-serif; }
+            .font-mono { font-family: 'JetBrains Mono', monospace; }
+            .row-hover:hover rect.bg { fill: #252525; stroke: #CD5C5C; stroke-opacity: 0.5; }
+            .row-hover:hover text { fill: #FFFFFF; }
+            .card-hover:hover { stroke: #CD5C5C; stroke-opacity: 1; }
+            .btn-toggle:hover rect { fill-opacity: 0.3; }
+        </style>
+        <pattern id="tech-grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#FFFFFF" stroke-opacity="0.03" stroke-width="1"/>
+        </pattern>
+        <pattern id="stripes-blocked" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="4" stroke-opacity="0.5"/>
+        </pattern>
+        <filter id="drop-shadow"><feDropShadow dx="0" dy="4" stdDeviation="12" flood-color="#000" flood-opacity="0.9"/></filter>
+        <clipPath id="clip-panel"><rect width="1200" height="700"/></clipPath>
+    </defs>
+    <rect width="1920" height="1080" fill="#0f0f0f" fill-opacity="0.95"/>
+    <rect width="1920" height="1080" fill="url(#tech-grid)"/>
+    <g transform="translate(360, 190)">
+        <rect width="1200" height="700" fill="#161616" stroke="#2A2A2A" stroke-width="1" filter="url(#drop-shadow)"/>
+        <g clip-path="url(#clip-panel)">
+             <g transform="translate(900, 400)" opacity="0.02">
+                <path d="M-50 -50 L50 -50 L50 50 L-50 50 Z" stroke="#FFFFFF" stroke-width="4" fill="none"/>
+                <line x1="-50" y1="-50" x2="50" y2="50" stroke="#FFFFFF" stroke-width="4"/>
+                <line x1="50" y1="-50" x2="-50" y2="50" stroke="#FFFFFF" stroke-width="4"/>
+                <circle cx="0" cy="0" r="30" stroke="#FFFFFF" stroke-width="4" fill="none"/>
+            </g>
+             <g transform="translate(250, 500)" opacity="0.02">
+                <rect x="-40" y="-60" width="80" height="120" stroke="#FFFFFF" stroke-width="4" fill="none"/>
+                <line x1="-40" y1="-20" x2="40" y2="-20" stroke="#FFFFFF" stroke-width="4"/>
+                <line x1="-20" y1="-60" x2="-20" y2="60" stroke="#FFFFFF" stroke-width="4"/>
+             </g>
+        </g>
+        <line x1="0" y1="70" x2="1200" y2="70" stroke="#2A2A2A" stroke-width="1"/>
+        <text x="40" y="45" fill="#CD5C5C" font-size="24" font-weight="700" class="font-main" letter-spacing="1">BLOCK MENU</text>
+        <text x="1160" y="45" fill="#444" font-size="16" font-weight="700" class="font-main" text-anchor="end">WIPE PHASE 1</text>
+        <g transform="translate(40, 100)">
+            <g>
+                <rect width="360" height="100" fill="#1F1F1F" stroke="#333" stroke-width="1" class="card-hover"/>
+                <text x="30" y="40" fill="#666" font-size="12" font-weight="700" class="font-main" letter-spacing="1">BLOCKED ITEMS</text>
+                <text x="30" y="80" fill="#CD5C5C" font-size="36" font-weight="700" class="font-mono">14</text>
+                <circle cx="320" cy="50" r="25" fill="#CD5C5C" fill-opacity="0.2"/>
+                <line x1="305" y1="35" x2="335" y2="65" stroke="#CD5C5C" stroke-width="3"/>
+                <line x1="335" y1="35" x2="305" y2="65" stroke="#CD5C5C" stroke-width="3"/>
+            </g>
+            <g transform="translate(380, 0)">
+                <rect width="360" height="100" fill="#1F1F1F" stroke="#333" stroke-width="1" class="card-hover"/>
+                <text x="30" y="40" fill="#666" font-size="12" font-weight="700" class="font-main" letter-spacing="1">ACTIVE UNTIL</text>
+                <text x="30" y="80" fill="#E6C85E" font-size="36" font-weight="700" class="font-mono">12:45:30</text>
+            </g>
+            <g transform="translate(760, 0)">
+                <rect width="360" height="100" fill="#1F1F1F" stroke="#333" stroke-width="1" class="card-hover"/>
+                <text x="30" y="40" fill="#666" font-size="12" font-weight="700" class="font-main" letter-spacing="1">NEXT UNLOCK</text>
+                <text x="30" y="80" fill="#8FAE58" font-size="36" font-weight="700" class="font-mono">EXPLOSIVES</text>
+            </g>
+        </g>
+        <g transform="translate(40, 230)">
+            <text x="0" y="0" fill="#666" font-size="14" font-weight="700" class="font-main" letter-spacing="1">BLOCKED WEAPONS & EXPLOSIVES</text>
+            <g transform="translate(0, 30)">
+                <rect width="1120" height="40" fill="#1A1A1A"/>
+                <text x="20" y="25" fill="#555" font-size="12" font-weight="700" class="font-main">ITEM NAME</text>
+                <text x="400" y="25" fill="#555" font-size="12" font-weight="700" class="font-main">CATEGORY</text>
+                <text x="600" y="25" fill="#555" font-size="12" font-weight="700" class="font-main">UNLOCK TIME</text>
+                <text x="900" y="25" fill="#555" font-size="12" font-weight="700" class="font-main">STATUS</text>
+            </g>
+            <g transform="translate(0, 80)" class="row-hover">
+                <rect class="bg" width="1120" height="60" fill="#161616" stroke-bottom="#222"/>
+                <line x1="0" y1="60" x2="1120" y2="60" stroke="#222"/>
+                <rect x="20" y="15" width="30" height="30" fill="#333"/>
+                <rect x="1" y="1" width="1118" height="58" fill="url(#stripes-blocked)" opacity="0.3"/>
+                <text x="70" y="35" fill="#DDD" font-size="16" font-weight="700" class="font-main">TIMED EXPLOSIVE (C4)</text>
+                <text x="400" y="35" fill="#CD5C5C" font-size="14" class="font-main">Explosives</text>
+                <text x="600" y="35" fill="#E6C85E" font-size="16" font-weight="700" class="font-mono">04:20:00</text>
+                <circle cx="920" cy="30" r="6" fill="#CD5C5C"/>
+                <text x="940" y="35" fill="#CD5C5C" font-size="14" font-weight="700" class="font-main">BLOCKED</text>
+            </g>
+            <g transform="translate(0, 140)" class="row-hover">
+                <rect class="bg" width="1120" height="60" fill="#1F1F1F" stroke="#333"/>
+                <line x1="0" y1="60" x2="1120" y2="60" stroke="#222"/>
+                <rect x="20" y="15" width="30" height="30" fill="#333"/>
+                <rect x="1" y="1" width="1118" height="58" fill="url(#stripes-blocked)" opacity="0.3"/>
+                <text x="70" y="35" fill="#DDD" font-size="16" font-weight="700" class="font-main">ROCKET LAUNCHER</text>
+                <text x="400" y="35" fill="#CD5C5C" font-size="14" class="font-main">Explosives</text>
+                <text x="600" y="35" fill="#E6C85E" font-size="16" font-weight="700" class="font-mono">04:20:00</text>
+                <circle cx="920" cy="30" r="6" fill="#CD5C5C"/>
+                <text x="940" y="35" fill="#CD5C5C" font-size="14" font-weight="700" class="font-main">BLOCKED</text>
+            </g>
+            <g transform="translate(0, 200)" class="row-hover">
+                <rect class="bg" width="1120" height="60" fill="#161616"/>
+                <line x1="0" y1="60" x2="1120" y2="60" stroke="#222"/>
+                <rect x="20" y="15" width="30" height="30" fill="#333"/>
+                <rect x="1" y="1" width="1118" height="58" fill="url(#stripes-blocked)" opacity="0.3"/>
+                <text x="70" y="35" fill="#DDD" font-size="16" font-weight="700" class="font-main">M249 LIGHT MACHINE GUN</text>
+                <text x="400" y="35" fill="#E6C85E" font-size="14" class="font-main">Tier 3 Weapon</text>
+                <text x="600" y="35" fill="#E6C85E" font-size="16" font-weight="700" class="font-mono">24:00:00</text>
+                <circle cx="920" cy="30" r="6" fill="#CD5C5C"/>
+                <text x="940" y="35" fill="#CD5C5C" font-size="14" font-weight="700" class="font-main">BLOCKED</text>
+            </g>
+            <g transform="translate(0, 260)" class="row-hover">
+                <rect class="bg" width="1120" height="60" fill="#161616"/>
+                <line x1="0" y1="60" x2="1120" y2="60" stroke="#222"/>
+                <rect x="20" y="15" width="30" height="30" fill="#333"/>
+                <rect x="1" y="1" width="1118" height="58" fill="url(#stripes-blocked)" opacity="0.3"/>
+                <text x="70" y="35" fill="#DDD" font-size="16" font-weight="700" class="font-main">SATCHEL CHARGE</text>
+                <text x="400" y="35" fill="#CD5C5C" font-size="14" class="font-main">Explosives</text>
+                <text x="600" y="35" fill="#E6C85E" font-size="16" font-weight="700" class="font-mono">04:20:00</text>
+                <circle cx="920" cy="30" r="6" fill="#CD5C5C"/>
+                <text x="940" y="35" fill="#CD5C5C" font-size="14" font-weight="700" class="font-main">BLOCKED</text>
+            </g>
+            <g transform="translate(0, 320)" class="row-hover">
+                <rect class="bg" width="1120" height="60" fill="#161616"/>
+                <line x1="0" y1="60" x2="1120" y2="60" stroke="#222"/>
+                <rect x="20" y="15" width="30" height="30" fill="#333"/>
+                <rect x="1" y="1" width="1118" height="58" fill="url(#stripes-blocked)" opacity="0.3"/>
+                <text x="70" y="35" fill="#DDD" font-size="16" font-weight="700" class="font-main">L96 RIFLE</text>
+                <text x="400" y="35" fill="#E6C85E" font-size="14" class="font-main">Tier 3 Weapon</text>
+                <text x="600" y="35" fill="#E6C85E" font-size="16" font-weight="700" class="font-mono">24:00:00</text>
+                <circle cx="920" cy="30" r="6" fill="#CD5C5C"/>
+                <text x="940" y="35" fill="#CD5C5C" font-size="14" font-weight="700" class="font-main">BLOCKED</text>
+            </g>
+        </g>
+        <g transform="translate(40, 600)">
+            <text x="0" y="0" fill="#666" font-size="14" font-weight="700" class="font-main" letter-spacing="1">PHASE INFORMATION</text>
+            <g transform="translate(0, 20)">
+                <rect width="1120" height="50" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+                <circle cx="30" cy="25" r="10" fill="#CD5C5C"/>
+                <text x="30" y="29" fill="#FFF" text-anchor="middle" font-size="16" font-weight="700" class="font-mono">1</text>
+                <text x="60" y="22" fill="#FFF" font-size="16" font-weight="700" class="font-main">EARLY WIPE PHASE (0-12h)</text>
+                <text x="60" y="38" fill="#888" font-size="13" class="font-main">Only primitive weapons allowed. Tier 2+ weapons and explosives are blocked.</text>
+                <rect x="900" y="10" width="200" height="30" rx="4" fill="#CD5C5C" fill-opacity="0.1" stroke="#CD5C5C"/>
+                <text x="1000" y="32" fill="#CD5C5C" text-anchor="middle" font-size="14" font-weight="700" class="font-main">ACTIVE NOW</text>
+            </g>
+        </g>
+    </g>
+    <text x="960" y="940" text-anchor="middle" fill="#444" font-size="14" class="font-main" letter-spacing="1">PROGRESSIVE WIPE SYSTEM • PRESS [ESC] TO CLOSE</text>
+</svg>
+
+
+

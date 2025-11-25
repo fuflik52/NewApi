@@ -8,7 +8,9 @@
   "networkAccess": {
     "allowedDomains": [
       "https://bublickrust.ru",
-      "https://cdn.discordapp.com"
+      "https://cdn.discordapp.com",
+      "https://cdn.jsdelivr.net",
+      "https://generativelanguage.googleapis.com"
     ]
   }
 }

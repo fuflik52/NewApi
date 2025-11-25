@@ -1,0 +1,176 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&amp;family=JetBrains+Mono:wght@700&amp;display=swap');
+            .font-main { font-family: 'Roboto Condensed', sans-serif; }
+            .font-mono { font-family: 'JetBrains Mono', monospace; }
+            
+            .reason-btn:hover rect { fill: #2A2A2A; stroke-opacity: 1; }
+            .reason-btn:hover text { fill: #FFF; }
+            .reason-selected rect { fill: #CD5C5C; fill-opacity: 0.2; stroke: #CD5C5C; }
+            .reason-selected text { fill: #CD5C5C; }
+            
+            .submit-btn:hover rect { fill: #CD5C5C; }
+            .submit-btn:hover text { fill: #FFF; }
+            
+            .cancel-btn:hover rect { stroke-opacity: 1; }
+            .cancel-btn:hover text { fill: #FFF; }
+        </style>
+        
+        <pattern id="tech-grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#FFFFFF" stroke-opacity="0.03" stroke-width="1"/>
+        </pattern>
+        
+        <filter id="drop-shadow"><feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#000" flood-opacity="0.9"/></filter>
+        <clipPath id="clip-report"><rect width="800" height="700"/></clipPath>
+    </defs>
+
+    <!-- Background -->
+    <rect width="1920" height="1080" fill="#0f0f0f" fill-opacity="0.95"/>
+    <rect width="1920" height="1080" fill="url(#tech-grid)"/>
+
+    <!-- Main Panel -->
+    <g transform="translate(560, 190)">
+        <rect width="800" height="700" fill="#161616" stroke="#2A2A2A" stroke-width="1" filter="url(#drop-shadow)"/>
+        
+        <!-- Watermark: Warning Sign -->
+        <g clip-path="url(#clip-report)">
+            <g transform="translate(600, 350) rotate(15) scale(4)" opacity="0.02">
+                <path d="M0 -50 L45 30 L-45 30 Z" stroke="#FFFFFF" stroke-width="5" fill="none"/>
+                <rect x="-5" y="-10" width="10" height="25" fill="#FFFFFF"/>
+                <circle cx="0" cy="20" r="5" fill="#FFFFFF"/>
+            </g>
+        </g>
+
+        <!-- Header -->
+        <rect width="800" height="80" fill="#1F1F1F" stroke-bottom="#333"/>
+        <rect x="0" y="0" width="4" height="80" fill="#CD5C5C"/>
+        <text x="30" y="48" fill="#CD5C5C" font-size="28" font-weight="700" class="font-main" letter-spacing="2">REPORT PLAYER</text>
+        <text x="770" y="48" fill="#666" font-size="14" font-weight="700" class="font-main" text-anchor="end">ANTI-CHEAT SYSTEM</text>
+
+        <!-- Player Info Section -->
+        <g transform="translate(40, 110)">
+            <text x="0" y="0" fill="#666" font-size="14" font-weight="700" class="font-main" letter-spacing="1">TARGET PLAYER</text>
+            
+            <g transform="translate(0, 20)">
+                <rect width="720" height="100" fill="#1A1A1A" stroke="#333" stroke-width="1"/>
+                
+                <!-- Avatar -->
+                <rect x="20" y="20" width="60" height="60" fill="#252525"/>
+                <g transform="translate(50, 50) scale(1.2)">
+                    <circle cx="0" cy="-5" r="8" fill="#444"/>
+                    <path d="M-10 10 Q0 20 10 10 V15 H-10 Z" fill="#444"/>
+                </g>
+                
+                <!-- Player Name -->
+                <text x="100" y="40" fill="#FFF" font-size="24" font-weight="700" class="font-main">SUSPICIOUS_PLAYER</text>
+                <text x="100" y="65" fill="#888" font-size="14" class="font-main">SteamID: 76561198XXXXXX</text>
+                
+                <!-- Online Status -->
+                <g transform="translate(600, 40)">
+                    <circle cx="0" cy="0" r="6" fill="#8FAE58"/>
+                    <text x="15" y="5" fill="#8FAE58" font-size="14" font-weight="700" class="font-main">ONLINE</text>
+                </g>
+            </g>
+        </g>
+
+        <!-- Report Reason Section -->
+        <g transform="translate(40, 260)">
+            <text x="0" y="0" fill="#666" font-size="14" font-weight="700" class="font-main" letter-spacing="1">SELECT VIOLATION TYPE</text>
+            
+            <!-- Row 1 -->
+            <g transform="translate(0, 30)">
+                <!-- AIMBOT -->
+                <g class="reason-btn reason-selected">
+                    <rect width="230" height="70" rx="4" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+                    <circle cx="40" cy="35" r="10" stroke="#CD5C5C" stroke-width="2" fill="none"/>
+                    <line x1="40" y1="25" x2="40" y2="45" stroke="#CD5C5C" stroke-width="2"/>
+                    <line x1="30" y1="35" x2="50" y2="35" stroke="#CD5C5C" stroke-width="2"/>
+                    <text x="70" y="42" fill="#CD5C5C" font-size="16" font-weight="700" class="font-main">AIMBOT</text>
+                </g>
+                
+                <!-- SPEEDHACK -->
+                <g transform="translate(245, 0)" class="reason-btn">
+                    <rect width="230" height="70" rx="4" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+                    <path d="M25 35 L50 35" stroke="#888" stroke-width="2.5"/>
+                    <path d="M45 30 L50 35 L45 40" stroke="#888" stroke-width="2.5" fill="none"/>
+                    <text x="70" y="42" fill="#AAA" font-size="16" font-weight="700" class="font-main">SPEEDHACK</text>
+                </g>
+                
+                <!-- FLYHACK -->
+                <g transform="translate(490, 0)" class="reason-btn">
+                    <rect width="230" height="70" rx="4" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+                    <path d="M30 40 L40 25 L50 40" stroke="#888" stroke-width="2.5" fill="none"/>
+                    <line x1="25" y1="40" x2="55" y2="40" stroke="#888" stroke-width="2"/>
+                    <text x="70" y="42" fill="#AAA" font-size="16" font-weight="700" class="font-main">FLYHACK</text>
+                </g>
+            </g>
+
+            <!-- Row 2 -->
+            <g transform="translate(0, 110)">
+                <!-- ESP/WALLHACK -->
+                <g class="reason-btn">
+                    <rect width="230" height="70" rx="4" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+                    <rect x="30" y="25" width="20" height="20" stroke="#888" stroke-width="2" fill="none"/>
+                    <circle cx="40" cy="35" r="4" fill="#888"/>
+                    <text x="70" y="42" fill="#AAA" font-size="16" font-weight="700" class="font-main">ESP/WALLHACK</text>
+                </g>
+                
+                <!-- NO RECOIL -->
+                <g transform="translate(245, 0)" class="reason-btn">
+                    <rect width="230" height="70" rx="4" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+                    <path d="M30 45 L50 45 L50 30" stroke="#888" stroke-width="2.5" fill="none"/>
+                    <text x="70" y="42" fill="#AAA" font-size="16" font-weight="700" class="font-main">NO RECOIL</text>
+                </g>
+                
+                <!-- TOXIC BEHAVIOR -->
+                <g transform="translate(490, 0)" class="reason-btn">
+                    <rect width="230" height="70" rx="4" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+                    <line x1="30" y1="25" x2="50" y2="45" stroke="#888" stroke-width="2.5"/>
+                    <line x1="50" y1="25" x2="30" y2="45" stroke="#888" stroke-width="2.5"/>
+                    <text x="70" y="42" fill="#AAA" font-size="16" font-weight="700" class="font-main">TOXIC BEHAVIOR</text>
+                </g>
+            </g>
+        </g>
+
+        <!-- Additional Details -->
+        <g transform="translate(40, 470)">
+            <text x="0" y="0" fill="#666" font-size="14" font-weight="700" class="font-main" letter-spacing="1">ADDITIONAL INFORMATION (OPTIONAL)</text>
+            
+            <g transform="translate(0, 20)">
+                <rect width="720" height="100" rx="4" fill="#1A1A1A" stroke="#333" stroke-width="1"/>
+                <text x="20" y="30" fill="#555" font-size="14" class="font-main">Describe what you witnessed...</text>
+            </g>
+        </g>
+
+        <!-- Action Buttons -->
+        <g transform="translate(40, 610)">
+            <!-- Cancel Button -->
+            <g class="cancel-btn">
+                <rect width="340" height="60" rx="6" fill="none" stroke="#555" stroke-width="1" stroke-opacity="0.5"/>
+                <text x="170" y="38" fill="#AAA" text-anchor="middle" font-size="18" font-weight="700" class="font-main" letter-spacing="1">CANCEL</text>
+            </g>
+            
+            <!-- Submit Button -->
+            <g transform="translate(380, 0)" class="submit-btn">
+                <rect width="340" height="60" rx="6" fill="#CD5C5C" fill-opacity="0.2" stroke="#CD5C5C" stroke-width="2"/>
+                <text x="170" y="38" fill="#CD5C5C" text-anchor="middle" font-size="18" font-weight="700" class="font-main" letter-spacing="1">SUBMIT REPORT</text>
+                
+                <!-- Warning Icon -->
+                <path d="M295 25 L305 40 L285 40 Z" stroke="#CD5C5C" stroke-width="2" fill="none"/>
+                <line x1="295" y1="31" x2="295" y2="35" stroke="#CD5C5C" stroke-width="2"/>
+                <circle cx="295" cy="37" r="1" fill="#CD5C5C"/>
+            </g>
+        </g>
+
+        <!-- Corner Accents -->
+        <path d="M0 30 V0 H30" stroke="#CD5C5C" stroke-width="2" fill="none"/>
+        <path d="M770 0 H800 V30" stroke="#CD5C5C" stroke-width="2" fill="none"/>
+        <path d="M0 670 V700 H30" stroke="#CD5C5C" stroke-width="2" fill="none"/>
+        <path d="M770 700 H800 V670" stroke="#CD5C5C" stroke-width="2" fill="none"/>
+    </g>
+
+    <!-- Bottom Notice -->
+    <text x="960" y="940" text-anchor="middle" fill="#444" font-size="14" class="font-main" letter-spacing="1">FALSE REPORTS WILL RESULT IN PENALTIES • PRESS [ESC] TO CLOSE</text>
+</svg>
+

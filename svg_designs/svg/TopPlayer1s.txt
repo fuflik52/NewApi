@@ -1,0 +1,208 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&amp;family=JetBrains+Mono:wght@700&amp;display=swap');
+            .font-main { font-family: 'Roboto Condensed', sans-serif; }
+            .font-mono { font-family: 'JetBrains Mono', monospace; }
+            
+            .row-hover:hover rect.bg { fill: #D4C075; fill-opacity: 0.1; stroke: #D4C075; stroke-opacity: 0.5; }
+            .row-hover:hover text { fill: #FFFFFF; }
+            .row-hover:hover text.rank { fill: #FF8C3B; }
+            
+            .btn-hover:hover rect { stroke: #BECF8F; fill: #718B44; fill-opacity: 0.2; }
+            .btn-hover:hover text { fill: #BECF8F; }
+            
+            /* Custom Scrollbar for potential HTML usage simulation */
+            .scroll-bar { fill: #FFFFFF; fill-opacity: 0.1; }
+        </style>
+        
+        <pattern id="tech-grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#FFFFFF" stroke-opacity="0.03" stroke-width="1"/>
+        </pattern>
+        
+        <filter id="drop-shadow"><feDropShadow dx="0" dy="8" stdDeviation="20" flood-color="#000" flood-opacity="0.9"/></filter>
+        <filter id="blur-glass"><feGaussianBlur in="SourceGraphic" stdDeviation="15"/></filter>
+        
+        <linearGradient id="grad-vip" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#D4C075" stop-opacity="0.1"/>
+            <stop offset="100%" stop-color="#FFD700" stop-opacity="0.05"/>
+        </linearGradient>
+    </defs>
+    
+    <!-- Background (Standardized) -->
+    <rect width="1920" height="1080" fill="#111111"/>
+    <g filter="url(#blur-glass)" opacity="0.3">
+        <rect width="1920" height="1080" fill="#535353"/>
+    </g>
+    <rect width="1920" height="1080" fill="url(#tech-grid)"/>
+    <rect width="1920" height="1080" fill="#000000" fill-opacity="0.2"/>
+    
+    <!-- Main Panel -->
+    <g transform="translate(360, 150)">
+        <!-- Glass Panel Background -->
+        <rect width="1200" height="800" fill="#535353" fill-opacity="0.6" stroke="#FFFFFF" stroke-opacity="0.1" stroke-width="2" rx="12" filter="url(#drop-shadow)"/>
+        
+        <!-- Header Line -->
+        <line x1="0" y1="90" x2="1200" y2="90" stroke="#FFFFFF" stroke-opacity="0.1" stroke-width="1"/>
+        
+        <!-- Title -->
+        <text x="40" y="55" fill="#FFFFFF" font-size="32" font-weight="700" class="font-main" letter-spacing="2">TOP PLAYERS</text>
+        <text x="1160" y="55" fill="#C6C4C2" font-size="16" font-weight="700" class="font-main" text-anchor="end">SEASON 14 LEADERBOARD</text>
+        
+        <!-- My Statistics Button -->
+        <g transform="translate(950, 25)" class="btn-hover" style="cursor: pointer;">
+            <rect width="180" height="40" fill="none" stroke="#718B44" stroke-width="1" rx="4"/>
+            <text x="90" y="26" fill="#BECF8F" font-size="14" font-weight="700" class="font-main" text-anchor="middle" letter-spacing="1">МОЯ СТАТИСТИКА</text>
+        </g>
+
+        <!-- Table Header -->
+        <g transform="translate(40, 110)">
+             <rect width="1120" height="40" fill="#FFFFFF" fill-opacity="0.1" rx="4"/>
+             <text x="20" y="26" fill="#C6C4C2" font-size="14" font-weight="700" class="font-main">RANK</text>
+             <text x="120" y="26" fill="#C6C4C2" font-size="14" font-weight="700" class="font-main">PLAYER</text>
+             <text x="450" y="26" fill="#C6C4C2" font-size="14" font-weight="700" class="font-main">CLAN</text>
+             <text x="650" y="26" fill="#C6C4C2" font-size="14" font-weight="700" class="font-main">K/D RATIO</text>
+             <text x="820" y="26" fill="#C6C4C2" font-size="14" font-weight="700" class="font-main">HOURS</text>
+             <text x="1080" y="26" fill="#C6C4C2" font-size="14" font-weight="700" class="font-main" text-anchor="end">SCORE</text>
+        </g>
+
+        <!-- Rank 1 (VIP Gold Style) -->
+        <g transform="translate(40, 160)" class="row-hover">
+            <rect class="bg" width="1120" height="60" fill="url(#grad-vip)" stroke="#D4C075" stroke-opacity="0.3" rx="4"/>
+            <text x="30" y="38" fill="#FF8C3B" font-size="24" font-weight="700" class="font-mono rank">#1</text>
+            
+            <!-- Avatar Placeholder -->
+            <rect x="100" y="10" width="40" height="40" fill="#000000" fill-opacity="0.3" rx="4"/>
+            <circle cx="120" cy="30" r="15" fill="#D4C075"/> <!-- Gold Avatar -->
+            
+            <text x="160" y="38" fill="#FFFFFF" font-size="20" font-weight="700" class="font-main">SLAUGHTER_KING</text>
+            
+            <text x="450" y="38" fill="#BECF8F" font-size="16" font-weight="700" class="font-mono">[ZERGS]</text>
+            <text x="650" y="38" fill="#FF8C3B" font-size="18" font-weight="700" class="font-mono">8.45</text>
+            <text x="820" y="38" fill="#C6C4C2" font-size="16" font-weight="700" class="font-mono">2,400h</text>
+            <text x="1080" y="38" fill="#FF8C3B" font-size="20" font-weight="700" class="font-mono" text-anchor="end">152,400</text>
+        </g>
+
+        <!-- Rank 2 -->
+        <g transform="translate(40, 230)" class="row-hover">
+            <rect class="bg" width="1120" height="50" fill="#FFFFFF" fill-opacity="0.05" rx="4"/>
+            <text x="30" y="32" fill="#C6C4C2" font-size="20" font-weight="700" class="font-mono rank">#2</text>
+            
+            <circle cx="120" cy="25" r="15" fill="#535353"/>
+            <text x="160" y="32" fill="#FFFFFF" font-size="16" font-weight="700" class="font-main">NIGHTSTALKER</text>
+            
+            <text x="450" y="32" fill="#84BBDB" font-size="14" font-weight="700" class="font-mono">[SHAD]</text>
+            <text x="650" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-mono">6.20</text>
+            <text x="820" y="32" fill="#C6C4C2" fill-opacity="0.6" font-size="14" font-weight="700" class="font-mono">1,100h</text>
+            <text x="1080" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-mono" text-anchor="end">98,500</text>
+        </g>
+        
+         <!-- Rank 3 -->
+        <g transform="translate(40, 280)" class="row-hover">
+            <rect class="bg" width="1120" height="50" fill="#FFFFFF" fill-opacity="0.05" rx="4"/>
+            <text x="30" y="32" fill="#FF9F5D" font-size="20" font-weight="700" class="font-mono rank">#3</text>
+            
+            <circle cx="120" cy="25" r="15" fill="#535353"/>
+            <text x="160" y="32" fill="#FFFFFF" font-size="16" font-weight="700" class="font-main">RUST_LORD</text>
+            
+            <text x="450" y="32" fill="#BECF8F" font-size="14" font-weight="700" class="font-mono">[GODS]</text>
+            <text x="650" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-mono">5.90</text>
+            <text x="820" y="32" fill="#C6C4C2" fill-opacity="0.6" font-size="14" font-weight="700" class="font-mono">3,500h</text>
+            <text x="1080" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-mono" text-anchor="end">92,100</text>
+        </g>
+
+        <!-- Rank 4 -->
+        <g transform="translate(40, 330)" class="row-hover">
+            <rect class="bg" width="1120" height="50" fill="#FFFFFF" fill-opacity="0.05" rx="4"/>
+            <text x="30" y="32" fill="#C6C4C2" fill-opacity="0.5" font-size="20" font-weight="700" class="font-mono rank">#4</text>
+            <circle cx="120" cy="25" r="15" fill="#535353"/>
+            <text x="160" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-main">TOXIC_AVENGER</text>
+            <text x="450" y="32" fill="#C6C4C2" fill-opacity="0.5" font-size="14" font-weight="700" class="font-mono">-</text>
+            <text x="650" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-mono">4.20</text>
+            <text x="820" y="32" fill="#C6C4C2" fill-opacity="0.6" font-size="14" font-weight="700" class="font-mono">5,600h</text>
+            <text x="1080" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-mono" text-anchor="end">85,200</text>
+        </g>
+
+        <!-- Rank 5 -->
+        <g transform="translate(40, 380)" class="row-hover">
+             <rect class="bg" width="1120" height="50" fill="#FFFFFF" fill-opacity="0.05" rx="4"/>
+             <text x="30" y="32" fill="#C6C4C2" fill-opacity="0.5" font-size="20" font-weight="700" class="font-mono rank">#5</text>
+             <circle cx="120" cy="25" r="15" fill="#535353"/>
+             <text x="160" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-main">BEAR_GRYLLS</text>
+             <text x="450" y="32" fill="#BECF8F" font-size="14" font-weight="700" class="font-mono">[SURV]</text>
+             <text x="650" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-mono">3.80</text>
+             <text x="820" y="32" fill="#C6C4C2" fill-opacity="0.6" font-size="14" font-weight="700" class="font-mono">800h</text>
+             <text x="1080" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-mono" text-anchor="end">74,500</text>
+        </g>
+
+        <!-- Rank 6 -->
+        <g transform="translate(40, 430)" class="row-hover">
+            <rect class="bg" width="1120" height="50" fill="#FFFFFF" fill-opacity="0.05" rx="4"/>
+            <text x="30" y="32" fill="#C6C4C2" fill-opacity="0.5" font-size="20" font-weight="700" class="font-mono rank">#6</text>
+            <circle cx="120" cy="25" r="15" fill="#535353"/>
+            <text x="160" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-main">NAKED_SPAWN</text>
+            <text x="450" y="32" fill="#C6C4C2" fill-opacity="0.5" font-size="14" font-weight="700" class="font-mono">-</text>
+            <text x="650" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-mono">1.20</text>
+            <text x="820" y="32" fill="#C6C4C2" fill-opacity="0.6" font-size="14" font-weight="700" class="font-mono">12h</text>
+            <text x="1080" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-mono" text-anchor="end">12,000</text>
+        </g>
+        
+         <g transform="translate(40, 480)" class="row-hover">
+            <rect class="bg" width="1120" height="50" fill="#FFFFFF" fill-opacity="0.05" rx="4"/>
+            <text x="30" y="32" fill="#C6C4C2" fill-opacity="0.5" font-size="20" font-weight="700" class="font-mono rank">#7</text>
+            <circle cx="120" cy="25" r="15" fill="#535353"/>
+            <text x="160" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-main">FARM_BOT_9000</text>
+            <text x="450" y="32" fill="#BECF8F" font-size="14" font-weight="700" class="font-mono">[BOTS]</text>
+            <text x="650" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-mono">0.50</text>
+            <text x="820" y="32" fill="#C6C4C2" fill-opacity="0.6" font-size="14" font-weight="700" class="font-mono">5,000h</text>
+            <text x="1080" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-mono" text-anchor="end">10,500</text>
+        </g>
+
+        <!-- Rank 8 -->
+         <g transform="translate(40, 530)" class="row-hover">
+            <rect class="bg" width="1120" height="50" fill="#FFFFFF" fill-opacity="0.05" rx="4"/>
+            <text x="30" y="32" fill="#C6C4C2" fill-opacity="0.5" font-size="20" font-weight="700" class="font-mono rank">#8</text>
+            <circle cx="120" cy="25" r="15" fill="#535353"/>
+            <text x="160" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-main">ZERG_RECRUIT</text>
+            <text x="450" y="32" fill="#BECF8F" font-size="14" font-weight="700" class="font-mono">[ZERGS]</text>
+            <text x="650" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-mono">0.80</text>
+            <text x="820" y="32" fill="#C6C4C2" fill-opacity="0.6" font-size="14" font-weight="700" class="font-mono">150h</text>
+            <text x="1080" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-mono" text-anchor="end">8,400</text>
+        </g>
+
+        <!-- Rank 9 -->
+         <g transform="translate(40, 580)" class="row-hover">
+            <rect class="bg" width="1120" height="50" fill="#FFFFFF" fill-opacity="0.05" rx="4"/>
+            <text x="30" y="32" fill="#C6C4C2" fill-opacity="0.5" font-size="20" font-weight="700" class="font-mono rank">#9</text>
+            <circle cx="120" cy="25" r="15" fill="#535353"/>
+            <text x="160" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-main">ROOF_CAMPER</text>
+            <text x="450" y="32" fill="#C6C4C2" fill-opacity="0.5" font-size="14" font-weight="700" class="font-mono">-</text>
+            <text x="650" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-mono">1.05</text>
+            <text x="820" y="32" fill="#C6C4C2" fill-opacity="0.6" font-size="14" font-weight="700" class="font-mono">420h</text>
+            <text x="1080" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-mono" text-anchor="end">6,200</text>
+        </g>
+
+        <!-- Rank 10 -->
+         <g transform="translate(40, 630)" class="row-hover">
+            <rect class="bg" width="1120" height="50" fill="#FFFFFF" fill-opacity="0.05" rx="4"/>
+            <text x="30" y="32" fill="#C6C4C2" fill-opacity="0.5" font-size="20" font-weight="700" class="font-mono rank">#10</text>
+            <circle cx="120" cy="25" r="15" fill="#535353"/>
+            <text x="160" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-main">GRUB_MASTER</text>
+            <text x="450" y="32" fill="#C6C4C2" fill-opacity="0.5" font-size="14" font-weight="700" class="font-mono">-</text>
+            <text x="650" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-mono">0.30</text>
+            <text x="820" y="32" fill="#C6C4C2" fill-opacity="0.6" font-size="14" font-weight="700" class="font-mono">20h</text>
+            <text x="1080" y="32" fill="#C6C4C2" font-size="16" font-weight="700" class="font-mono" text-anchor="end">1,100</text>
+        </g>
+
+        <!-- Pagination / Footer -->
+         <g transform="translate(600, 740)">
+            <text x="0" y="0" fill="#C6C4C2" fill-opacity="0.6" font-size="14" font-weight="700" class="font-main" text-anchor="middle">SHOWING 1-10 OF 2,542 PLAYERS</text>
+            <g transform="translate(-60, 20)">
+                 <rect width="120" height="2" fill="#535353"/>
+                 <rect width="40" height="2" fill="#D4C075"/>
+            </g>
+         </g>
+
+    </g>
+    <text x="960" y="980" text-anchor="middle" fill="#C6C4C2" fill-opacity="0.5" font-size="14" class="font-main" letter-spacing="1">PRESS [ESC] TO CLOSE</text>
+</svg>

@@ -1,0 +1,125 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&amp;family=JetBrains+Mono:wght@700&amp;display=swap');
+            .font-main { font-family: 'Roboto Condensed', sans-serif; }
+            .font-mono { font-family: 'JetBrains Mono', monospace; }
+            .btn-hover:hover rect.bg { stroke: #8FAE58; fill-opacity: 0.2; }
+            .btn-hover:hover text.label { fill: #FFFFFF; }
+            .cat-btn:hover rect { fill: #333; }
+            .cat-btn:hover path { fill: #FFF; }
+        </style>
+        <pattern id="tech-grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#FFFFFF" stroke-opacity="0.03" stroke-width="1"/>
+        </pattern>
+        <filter id="drop-shadow"><feDropShadow dx="0" dy="4" stdDeviation="12" flood-color="#000" flood-opacity="0.9"/></filter>
+        <clipPath id="clip-details"><rect width="400" height="700"/></clipPath>
+    </defs>
+    <rect width="1920" height="1080" fill="#0f0f0f" fill-opacity="0.95"/>
+    <rect width="1920" height="1080" fill="url(#tech-grid)"/>
+    <g transform="translate(260, 190)">
+        <rect width="1400" height="700" fill="#161616" stroke="#2A2A2A" stroke-width="1" filter="url(#drop-shadow)"/>
+        <rect width="1400" height="60" fill="#1F1F1F" stroke-bottom="#333"/>
+        <text x="30" y="38" fill="#8FAE58" font-size="24" font-weight="700" class="font-main" letter-spacing="1">CRAFTING BENCH</text>
+        <text x="1370" y="38" fill="#666" font-size="16" font-weight="700" class="font-main" text-anchor="end">LEVEL 2 WORKBENCH</text>
+        <rect x="0" y="0" width="4" height="60" fill="#8FAE58"/>
+        <g transform="translate(0, 60)">
+            <rect width="80" height="640" fill="#131313" stroke-right="#2A2A2A"/>
+            <g transform="translate(0, 0)" class="cat-btn">
+                <rect width="80" height="80" fill="#1F1F1F"/>
+                <rect width="4" height="80" fill="#8FAE58"/>
+                <path transform="translate(25, 25) scale(1.5)" d="M2 8 L8 2 L18 12 L12 18 Z M6 12 L12 6" fill="#FFFFFF" stroke="none"/>
+            </g>
+            <g transform="translate(0, 80)" class="cat-btn">
+                <rect width="80" height="80" fill="none"/>
+                <path transform="translate(25, 25) scale(1.5)" d="M2 18 V 8 L10 2 L18 8 V 18 H 2 M 8 18 V 12 H 12 V 18" fill="#666"/>
+            </g>
+            <g transform="translate(0, 160)" class="cat-btn">
+                <rect width="80" height="80" fill="none"/>
+                <path transform="translate(25, 25) scale(1.5)" d="M8 2 H 12 V 8 H 18 V 12 H 12 V 18 H 8 V 12 H 2 V 8 H 8 Z" fill="#666"/>
+            </g>
+            <g transform="translate(0, 240)" class="cat-btn">
+                <rect width="80" height="80" fill="none"/>
+                <path transform="translate(25, 25) scale(1.5)" d="M4 4 L 8 2 L 12 2 L 16 4 L 14 18 H 6 Z" fill="#666"/>
+            </g>
+        </g>
+        <g transform="translate(100, 80)">
+            <text x="0" y="0" fill="#666" font-size="12" font-weight="700" class="font-main" letter-spacing="1">WEAPONS</text>
+            <g transform="translate(0, 20)" class="btn-hover">
+                <rect class="bg" width="160" height="160" fill="#1F1F1F" stroke="#8FAE58" stroke-width="2"/>
+                <text x="80" y="60" fill="#555" text-anchor="middle" font-size="10" class="font-main">IMG</text>
+                <text x="80" y="130" fill="#FFFFFF" text-anchor="middle" font-size="16" font-weight="700" class="font-main label">ASSAULT RIFLE</text>
+                <text x="80" y="148" fill="#8FAE58" text-anchor="middle" font-size="12" font-weight="700" class="font-mono">50 HQM</text>
+            </g>
+            <g transform="translate(180, 20)" class="btn-hover">
+                <rect class="bg" width="160" height="160" fill="#161616" stroke="#333" stroke-width="1"/>
+                <text x="80" y="60" fill="#555" text-anchor="middle" font-size="10" class="font-main">IMG</text>
+                <text x="80" y="130" fill="#DDD" text-anchor="middle" font-size="16" font-weight="700" class="font-main label">BOLT ACTION</text>
+                <text x="80" y="148" fill="#888" text-anchor="middle" font-size="12" font-weight="700" class="font-mono">30 HQM</text>
+            </g>
+            <g transform="translate(360, 20)">
+                <rect width="160" height="160" fill="#161616" stroke="#E6C85E" stroke-width="1"/>
+                <text x="80" y="60" fill="#555" text-anchor="middle" font-size="10" class="font-main">IMG</text>
+                <text x="80" y="130" fill="#E6C85E" text-anchor="middle" font-size="16" font-weight="700" class="font-main">THOMPSON</text>
+                <rect x="20" y="140" width="120" height="6" fill="#333" rx="2"/>
+                <rect x="20" y="140" width="80" height="6" fill="#E6C85E" rx="2"/>
+                <text x="80" y="100" fill="#E6C85E" text-anchor="middle" font-size="12" font-weight="700" class="font-mono">15s LEFT</text>
+            </g>
+            <g transform="translate(540, 20)">
+                <rect width="160" height="160" fill="#1A1A1A" stroke="#CD5C5C" stroke-opacity="0.3" stroke-width="1"/>
+                <rect x="80" y="60" width="40" height="40" fill="#222"/>
+                <text x="80" y="130" fill="#777" text-anchor="middle" font-size="16" font-weight="700" class="font-main">MP5A4</text>
+                <text x="80" y="148" fill="#CD5C5C" text-anchor="middle" font-size="12" font-weight="700" class="font-main">NO RESOURCES</text>
+            </g>
+            <g transform="translate(0, 200)" class="btn-hover">
+                <rect class="bg" width="160" height="160" fill="#161616" stroke="#333" stroke-width="1"/>
+                <text x="80" y="130" fill="#DDD" text-anchor="middle" font-size="16" font-weight="700" class="font-main label">SEMI RIFLE</text>
+                <text x="80" y="148" fill="#888" text-anchor="middle" font-size="12" font-weight="700" class="font-mono">450 FRAG</text>
+            </g>
+             <g transform="translate(180, 200)" class="btn-hover">
+                <rect class="bg" width="160" height="160" fill="#161616" stroke="#333" stroke-width="1"/>
+                <text x="80" y="130" fill="#DDD" text-anchor="middle" font-size="16" font-weight="700" class="font-main label">PYTHON</text>
+                <text x="80" y="148" fill="#888" text-anchor="middle" font-size="12" font-weight="700" class="font-mono">3 PIPES</text>
+            </g>
+        </g>
+        <g transform="translate(1000, 0)">
+            <rect width="400" height="700" fill="#131313" stroke-left="#2A2A2A"/>
+            <g clip-path="url(#clip-details)">
+                <g transform="translate(200, 300) rotate(15) scale(3)" opacity="0.02">
+                    <rect x="-40" y="-60" width="80" height="120" stroke="#FFFFFF" stroke-width="4" fill="none"/>
+                    <line x1="-40" y1="-20" x2="40" y2="-20" stroke="#FFFFFF" stroke-width="4"/>
+                    <line x1="-20" y1="-60" x2="-20" y2="60" stroke="#FFFFFF" stroke-width="4"/>
+                </g>
+            </g>
+            <g transform="translate(40, 60)">
+                <rect width="320" height="200" fill="#1A1A1A" stroke="#333" stroke-width="1"/>
+                <path d="M0 0 L320 200" stroke="#222"/>
+                <path d="M320 0 L0 200" stroke="#222"/>
+                <text x="160" y="110" fill="#444" text-anchor="middle" font-size="14" class="font-main">LARGE PREVIEW</text>
+                <text x="0" y="240" fill="#FFFFFF" font-size="32" font-weight="700" class="font-main">ASSAULT RIFLE</text>
+                <text x="0" y="270" fill="#888" font-size="14" class="font-main" width="300">High fire rate, moderate damage. The standard for combat.</text>
+                <text x="0" y="320" fill="#8FAE58" font-size="14" font-weight="700" class="font-main" letter-spacing="1">REQUIRED RESOURCES</text>
+                <g transform="translate(0, 340)">
+                    <rect width="320" height="50" fill="#1F1F1F" stroke="#333"/>
+                    <text x="20" y="30" fill="#DDD" font-size="16" font-weight="700" class="font-main">High Quality Metal</text>
+                    <text x="300" y="30" fill="#8FAE58" font-size="16" font-weight="700" class="font-mono" text-anchor="end">50 / 120</text>
+                </g>
+                <g transform="translate(0, 400)">
+                    <rect width="320" height="50" fill="#1F1F1F" stroke="#333"/>
+                    <text x="20" y="30" fill="#DDD" font-size="16" font-weight="700" class="font-main">Wood</text>
+                    <text x="300" y="30" fill="#8FAE58" font-size="16" font-weight="700" class="font-mono" text-anchor="end">200 / 5000</text>
+                </g>
+                <g transform="translate(0, 460)">
+                    <rect width="320" height="50" fill="#1F1F1F" stroke="#333"/>
+                    <text x="20" y="30" fill="#DDD" font-size="16" font-weight="700" class="font-main">Rifle Body</text>
+                    <text x="300" y="30" fill="#8FAE58" font-size="16" font-weight="700" class="font-mono" text-anchor="end">1 / 4</text>
+                </g>
+                <g transform="translate(0, 540)">
+                    <rect width="320" height="60" rx="4" fill="#8FAE58"/>
+                    <text x="160" y="38" fill="#000" font-size="24" font-weight="700" text-anchor="middle" class="font-main">CRAFT ITEM</text>
+                    <text x="310" y="38" fill="#000" font-size="14" font-weight="700" text-anchor="end" opacity="0.5">30s</text>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

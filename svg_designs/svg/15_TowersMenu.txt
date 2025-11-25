@@ -1,0 +1,185 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&amp;family=JetBrains+Mono:wght@700&amp;display=swap');
+            .font-main { font-family: 'Roboto Condensed', sans-serif; }
+            .font-mono { font-family: 'JetBrains Mono', monospace; }
+            
+            /* Эффекты наведения */
+            .nav-icon:hover circle { stroke: #E6C85E; stroke-opacity: 1; fill: #222; }
+            .nav-icon:hover path { fill: #FFF; }
+            
+            .hex-tower:hover polygon { stroke: #E6C85E; stroke-width: 3; fill-opacity: 0.8; }
+            .hex-tower:hover text.status { fill: #FFF; }
+            
+            .btn-claim:hover rect.bg { fill: #E6C85E; }
+            .btn-claim:hover text { fill: #000; }
+        </style>
+
+        <linearGradient id="grad-overlay" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#000" stop-opacity="0.9"/>
+            <stop offset="20%" stop-color="#111" stop-opacity="0.5"/>
+            <stop offset="80%" stop-color="#111" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="#000" stop-opacity="0.9"/>
+        </linearGradient>
+        
+        <filter id="neon-glow">
+            <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#E6C85E" flood-opacity="0.4"/>
+        </filter>
+        
+        <pattern id="hex-grid" x="0" y="0" width="40" height="69.28" patternUnits="userSpaceOnUse" patternTransform="scale(0.5)">
+            <path d="M20 0 L40 11.54 V34.64 L20 46.18 L0 34.64 V11.54 Z" fill="none" stroke="#333" stroke-width="1"/>
+        </pattern>
+    </defs>
+
+    <!-- ФОН: Темный с гексагональной сеткой -->
+    <rect width="1920" height="1080" fill="#0a0a0a"/>
+    <rect width="1920" height="1080" fill="url(#hex-grid)" opacity="0.2"/>
+    <rect width="1920" height="1080" fill="url(#grad-overlay)"/>
+
+    <!-- ГЛАВНЫЙ ЛЕЙАУТ: 3 КОЛОНКИ (Узкая навигация - Центр схема - Правая панель) -->
+    
+    <!-- 1. ЛЕВАЯ НАВИГАЦИЯ (Compact Sidebar) -->
+    <g transform="translate(40, 140)">
+        <!-- Фон сайдбара -->
+        <rect width="80" height="800" rx="10" fill="#161616" stroke="#333" stroke-width="1"/>
+        
+        <!-- Иконки -->
+        <g transform="translate(40, 60)" class="nav-icon">
+            <circle cx="0" cy="0" r="24" fill="transparent" stroke="transparent" stroke-width="2"/>
+            <path d="M-10 -8 H10 V8 H-10 Z" fill="#555"/> <!-- Home -->
+        </g>
+        <g transform="translate(40, 130)" class="nav-icon">
+            <circle cx="0" cy="0" r="24" fill="transparent" stroke="transparent" stroke-width="2"/>
+            <path d="M-8 -10 L8 0 L-8 10 Z" fill="#555"/> <!-- Play -->
+        </g>
+        <g transform="translate(40, 200)">
+            <!-- Active Item -->
+            <circle cx="0" cy="0" r="24" fill="#222" stroke="#E6C85E" stroke-width="2"/>
+            <path d="M-6 10 V-10 H6 V10 M-10 10 H10" stroke="#E6C85E" stroke-width="2" fill="none"/> <!-- Tower Icon -->
+        </g>
+        <g transform="translate(40, 270)" class="nav-icon">
+            <circle cx="0" cy="0" r="24" fill="transparent" stroke="transparent" stroke-width="2"/>
+            <circle cx="0" cy="0" r="8" fill="#555"/> <!-- Settings -->
+        </g>
+        
+        <!-- Низ: Выход -->
+        <g transform="translate(40, 740)" class="nav-icon">
+             <path d="M-10 0 H0 M5 -5 L10 0 L5 5" stroke="#CD5C5C" stroke-width="2"/>
+        </g>
+    </g>
+
+    <!-- 2. ЦЕНТРАЛЬНАЯ ЧАСТЬ: СХЕМА БАШЕН (Map View) -->
+    <g transform="translate(160, 140)">
+        <!-- Заголовок -->
+        <text x="0" y="40" fill="#FFF" font-size="48" font-weight="700" class="font-main" letter-spacing="2">TERRITORY CONTROL</text>
+        <text x="5" y="70" fill="#888" font-size="16" class="font-main">DOMINATE THE ISLAND</text>
+
+        <!-- СХЕМА (Ромб) -->
+        <g transform="translate(450, 450)">
+            
+            <!-- Соединительные линии (Network) -->
+            <path d="M0 -250 L-250 0 L0 250 L250 0 Z" stroke="#333" stroke-width="2" stroke-dasharray="10 5"/>
+            <path d="M0 -250 L0 250 M-250 0 L250 0" stroke="#222" stroke-width="2"/>
+            
+            <!-- Центральный Хаб (Лого) -->
+            <circle cx="0" cy="0" r="60" fill="#111" stroke="#333" stroke-width="2"/>
+            <text x="0" y="5" fill="#444" text-anchor="middle" font-size="12" font-weight="700" class="font-mono">HUB</text>
+
+            <!-- TOWER NORTH -->
+            <g transform="translate(0, -250)" class="hex-tower">
+                <polygon points="0,-60 52,-30 52,30 0,60 -52,30 -52,-30" fill="#1A1A1A" stroke="#444" stroke-width="2"/>
+                <text x="0" y="-10" fill="#888" text-anchor="middle" font-size="12" font-weight="700" class="font-main">NORTH TOWER</text>
+                <text x="0" y="15" fill="#AAA" text-anchor="middle" font-size="14" font-weight="700" class="font-main status">UNCLAIMED</text>
+                <text x="0" y="35" fill="#888" text-anchor="middle" font-size="10" class="font-mono">4:20 TO CAP</text>
+            </g>
+
+            <!-- TOWER EAST (Захвачена) -->
+            <g transform="translate(250, 0)" class="hex-tower">
+                <polygon points="0,-60 52,-30 52,30 0,60 -52,30 -52,-30" fill="#1F251F" stroke="#8FAE58" stroke-width="2" filter="url(#neon-glow)"/>
+                <text x="0" y="-10" fill="#8FAE58" text-anchor="middle" font-size="12" font-weight="700" class="font-main">EAST TOWER</text>
+                <text x="0" y="15" fill="#FFF" text-anchor="middle" font-size="14" font-weight="700" class="font-main status">TIPIDOR</text>
+                <text x="0" y="35" fill="#8FAE58" text-anchor="middle" font-size="10" class="font-mono">+150 SCRAP/H</text>
+            </g>
+
+            <!-- TOWER SOUTH (Битва) -->
+            <g transform="translate(0, 250)" class="hex-tower">
+                <polygon points="0,-60 52,-30 52,30 0,60 -52,30 -52,-30" fill="#2A1A1A" stroke="#CD5C5C" stroke-width="2"/>
+                <!-- Анимация пульсации (статичная для svg) -->
+                <circle cx="0" cy="0" r="40" stroke="#CD5C5C" stroke-width="1" stroke-dasharray="5 5" opacity="0.5"/>
+                
+                <text x="0" y="-10" fill="#CD5C5C" text-anchor="middle" font-size="12" font-weight="700" class="font-main">SOUTH TOWER</text>
+                <text x="0" y="15" fill="#FFF" text-anchor="middle" font-size="14" font-weight="700" class="font-main status">CONTESTED</text>
+                <text x="0" y="35" fill="#CD5C5C" text-anchor="middle" font-size="10" class="font-mono">98% CAP</text>
+            </g>
+
+            <!-- TOWER WEST -->
+            <g transform="translate(-250, 0)" class="hex-tower">
+                <polygon points="0,-60 52,-30 52,30 0,60 -52,30 -52,-30" fill="#1A1A1A" stroke="#444" stroke-width="2"/>
+                <text x="0" y="-10" fill="#888" text-anchor="middle" font-size="12" font-weight="700" class="font-main">WEST TOWER</text>
+                <text x="0" y="15" fill="#AAA" text-anchor="middle" font-size="14" font-weight="700" class="font-main status">UNCLAIMED</text>
+            </g>
+            
+        </g>
+    </g>
+
+    <!-- 3. ПРАВАЯ ПАНЕЛЬ: КАЗНА (Treasury Sidebar) -->
+    <g transform="translate(1220, 140)">
+        <!-- Фон панели -->
+        <path d="M40 0 L400 0 L400 800 L0 800 L0 40 Z" fill="#161616" stroke="#333" stroke-width="1"/>
+        
+        <!-- Заголовок секции -->
+        <g transform="translate(40, 40)">
+            <text x="0" y="0" fill="#E6C85E" font-size="24" font-weight="700" class="font-main" letter-spacing="1">CLAN TREASURY</text>
+            <text x="0" y="25" fill="#666" font-size="14" class="font-main">ACCUMULATED TAX REVENUE</text>
+        </g>
+
+        <!-- Статистика -->
+        <g transform="translate(40, 100)">
+            <rect width="320" height="80" rx="4" fill="#131313" stroke="#2A2A2A"/>
+            <text x="20" y="30" fill="#888" font-size="12" font-weight="700" class="font-main">TOTAL INCOME RATE</text>
+            <text x="20" y="60" fill="#8FAE58" font-size="32" font-weight="700" class="font-mono">+450</text>
+            <text x="100" y="60" fill="#555" font-size="14" class="font-main">SCRAP / HOUR</text>
+        </g>
+
+        <!-- Сетка инвентаря (Вертикальная) -->
+        <g transform="translate(40, 200)">
+            <text x="0" y="0" fill="#AAA" font-size="14" font-weight="700" class="font-main">READY TO CLAIM</text>
+            
+            <g transform="translate(0, 20)">
+                <!-- Сетка 4x5 -->
+                <rect x="0" y="0" width="70" height="70" fill="#1F1F1F" stroke="#333"/>
+                <rect x="80" y="0" width="70" height="70" fill="#1F1F1F" stroke="#333"/>
+                <rect x="160" y="0" width="70" height="70" fill="#1F1F1F" stroke="#333"/>
+                <rect x="240" y="0" width="70" height="70" fill="#1F1F1F" stroke="#333"/>
+                
+                <rect x="0" y="80" width="70" height="70" fill="#1F1F1F" stroke="#333"/>
+                <rect x="80" y="80" width="70" height="70" fill="#1F1F1F" stroke="#333"/>
+                <!-- Предмет в слоте -->
+                <rect x="165" y="85" width="60" height="60" fill="#2A2A2A"/>
+                <text x="195" y="120" fill="#555" text-anchor="middle" font-size="10">ITEM</text>
+                <text x="225" y="145" fill="#DDD" text-anchor="end" font-size="10">x50</text>
+                <rect x="160" y="80" width="70" height="70" fill="none" stroke="#555"/>
+                
+                <rect x="240" y="80" width="70" height="70" fill="#1F1F1F" stroke="#333"/>
+                
+                <rect x="0" y="160" width="70" height="70" fill="#1F1F1F" stroke="#333"/>
+                <rect x="80" y="160" width="70" height="70" fill="#1F1F1F" stroke="#333"/>
+                <rect x="160" y="160" width="70" height="70" fill="#1F1F1F" stroke="#333"/>
+                <rect x="240" y="160" width="70" height="70" fill="#1F1F1F" stroke="#333"/>
+                
+                <rect x="0" y="240" width="70" height="70" fill="#1F1F1F" stroke="#333"/>
+                <rect x="80" y="240" width="70" height="70" fill="#1F1F1F" stroke="#333"/>
+                <rect x="160" y="240" width="70" height="70" fill="#1F1F1F" stroke="#333"/>
+                <rect x="240" y="240" width="70" height="70" fill="#1F1F1F" stroke="#333"/>
+            </g>
+        </g>
+
+        <!-- Кнопка Claim (внизу панели) -->
+        <g transform="translate(40, 700)" class="btn-claim" cursor="pointer">
+            <rect class="bg" width="320" height="60" rx="4" fill="#2A2A2A" stroke="#E6C85E" stroke-width="1"/>
+            <text x="160" y="36" fill="#E6C85E" text-anchor="middle" font-size="18" font-weight="700" class="font-main" letter-spacing="1">TRANSFER TO INVENTORY</text>
+        </g>
+    </g>
+
+</svg>

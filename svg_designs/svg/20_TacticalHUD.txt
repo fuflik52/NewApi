@@ -1,0 +1,112 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <!-- Light Tactical Gradient (Glass Effect) -->
+        <linearGradient id="grad-glass" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#E4DAD1" stop-opacity="0.15"/>
+            <stop offset="0.7" stop-color="#E4DAD1" stop-opacity="0.05"/>
+            <stop offset="1" stop-color="#E4DAD1" stop-opacity="0"/>
+        </linearGradient>
+    </defs>
+
+    <!-- 1. MEGA BOX EVENT -->
+    <g transform="translate(1700, 169)">
+        <!-- Background Panel (Light Glass) -->
+        <path d="M0 0 H180 L200 20 V56 H20 L0 36 V0Z" fill="url(#grad-glass)"/>
+        
+        <!-- Decor Strip (Green) -->
+        <path d="M0 0 H4 L24 20 V56 H20 L0 36 Z" fill="#738D45"/>
+
+        <!-- Icon Area -->
+        <g transform="translate(30, 8)">
+            <!-- Box Icon (Decor Color) -->
+            <path d="M10 12 H30 V30 H10 V12 Z M12 14 V28 H28 V14 H12" fill="#738D45" fill-rule="evenodd"/>
+        </g>
+
+        <!-- Text (Base Color) -->
+        <text x="75" y="22" fill="#E4DAD1" font-family="Roboto Condensed, sans-serif" font-weight="700" font-size="16" letter-spacing="0.5">MEGA BOX</text>
+        <text x="75" y="38" fill="#E4DAD1" fill-opacity="0.7" font-family="JetBrains Mono, monospace" font-size="11">07:30 REMAINING</text>
+
+        <!-- Progress Bar -->
+        <rect x="75" y="44" width="110" height="2" fill="#E4DAD1" fill-opacity="0.2"/>
+        <rect x="75" y="44" width="75" height="2" fill="#738D45"/>
+    </g>
+
+    <!-- 2. SULFUR EVENT -->
+    <g transform="translate(1700, 240)">
+        <path d="M0 0 H180 L200 20 V56 H20 L0 36 V0Z" fill="url(#grad-glass)"/>
+        
+        <path d="M0 0 H4 L24 20 V56 H20 L0 36 Z" fill="#738D45"/>
+        
+        <g transform="translate(30, 8)">
+             <!-- Icon: Ore -->
+             <path d="M20 10 L28 18 L24 28 L16 28 L12 18 Z" fill="#738D45"/>
+        </g>
+
+        <text x="75" y="22" fill="#E4DAD1" font-family="Roboto Condensed, sans-serif" font-weight="700" font-size="16" letter-spacing="0.5">SULFUR EVENT</text>
+        <text x="75" y="38" fill="#E4DAD1" fill-opacity="0.7" font-family="JetBrains Mono, monospace" font-size="11">07:30 REMAINING</text>
+        
+        <rect x="75" y="44" width="110" height="2" fill="#E4DAD1" fill-opacity="0.2"/>
+        <rect x="75" y="44" width="45" height="2" fill="#738D45"/>
+    </g>
+
+    <!-- 3. COMBAT BLOCK -->
+    <g transform="translate(1700, 311)">
+        <path d="M0 0 H180 L200 20 V56 H20 L0 36 V0Z" fill="url(#grad-glass)"/>
+        
+        <path d="M0 0 H4 L24 20 V56 H20 L0 36 Z" fill="#738D45"/>
+        
+        <g transform="translate(30, 8)">
+             <!-- Icon: Swords -->
+             <path d="M13 30 L11 28 L27 12 L29 14 Z M27 30 L29 28 L13 12 L11 14 Z" fill="#738D45"/>
+        </g>
+
+        <text x="75" y="22" fill="#E4DAD1" font-family="Roboto Condensed, sans-serif" font-weight="700" font-size="16" letter-spacing="0.5">COMBAT BLOCK</text>
+        <text x="75" y="38" fill="#E4DAD1" fill-opacity="0.7" font-family="JetBrains Mono, monospace" font-size="11">07:30 LOCKED</text>
+        
+        <rect x="75" y="44" width="110" height="2" fill="#E4DAD1" fill-opacity="0.2"/>
+        <rect x="75" y="44" width="90" height="2" fill="#738D45"/>
+    </g>
+
+    <!-- 4. RAID BLOCK -->
+    <g transform="translate(1700, 382)">
+        <path d="M0 0 H180 L200 20 V56 H20 L0 36 V0Z" fill="url(#grad-glass)"/>
+        
+        <path d="M0 0 H4 L24 20 V56 H20 L0 36 Z" fill="#738D45"/>
+        
+        <g transform="translate(30, 8)">
+             <!-- Icon: Skull/Hazard -->
+             <path d="M20 10 L30 15 V22 C30 28 20 32 20 32 C20 32 10 28 10 22 V15 L20 10Z" fill="#738D45"/>
+        </g>
+
+        <text x="75" y="22" fill="#E4DAD1" font-family="Roboto Condensed, sans-serif" font-weight="700" font-size="16" letter-spacing="0.5">RAID BLOCK</text>
+        <text x="75" y="38" fill="#E4DAD1" fill-opacity="0.7" font-family="JetBrains Mono, monospace" font-size="11">07:30 LOCKED</text>
+        
+        <rect x="75" y="44" width="110" height="2" fill="#E4DAD1" fill-opacity="0.2"/>
+        <rect x="75" y="44" width="105" height="2" fill="#738D45"/>
+    </g>
+
+    <!-- 5. MONEY CRATE (Featured) -->
+    <g transform="translate(1680, 453)">
+        <!-- Larger Background -->
+        <path d="M0 0 H200 L220 20 V80 H20 L0 60 V0Z" fill="url(#grad-glass)"/>
+        
+        <!-- Large Side Decor Strip -->
+        <path d="M0 0 H4 L24 20 V80 H20 L0 60 Z" fill="#738D45"/>
+        
+        <!-- Top Accent Line -->
+        <rect x="20" y="0" width="180" height="2" fill="#738D45" fill-opacity="0.5"/>
+
+        <g transform="translate(30, 20)">
+             <circle cx="20" cy="20" r="18" fill="#738D45" fill-opacity="0.2"/>
+             <text x="20" y="26" text-anchor="middle" fill="#738D45" font-family="Roboto Condensed, sans-serif" font-weight="bold" font-size="20">$</text>
+        </g>
+
+        <text x="85" y="30" fill="#E4DAD1" font-family="Roboto Condensed, sans-serif" font-weight="700" font-size="20" letter-spacing="1">MONEY CRATE</text>
+        <text x="85" y="50" fill="#E4DAD1" font-family="JetBrains Mono, monospace" font-weight="bold" font-size="14">REWARD: 200 RUB</text>
+        <text x="85" y="65" fill="#E4DAD1" fill-opacity="0.7" font-family="JetBrains Mono, monospace" font-size="12">TIME: 13:30</text>
+        
+        <rect x="25" y="75" width="180" height="2" fill="#E4DAD1" fill-opacity="0.2"/>
+        <rect x="25" y="75" width="140" height="2" fill="#738D45"/>
+    </g>
+
+</svg>

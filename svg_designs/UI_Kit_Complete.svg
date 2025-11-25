@@ -1,0 +1,444 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&amp;family=JetBrains+Mono:wght@700&amp;display=swap');
+            .font-main { font-family: 'Roboto Condensed', sans-serif; }
+            .font-mono { font-family: 'JetBrains Mono', monospace; }
+        </style>
+        
+        <!-- COLOR PALETTE GRADIENTS -->
+        <linearGradient id="grad-primary" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#8FAE58"/>
+            <stop offset="100%" stop-color="#6B8A3F"/>
+        </linearGradient>
+        
+        <linearGradient id="grad-danger" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#CD5C5C"/>
+            <stop offset="100%" stop-color="#A03D3D"/>
+        </linearGradient>
+        
+        <linearGradient id="grad-premium" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#E6C85E"/>
+            <stop offset="100%" stop-color="#FFD700"/>
+        </linearGradient>
+        
+        <linearGradient id="grad-blue" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#4D88FF"/>
+            <stop offset="100%" stop-color="#0055FF"/>
+        </linearGradient>
+        
+        <!-- PATTERNS -->
+        <pattern id="tech-grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#FFFFFF" stroke-opacity="0.03" stroke-width="1"/>
+        </pattern>
+        
+        <pattern id="stripes-blocked" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="4" stroke-opacity="0.5"/>
+        </pattern>
+        
+        <!-- FILTERS -->
+        <filter id="drop-shadow"><feDropShadow dx="0" dy="4" stdDeviation="12" flood-color="#000" flood-opacity="0.9"/></filter>
+        <filter id="glow-green"><feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="#8FAE58" flood-opacity="0.6"/></filter>
+        <filter id="glow-red"><feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="#FF4444" flood-opacity="0.6"/></filter>
+        <filter id="glow-gold"><feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="#E6C85E" flood-opacity="0.6"/></filter>
+    </defs>
+
+    <!-- BACKGROUND -->
+    <rect width="1920" height="1080" fill="#0f0f0f" fill-opacity="0.95"/>
+    <rect width="1920" height="1080" fill="url(#tech-grid)"/>
+
+    <!-- TITLE -->
+    <text x="960" y="50" text-anchor="middle" fill="#FFF" font-size="48" font-weight="700" class="font-main" letter-spacing="2">UI KIT - COLOR PALETTE &amp; COMPONENTS</text>
+
+    <!-- ==================== COLOR PALETTE SECTION ==================== -->
+    <g transform="translate(40, 100)">
+        <text x="0" y="0" fill="#8FAE58" font-size="32" font-weight="700" class="font-main" letter-spacing="1">COLOR PALETTE</text>
+        
+        <!-- PRIMARY COLORS -->
+        <g transform="translate(0, 50)">
+            <text x="0" y="0" fill="#666" font-size="18" font-weight="700" class="font-main">PRIMARY COLORS</text>
+            
+            <!-- Green (Success/Available) -->
+            <g transform="translate(0, 30)">
+                <rect width="200" height="80" fill="#8FAE58"/>
+                <text x="10" y="25" fill="#000" font-size="14" font-weight="700" class="font-main">SUCCESS</text>
+                <text x="10" y="45" fill="#000" font-size="12" class="font-mono">#8FAE58</text>
+                <text x="10" y="65" fill="#000" font-size="11" class="font-main">Available / Active</text>
+            </g>
+            
+            <!-- Red (Danger/Blocked) -->
+            <g transform="translate(220, 30)">
+                <rect width="200" height="80" fill="#CD5C5C"/>
+                <text x="10" y="25" fill="#FFF" font-size="14" font-weight="700" class="font-main">DANGER</text>
+                <text x="10" y="45" fill="#FFF" font-size="12" class="font-mono">#CD5C5C</text>
+                <text x="10" y="65" fill="#FFF" font-size="11" class="font-main">Blocked / Error</text>
+            </g>
+            
+            <!-- Gold (Premium/VIP) -->
+            <g transform="translate(440, 30)">
+                <rect width="200" height="80" fill="#E6C85E"/>
+                <text x="10" y="25" fill="#000" font-size="14" font-weight="700" class="font-main">PREMIUM</text>
+                <text x="10" y="45" fill="#000" font-size="12" class="font-mono">#E6C85E</text>
+                <text x="10" y="65" fill="#000" font-size="11" class="font-main">VIP / Exclusive</text>
+            </g>
+            
+            <!-- Blue (Info/Logo) -->
+            <g transform="translate(660, 30)">
+                <rect width="200" height="80" fill="#4D88FF"/>
+                <text x="10" y="25" fill="#FFF" font-size="14" font-weight="700" class="font-main">INFO</text>
+                <text x="10" y="45" fill="#FFF" font-size="12" class="font-mono">#4D88FF</text>
+                <text x="10" y="65" fill="#FFF" font-size="11" class="font-main">Information / Logo</text>
+            </g>
+            
+            <!-- Alert Red -->
+            <g transform="translate(880, 30)">
+                <rect width="200" height="80" fill="#FF4444"/>
+                <text x="10" y="25" fill="#FFF" font-size="14" font-weight="700" class="font-main">ALERT</text>
+                <text x="10" y="45" fill="#FFF" font-size="12" class="font-mono">#FF4444</text>
+                <text x="10" y="65" fill="#FFF" font-size="11" class="font-main">Raid / Warning</text>
+            </g>
+        </g>
+        
+        <!-- BACKGROUND COLORS -->
+        <g transform="translate(0, 200)">
+            <text x="0" y="0" fill="#666" font-size="18" font-weight="700" class="font-main">BACKGROUND COLORS</text>
+            
+            <g transform="translate(0, 30)">
+                <rect width="150" height="60" fill="#0f0f0f" stroke="#333"/>
+                <text x="10" y="25" fill="#FFF" font-size="12" class="font-mono">#0f0f0f</text>
+                <text x="10" y="40" fill="#888" font-size="10" class="font-main">Base Background</text>
+            </g>
+            
+            <g transform="translate(170, 30)">
+                <rect width="150" height="60" fill="#131313" stroke="#333"/>
+                <text x="10" y="25" fill="#FFF" font-size="12" class="font-mono">#131313</text>
+                <text x="10" y="40" fill="#888" font-size="10" class="font-main">Dark Panel</text>
+            </g>
+            
+            <g transform="translate(340, 30)">
+                <rect width="150" height="60" fill="#161616" stroke="#333"/>
+                <text x="10" y="25" fill="#FFF" font-size="12" class="font-mono">#161616</text>
+                <text x="10" y="40" fill="#888" font-size="10" class="font-main">Main Panel</text>
+            </g>
+            
+            <g transform="translate(510, 30)">
+                <rect width="150" height="60" fill="#1A1A1A" stroke="#333"/>
+                <text x="10" y="25" fill="#FFF" font-size="12" class="font-mono">#1A1A1A</text>
+                <text x="10" y="40" fill="#888" font-size="10" class="font-main">Card Background</text>
+            </g>
+            
+            <g transform="translate(680, 30)">
+                <rect width="150" height="60" fill="#1F1F1F" stroke="#333"/>
+                <text x="10" y="25" fill="#FFF" font-size="12" class="font-mono">#1F1F1F</text>
+                <text x="10" y="40" fill="#888" font-size="10" class="font-main">Element Background</text>
+            </g>
+            
+            <g transform="translate(850, 30)">
+                <rect width="150" height="60" fill="#252525" stroke="#333"/>
+                <text x="10" y="25" fill="#FFF" font-size="12" class="font-mono">#252525</text>
+                <text x="10" y="40" fill="#888" font-size="10" class="font-main">Nested Element</text>
+            </g>
+        </g>
+        
+        <!-- BORDER COLORS -->
+        <g transform="translate(0, 320)">
+            <text x="0" y="0" fill="#666" font-size="18" font-weight="700" class="font-main">BORDER COLORS</text>
+            
+            <g transform="translate(0, 30)">
+                <rect width="150" height="60" fill="#2A2A2A" stroke="#333"/>
+                <text x="10" y="25" fill="#FFF" font-size="12" class="font-mono">#2A2A2A</text>
+                <text x="10" y="40" fill="#888" font-size="10" class="font-main">Main Border</text>
+            </g>
+            
+            <g transform="translate(170, 30)">
+                <rect width="150" height="60" fill="#333" stroke="#444"/>
+                <text x="10" y="25" fill="#FFF" font-size="12" class="font-mono">#333</text>
+                <text x="10" y="40" fill="#888" font-size="10" class="font-main">Element Border</text>
+            </g>
+            
+            <g transform="translate(340, 30)">
+                <rect width="150" height="60" fill="#444" stroke="#555"/>
+                <text x="10" y="25" fill="#FFF" font-size="12" class="font-mono">#444</text>
+                <text x="10" y="40" fill="#888" font-size="10" class="font-main">Inactive Border</text>
+            </g>
+        </g>
+        
+        <!-- TEXT COLORS -->
+        <g transform="translate(0, 440)">
+            <text x="0" y="0" fill="#666" font-size="18" font-weight="700" class="font-main">TEXT COLORS</text>
+            
+            <g transform="translate(0, 30)">
+                <rect width="120" height="50" fill="#1F1F1F" stroke="#333"/>
+                <text x="10" y="20" fill="#FFF" font-size="14" font-weight="700" class="font-main">#FFF</text>
+                <text x="10" y="35" fill="#888" font-size="10" class="font-main">Primary Text</text>
+            </g>
+            
+            <g transform="translate(140, 30)">
+                <rect width="120" height="50" fill="#1F1F1F" stroke="#333"/>
+                <text x="10" y="20" fill="#DDD" font-size="14" font-weight="700" class="font-main">#DDD</text>
+                <text x="10" y="35" fill="#888" font-size="10" class="font-main">Secondary Text</text>
+            </g>
+            
+            <g transform="translate(280, 30)">
+                <rect width="120" height="50" fill="#1F1F1F" stroke="#333"/>
+                <text x="10" y="20" fill="#AAA" font-size="14" font-weight="700" class="font-main">#AAA</text>
+                <text x="10" y="35" fill="#888" font-size="10" class="font-main">Tertiary Text</text>
+            </g>
+            
+            <g transform="translate(420, 30)">
+                <rect width="120" height="50" fill="#1F1F1F" stroke="#333"/>
+                <text x="10" y="20" fill="#888" font-size="14" font-weight="700" class="font-main">#888</text>
+                <text x="10" y="35" fill="#888" font-size="10" class="font-main">Inactive Text</text>
+            </g>
+            
+            <g transform="translate(560, 30)">
+                <rect width="120" height="50" fill="#1F1F1F" stroke="#333"/>
+                <text x="10" y="20" fill="#666" font-size="14" font-weight="700" class="font-main">#666</text>
+                <text x="10" y="35" fill="#888" font-size="10" class="font-main">Disabled Text</text>
+            </g>
+        </g>
+    </g>
+
+    <!-- ==================== COMPONENTS SECTION ==================== -->
+    <g transform="translate(40, 550)">
+        <text x="0" y="0" fill="#8FAE58" font-size="32" font-weight="700" class="font-main" letter-spacing="1">UI COMPONENTS</text>
+        
+        <!-- BUTTONS -->
+        <g transform="translate(0, 50)">
+            <text x="0" y="0" fill="#666" font-size="18" font-weight="700" class="font-main">BUTTONS</text>
+            
+            <!-- Primary Button -->
+            <g transform="translate(0, 30)">
+                <rect width="200" height="50" rx="4" fill="#8FAE58"/>
+                <text x="100" y="32" fill="#000" text-anchor="middle" font-size="16" font-weight="700" class="font-main">PRIMARY BUTTON</text>
+            </g>
+            
+            <!-- Danger Button -->
+            <g transform="translate(220, 30)">
+                <rect width="200" height="50" rx="4" fill="#CD5C5C"/>
+                <text x="100" y="32" fill="#FFF" text-anchor="middle" font-size="16" font-weight="700" class="font-main">DANGER BUTTON</text>
+            </g>
+            
+            <!-- Premium Button -->
+            <g transform="translate(440, 30)">
+                <rect width="200" height="50" rx="4" fill="#E6C85E"/>
+                <text x="100" y="32" fill="#000" text-anchor="middle" font-size="16" font-weight="700" class="font-main">PREMIUM BUTTON</text>
+            </g>
+            
+            <!-- Outline Button -->
+            <g transform="translate(660, 30)">
+                <rect width="200" height="50" rx="4" fill="none" stroke="#8FAE58" stroke-width="2"/>
+                <text x="100" y="32" fill="#8FAE58" text-anchor="middle" font-size="16" font-weight="700" class="font-main">OUTLINE BUTTON</text>
+            </g>
+            
+            <!-- Disabled Button -->
+            <g transform="translate(880, 30)">
+                <rect width="200" height="50" rx="4" fill="#1A1A1A" stroke="#333" stroke-width="1"/>
+                <text x="100" y="32" fill="#555" text-anchor="middle" font-size="16" font-weight="700" class="font-main">DISABLED</text>
+            </g>
+        </g>
+        
+        <!-- CARDS -->
+        <g transform="translate(0, 150)">
+            <text x="0" y="0" fill="#666" font-size="18" font-weight="700" class="font-main">CARDS</text>
+            
+            <!-- Standard Card -->
+            <g transform="translate(0, 30)">
+                <rect width="250" height="150" rx="4" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+                <text x="125" y="30" fill="#FFF" text-anchor="middle" font-size="16" font-weight="700" class="font-main">STANDARD CARD</text>
+                <text x="125" y="50" fill="#888" text-anchor="middle" font-size="12" class="font-main">#1F1F1F Background</text>
+                <text x="125" y="70" fill="#AAA" text-anchor="middle" font-size="11" class="font-main">#333 Border</text>
+            </g>
+            
+            <!-- Premium Card -->
+            <g transform="translate(270, 30)">
+                <rect width="250" height="150" rx="4" fill="#1F1F1F" stroke="#E6C85E" stroke-width="2"/>
+                <rect x="0" y="0" width="250" height="150" rx="4" fill="url(#grad-premium)" fill-opacity="0.1"/>
+                <text x="125" y="30" fill="#E6C85E" text-anchor="middle" font-size="16" font-weight="700" class="font-main">PREMIUM CARD</text>
+                <text x="125" y="50" fill="#888" text-anchor="middle" font-size="12" class="font-main">Gold Border</text>
+                <text x="125" y="70" fill="#AAA" text-anchor="middle" font-size="11" class="font-main">VIP Content</text>
+            </g>
+            
+            <!-- Blocked Card -->
+            <g transform="translate(540, 30)">
+                <rect width="250" height="150" rx="4" fill="#1A1A1A" stroke="#CD5C5C" stroke-opacity="0.3" stroke-width="1"/>
+                <rect x="1" y="1" width="248" height="148" rx="3" fill="url(#stripes-blocked)"/>
+                <text x="125" y="30" fill="#CD5C5C" text-anchor="middle" font-size="16" font-weight="700" class="font-main">BLOCKED CARD</text>
+                <text x="125" y="50" fill="#888" text-anchor="middle" font-size="12" class="font-main">Diagonal Stripes</text>
+                <text x="125" y="70" fill="#AAA" text-anchor="middle" font-size="11" class="font-main">Unavailable</text>
+            </g>
+            
+            <!-- Active Card -->
+            <g transform="translate(810, 30)">
+                <rect width="250" height="150" rx="4" fill="#1F1F1F" stroke="#8FAE58" stroke-width="2"/>
+                <rect x="0" y="0" width="4" height="150" fill="#8FAE58"/>
+                <text x="125" y="30" fill="#8FAE58" text-anchor="middle" font-size="16" font-weight="700" class="font-main">ACTIVE CARD</text>
+                <text x="125" y="50" fill="#888" text-anchor="middle" font-size="12" class="font-main">Green Accent</text>
+                <text x="125" y="70" fill="#AAA" text-anchor="middle" font-size="11" class="font-main">Selected State</text>
+            </g>
+        </g>
+        
+        <!-- INPUT FIELDS -->
+        <g transform="translate(0, 350)">
+            <text x="0" y="0" fill="#666" font-size="18" font-weight="700" class="font-main">INPUT FIELDS</text>
+            
+            <!-- Standard Input -->
+            <g transform="translate(0, 30)">
+                <rect width="300" height="45" rx="4" fill="#1A1A1A" stroke="#333" stroke-width="1"/>
+                <text x="15" y="28" fill="#888" font-size="14" class="font-main">Standard Input Field</text>
+            </g>
+            
+            <!-- Active Input -->
+            <g transform="translate(320, 30)">
+                <rect width="300" height="45" rx="4" fill="#1A1A1A" stroke="#8FAE58" stroke-width="2"/>
+                <text x="15" y="28" fill="#FFF" font-size="14" class="font-main">Active Input Field</text>
+            </g>
+            
+            <!-- Disabled Input -->
+            <g transform="translate(640, 30)">
+                <rect width="300" height="45" rx="4" fill="#131313" stroke="#222" stroke-width="1"/>
+                <text x="15" y="28" fill="#555" font-size="14" class="font-main" opacity="0.5">Disabled Input</text>
+            </g>
+        </g>
+        
+        <!-- PROGRESS BARS -->
+        <g transform="translate(0, 450)">
+            <text x="0" y="0" fill="#666" font-size="18" font-weight="700" class="font-main">PROGRESS BARS</text>
+            
+            <!-- Standard Progress -->
+            <g transform="translate(0, 30)">
+                <rect width="400" height="20" rx="10" fill="#222"/>
+                <rect x="0" y="0" width="250" height="20" rx="10" fill="#8FAE58"/>
+                <text x="410" y="15" fill="#888" font-size="12" class="font-mono">62.5%</text>
+            </g>
+            
+            <!-- Premium Progress -->
+            <g transform="translate(0, 70)">
+                <rect width="400" height="20" rx="10" fill="#222"/>
+                <rect x="0" y="0" width="180" height="20" rx="10" fill="#E6C85E"/>
+                <text x="410" y="15" fill="#888" font-size="12" class="font-mono">45%</text>
+            </g>
+            
+            <!-- Danger Progress -->
+            <g transform="translate(0, 110)">
+                <rect width="400" height="20" rx="10" fill="#222"/>
+                <rect x="0" y="0" width="320" height="20" rx="10" fill="#CD5C5C"/>
+                <text x="410" y="15" fill="#888" font-size="12" class="font-mono">80%</text>
+            </g>
+        </g>
+        
+        <!-- BADGES & STATUS -->
+        <g transform="translate(0, 620)">
+            <text x="0" y="0" fill="#666" font-size="18" font-weight="700" class="font-main">BADGES &amp; STATUS</text>
+            
+            <!-- Online Status -->
+            <g transform="translate(0, 30)">
+                <circle cx="8" cy="8" r="6" fill="#8FAE58"/>
+                <text x="25" y="12" fill="#8FAE58" font-size="14" font-weight="700" class="font-main">ONLINE</text>
+            </g>
+            
+            <!-- Offline Status -->
+            <g transform="translate(150, 30)">
+                <circle cx="8" cy="8" r="6" fill="#444"/>
+                <text x="25" y="12" fill="#888" font-size="14" font-weight="700" class="font-main">OFFLINE</text>
+            </g>
+            
+            <!-- Premium Badge -->
+            <g transform="translate(300, 30)">
+                <rect width="100" height="25" rx="4" fill="#E6C85E"/>
+                <text x="50" y="17" fill="#000" text-anchor="middle" font-size="12" font-weight="700" class="font-main">PREMIUM</text>
+            </g>
+            
+            <!-- Alert Badge -->
+            <g transform="translate(420, 30)">
+                <rect width="80" height="25" rx="4" fill="#FF4444"/>
+                <text x="40" y="17" fill="#FFF" text-anchor="middle" font-size="12" font-weight="700" class="font-main">ALERT</text>
+            </g>
+            
+            <!-- Count Badge -->
+            <g transform="translate(520, 30)">
+                <circle cx="12" cy="12" r="12" fill="#CD5C5C"/>
+                <text x="12" y="17" fill="#FFF" text-anchor="middle" font-size="12" font-weight="700" class="font-mono">3</text>
+            </g>
+        </g>
+        
+        <!-- TYPOGRAPHY -->
+        <g transform="translate(0, 720)">
+            <text x="0" y="0" fill="#666" font-size="18" font-weight="700" class="font-main">TYPOGRAPHY</text>
+            
+            <g transform="translate(0, 30)">
+                <text x="0" y="0" fill="#FFF" font-size="36" font-weight="700" class="font-main">HEADING 1</text>
+                <text x="0" y="30" fill="#DDD" font-size="24" font-weight="700" class="font-main">HEADING 2</text>
+                <text x="0" y="60" fill="#AAA" font-size="18" font-weight="700" class="font-main">HEADING 3</text>
+                <text x="0" y="90" fill="#888" font-size="14" class="font-main">Body Text - Regular</text>
+                <text x="0" y="115" fill="#666" font-size="12" class="font-mono">MONOSPACE TEXT</text>
+            </g>
+        </g>
+    </g>
+
+    <!-- ==================== USAGE EXAMPLES ==================== -->
+    <g transform="translate(1100, 100)">
+        <text x="0" y="0" fill="#8FAE58" font-size="32" font-weight="700" class="font-main" letter-spacing="1">USAGE EXAMPLES</text>
+        
+        <!-- Panel Example -->
+        <g transform="translate(0, 50)">
+            <rect width="800" height="400" fill="#161616" stroke="#2A2A2A" stroke-width="1" filter="url(#drop-shadow)"/>
+            <rect width="800" height="60" fill="#1F1F1F" stroke-bottom="#333"/>
+            <rect x="0" y="0" width="4" height="60" fill="#8FAE58"/>
+            <text x="30" y="38" fill="#8FAE58" font-size="24" font-weight="700" class="font-main" letter-spacing="1">EXAMPLE PANEL</text>
+            
+            <!-- Content -->
+            <g transform="translate(40, 100)">
+                <text x="0" y="0" fill="#666" font-size="14" font-weight="700" class="font-main">PANEL CONTENT</text>
+                
+                <!-- Card Grid -->
+                <g transform="translate(0, 30)">
+                    <rect width="180" height="120" rx="4" fill="#1F1F1F" stroke="#333"/>
+                    <text x="90" y="40" fill="#FFF" text-anchor="middle" font-size="14" font-weight="700" class="font-main">ITEM 1</text>
+                    <rect x="60" y="60" width="60" height="30" rx="4" fill="#8FAE58"/>
+                    <text x="90" y="80" fill="#000" text-anchor="middle" font-size="12" font-weight="700" class="font-main">CLAIM</text>
+                </g>
+                
+                <g transform="translate(200, 30)">
+                    <rect width="180" height="120" rx="4" fill="#1F1F1F" stroke="#E6C85E" stroke-width="2"/>
+                    <text x="90" y="40" fill="#E6C85E" text-anchor="middle" font-size="14" font-weight="700" class="font-main">ITEM 2</text>
+                    <text x="90" y="65" fill="#888" text-anchor="middle" font-size="11" class="font-main">VIP ONLY</text>
+                </g>
+                
+                <g transform="translate(400, 30)">
+                    <rect width="180" height="120" rx="4" fill="#1A1A1A" stroke="#CD5C5C" stroke-opacity="0.3"/>
+                    <rect x="1" y="1" width="178" height="118" rx="3" fill="url(#stripes-blocked)"/>
+                    <text x="90" y="40" fill="#CD5C5C" text-anchor="middle" font-size="14" font-weight="700" class="font-main">ITEM 3</text>
+                    <text x="90" y="65" fill="#888" text-anchor="middle" font-size="11" class="font-main">BLOCKED</text>
+                </g>
+            </g>
+        </g>
+        
+        <!-- Navigation Example -->
+        <g transform="translate(0, 480)">
+            <text x="0" y="0" fill="#666" font-size="18" font-weight="700" class="font-main">NAVIGATION MENU</text>
+            
+            <g transform="translate(0, 30)">
+                <rect width="250" height="50" fill="#1F1F1F" stroke="#333"/>
+                <rect x="0" y="0" width="4" height="50" fill="#8FAE58"/>
+                <text x="30" y="32" fill="#8FAE58" font-size="16" font-weight="700" class="font-main">ACTIVE ITEM</text>
+            </g>
+            
+            <g transform="translate(0, 90)">
+                <rect width="250" height="50" fill="#161616" stroke="#333"/>
+                <text x="30" y="32" fill="#DDD" font-size="16" font-weight="700" class="font-main">INACTIVE ITEM</text>
+            </g>
+            
+            <g transform="translate(0, 150)">
+                <rect width="250" height="50" fill="#161616" stroke="#333"/>
+                <text x="30" y="32" fill="#888" font-size="16" font-weight="700" class="font-main">DISABLED ITEM</text>
+            </g>
+        </g>
+    </g>
+
+    <!-- FOOTER -->
+    <text x="960" y="1050" text-anchor="middle" fill="#444" font-size="14" class="font-main" letter-spacing="1">UI KIT v1.0 • All colors and components for Rust UI System</text>
+</svg>
+
+
+

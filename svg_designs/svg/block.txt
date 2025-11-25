@@ -1,0 +1,233 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&amp;family=JetBrains+Mono:wght@700&amp;display=swap');
+            .font-main { font-family: 'Roboto Condensed', sans-serif; }
+            .font-mono { font-family: 'JetBrains Mono', monospace; }
+            
+            .item-card:hover rect.bg { stroke: #718B44; stroke-width: 3; }
+            .item-blocked:hover rect.bg { stroke: #7B4521; stroke-width: 3; }
+        </style>
+        
+        <pattern id="tech-grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#FFFFFF" stroke-opacity="0.03" stroke-width="1"/>
+        </pattern>
+        
+        <pattern id="stripes-blocked" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="4" stroke-opacity="0.5"/>
+        </pattern>
+        
+        <filter id="drop-shadow"><feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#000" flood-opacity="0.9"/></filter>
+        <filter id="blur-glass"><feGaussianBlur in="SourceGraphic" stdDeviation="15"/></filter>
+        
+        <clipPath id="clip-panel"><rect width="1400" height="800"/></clipPath>
+    </defs>
+
+    <!-- BACKGROUND -->
+    <rect width="1920" height="1080" fill="#111111"/>
+    <g filter="url(#blur-glass)" opacity="0.3">
+        <rect width="1920" height="1080" fill="#535353"/>
+    </g>
+    <rect width="1920" height="1080" fill="url(#tech-grid)"/>
+    <rect width="1920" height="1080" fill="#000000" fill-opacity="0.2"/>
+
+    <!-- MAIN PANEL -->
+    <g transform="translate(260, 140)">
+        <rect width="1400" height="800" fill="#535353" fill-opacity="0.6" stroke="#FFFFFF" stroke-opacity="0.1" stroke-width="2" rx="12" filter="url(#drop-shadow)"/>
+        
+        <!-- WATERMARK -->
+        <g clip-path="url(#clip-panel)">
+            <g transform="translate(1100, 400) scale(4)" opacity="0.02">
+                <circle cx="0" cy="0" r="50" stroke="#FFFFFF" stroke-width="8" fill="none"/>
+                <path d="M0 -30 V0 L20 20" stroke="#FFFFFF" stroke-width="8" fill="none"/>
+            </g>
+        </g>
+
+        <!-- HEADER -->
+        <g transform="translate(40, 40)">
+            <text x="0" y="30" fill="#FFFFFF" font-size="48" font-weight="700" class="font-main" letter-spacing="2">WIPE RESTRICTIONS</text>
+            <text x="0" y="60" fill="#C6C4C2" fill-opacity="0.78" font-size="18" class="font-main">PHASE 1 ACTIVE • EXPLOSIVES & TIER 3 BLOCKED</text>
+            
+            <!-- Timer -->
+            <g transform="translate(1100, 0)">
+                <rect width="240" height="60" fill="#FFFFFF" fill-opacity="0.2" rx="8"/>
+                <text x="20" y="25" fill="#C6C4C2" fill-opacity="0.78" font-size="12" font-weight="700" class="font-main">TIME SINCE WIPE</text>
+                <text x="20" y="50" fill="#BECF8F" font-size="24" font-weight="700" class="font-mono">12:45:30</text>
+            </g>
+        </g>
+
+        <!-- ALLOWED ITEMS -->
+        <g transform="translate(40, 140)">
+            <rect width="650" height="40" fill="#718B44" fill-opacity="0.2" rx="6"/>
+            <text x="20" y="27" fill="#BECF8F" font-size="20" font-weight="700" class="font-main" letter-spacing="1">✓ РАЗРЕШЕНО</text>
+            
+            <!-- BOW -->
+            <g transform="translate(0, 60)" class="item-card">
+                <rect class="bg" width="200" height="200" fill="#FFFFFF" fill-opacity="0.2" rx="12" stroke="#718B44" stroke-width="2"/>
+                
+                <!-- Bow Icon -->
+                <g transform="translate(100, 80)">
+                    <path d="M-30 -40 Q-35 0 -30 40" stroke="#BECF8F" stroke-width="4" fill="none"/>
+                    <line x1="-30" y1="-35" x2="25" y2="0" stroke="#C6C4C2" stroke-width="2"/>
+                    <line x1="-30" y1="35" x2="25" y2="0" stroke="#C6C4C2" stroke-width="2"/>
+                    <path d="M20 -5 L30 0 L20 5 Z" fill="#BECF8F"/>
+                </g>
+                
+                <text x="100" y="160" fill="#FFFFFF" font-size="18" font-weight="700" text-anchor="middle" class="font-main">BOW</text>
+                <text x="100" y="180" fill="#BECF8F" font-size="14" text-anchor="middle" class="font-main">READY</text>
+            </g>
+
+            <!-- SPEAR -->
+            <g transform="translate(220, 60)" class="item-card">
+                <rect class="bg" width="200" height="200" fill="#FFFFFF" fill-opacity="0.2" rx="12" stroke="#718B44" stroke-width="2"/>
+                
+                <!-- Spear Icon -->
+                <g transform="translate(100, 100)">
+                    <line x1="0" y1="-50" x2="0" y2="30" stroke="#C6C4C2" stroke-width="4"/>
+                    <path d="M0 -50 L-10 -35 L10 -35 Z" fill="#BECF8F"/>
+                    <rect x="-5" y="25" width="10" height="15" fill="#8B7355"/>
+                </g>
+                
+                <text x="100" y="160" fill="#FFFFFF" font-size="18" font-weight="700" text-anchor="middle" class="font-main">SPEAR</text>
+                <text x="100" y="180" fill="#BECF8F" font-size="14" text-anchor="middle" class="font-main">READY</text>
+            </g>
+
+            <!-- STONE TOOLS -->
+            <g transform="translate(440, 60)" class="item-card">
+                <rect class="bg" width="200" height="200" fill="#FFFFFF" fill-opacity="0.2" rx="12" stroke="#718B44" stroke-width="2"/>
+                
+                <!-- Pickaxe Icon -->
+                <g transform="translate(100, 100)">
+                    <rect x="-3" y="0" width="6" height="40" fill="#8B7355"/>
+                    <path d="M-25 -10 L-30 -5 L-25 10 L-5 0 Z" fill="#888"/>
+                    <path d="M25 -10 L30 -5 L25 10 L5 0 Z" fill="#888"/>
+                </g>
+                
+                <text x="100" y="160" fill="#FFFFFF" font-size="18" font-weight="700" text-anchor="middle" class="font-main">STONE TOOLS</text>
+                <text x="100" y="180" fill="#BECF8F" font-size="14" text-anchor="middle" class="font-main">READY</text>
+            </g>
+        </g>
+
+        <!-- BLOCKED ITEMS -->
+        <g transform="translate(40, 410)">
+            <rect width="650" height="40" fill="#7B4521" fill-opacity="0.2" rx="6"/>
+            <text x="20" y="27" fill="#FF9F5D" font-size="20" font-weight="700" class="font-main" letter-spacing="1">✕ ЗАБЛОКИРОВАНО</text>
+            
+            <!-- C4 -->
+            <g transform="translate(0, 60)" class="item-blocked">
+                <rect class="bg" width="200" height="200" fill="#FFFFFF" fill-opacity="0.1" rx="12" stroke="#7B4521" stroke-width="2"/>
+                <rect width="200" height="200" fill="url(#stripes-blocked)" fill-opacity="0.3" rx="12"/>
+                
+                <!-- C4 Icon -->
+                <g transform="translate(100, 90)">
+                    <rect x="-30" y="-20" width="60" height="40" rx="4" fill="#444"/>
+                    <circle cx="-15" cy="0" r="4" fill="#FF9F5D"/>
+                    <circle cx="0" cy="0" r="4" fill="#FF9F5D"/>
+                    <circle cx="15" cy="0" r="4" fill="#FF9F5D"/>
+                    <rect x="-20" y="20" width="40" height="4" fill="#CD5C5C"/>
+                </g>
+                
+                <text x="100" y="140" fill="#C6C4C2" fill-opacity="0.6" font-size="18" font-weight="700" text-anchor="middle" class="font-main">C4</text>
+                <rect x="40" y="155" width="120" height="28" fill="#7B4521" fill-opacity="0.3" rx="4"/>
+                <text x="100" y="176" fill="#FF9F5D" font-size="14" font-weight="700" text-anchor="middle" class="font-mono">00:14:30</text>
+            </g>
+
+            <!-- ROCKET -->
+            <g transform="translate(220, 60)" class="item-blocked">
+                <rect class="bg" width="200" height="200" fill="#FFFFFF" fill-opacity="0.1" rx="12" stroke="#7B4521" stroke-width="2"/>
+                <rect width="200" height="200" fill="url(#stripes-blocked)" fill-opacity="0.3" rx="12"/>
+                
+                <!-- Rocket Icon -->
+                <g transform="translate(100, 100)">
+                    <path d="M0 -40 L10 -30 L10 30 L-10 30 L-10 -30 Z" fill="#555"/>
+                    <path d="M0 -40 L-8 -30 L8 -30 Z" fill="#CD5C5C"/>
+                    <rect x="-6" y="-15" width="12" height="20" fill="#FF9F5D"/>
+                    <path d="M-10 30 L-15 40 L-10 35 Z" fill="#444"/>
+                    <path d="M10 30 L15 40 L10 35 Z" fill="#444"/>
+                </g>
+                
+                <text x="100" y="140" fill="#C6C4C2" fill-opacity="0.6" font-size="18" font-weight="700" text-anchor="middle" class="font-main">ROCKET</text>
+                <rect x="40" y="155" width="120" height="28" fill="#7B4521" fill-opacity="0.3" rx="4"/>
+                <text x="100" y="176" fill="#FF9F5D" font-size="14" font-weight="700" text-anchor="middle" class="font-mono">00:14:30</text>
+            </g>
+
+            <!-- SATCHEL -->
+            <g transform="translate(440, 60)" class="item-blocked">
+                <rect class="bg" width="200" height="200" fill="#FFFFFF" fill-opacity="0.1" rx="12" stroke="#7B4521" stroke-width="2"/>
+                <rect width="200" height="200" fill="url(#stripes-blocked)" fill-opacity="0.3" rx="12"/>
+                
+                <!-- Satchel Icon -->
+                <g transform="translate(100, 90)">
+                    <rect x="-25" y="0" width="50" height="30" rx="4" fill="#444"/>
+                    <rect x="-20" y="5" width="40" height="20" fill="#555"/>
+                    <line x1="-15" y1="30" x2="-15" y2="40" stroke="#CD5C5C" stroke-width="3"/>
+                    <circle cx="-15" cy="40" r="3" fill="#FF9F5D"/>
+                </g>
+                
+                <text x="100" y="140" fill="#C6C4C2" fill-opacity="0.6" font-size="18" font-weight="700" text-anchor="middle" class="font-main">SATCHEL</text>
+                <rect x="40" y="155" width="120" height="28" fill="#7B4521" fill-opacity="0.3" rx="4"/>
+                <text x="100" y="176" fill="#FF9F5D" font-size="14" font-weight="700" text-anchor="middle" class="font-mono">00:14:30</text>
+            </g>
+        </g>
+
+        <!-- RIGHT PANEL: PHASE INFO -->
+        <g transform="translate(730, 140)">
+            <rect width="630" height="600" fill="#FFFFFF" fill-opacity="0.1" rx="12" stroke="#FFFFFF" stroke-opacity="0.1" stroke-width="1"/>
+            
+            <text x="30" y="40" fill="#84BBDB" font-size="24" font-weight="700" class="font-main" letter-spacing="1">WIPE PHASES</text>
+            
+            <!-- PHASE 1 -->
+            <g transform="translate(30, 70)">
+                <rect width="570" height="100" fill="#718B44" fill-opacity="0.2" rx="8" stroke="#718B44" stroke-width="2"/>
+                <circle cx="50" cy="50" r="25" fill="#718B44"/>
+                <text x="50" y="60" fill="#000000" font-size="28" font-weight="700" text-anchor="middle" class="font-mono">1</text>
+                
+                <text x="90" y="35" fill="#BECF8F" font-size="22" font-weight="700" class="font-main">EARLY PHASE</text>
+                <text x="90" y="60" fill="#C6C4C2" fill-opacity="0.78" font-size="16" class="font-main">0h - 12h • Primitive only</text>
+                <text x="90" y="82" fill="#718B44" font-size="18" font-weight="700" class="font-mono">● ACTIVE NOW</text>
+            </g>
+
+            <!-- PHASE 2 -->
+            <g transform="translate(30, 190)">
+                <rect width="570" height="100" fill="#FFFFFF" fill-opacity="0.1" rx="8" stroke="#1C5479" stroke-width="1"/>
+                <circle cx="50" cy="50" r="25" fill="#1C5479"/>
+                <text x="50" y="60" fill="#FFFFFF" font-size="28" font-weight="700" text-anchor="middle" class="font-mono">2</text>
+                
+                <text x="90" y="35" fill="#84BBDB" font-size="22" font-weight="700" class="font-main">MID PHASE</text>
+                <text x="90" y="60" fill="#C6C4C2" fill-opacity="0.78" font-size="16" class="font-main">12h - 24h • Explosives unlock</text>
+                <text x="90" y="82" fill="#84BBDB" font-size="18" font-weight="700" class="font-mono">UNLOCKS IN 00:14:30</text>
+            </g>
+
+            <!-- PHASE 3 -->
+            <g transform="translate(30, 310)">
+                <rect width="570" height="100" fill="#FFFFFF" fill-opacity="0.1" rx="8" stroke="#FFFFFF" stroke-opacity="0.1" stroke-width="1"/>
+                <circle cx="50" cy="50" r="25" fill="#FFFFFF" fill-opacity="0.1"/>
+                <text x="50" y="60" fill="#C6C4C2" fill-opacity="0.5" font-size="28" font-weight="700" text-anchor="middle" class="font-mono">3</text>
+                
+                <text x="90" y="35" fill="#C6C4C2" fill-opacity="0.5" font-size="22" font-weight="700" class="font-main">LATE PHASE</text>
+                <text x="90" y="60" fill="#C6C4C2" fill-opacity="0.5" font-size="16" class="font-main">24h - 48h • Tier 3 unlock</text>
+                <text x="90" y="82" fill="#C6C4C2" fill-opacity="0.5" font-size="18" font-weight="700" class="font-mono">LOCKED</text>
+            </g>
+
+            <!-- PHASE 4 -->
+            <g transform="translate(30, 430)">
+                <rect width="570" height="100" fill="#FFFFFF" fill-opacity="0.1" rx="8" stroke="#FFFFFF" stroke-opacity="0.1" stroke-width="1"/>
+                <circle cx="50" cy="50" r="25" fill="#FFFFFF" fill-opacity="0.1"/>
+                <text x="50" y="60" fill="#C6C4C2" fill-opacity="0.5" font-size="28" font-weight="700" text-anchor="middle" class="font-mono">4</text>
+                
+                <text x="90" y="35" fill="#C6C4C2" fill-opacity="0.5" font-size="22" font-weight="700" class="font-main">END GAME</text>
+                <text x="90" y="60" fill="#C6C4C2" fill-opacity="0.5" font-size="16" class="font-main">48h+ • No restrictions</text>
+                <text x="90" y="82" fill="#C6C4C2" fill-opacity="0.5" font-size="18" font-weight="700" class="font-mono">LOCKED</text>
+            </g>
+        </g>
+
+        <!-- CORNER ACCENTS -->
+        <path d="M12 40 V12 H40" stroke="#718B44" stroke-width="2" fill="none"/>
+        <path d="M1360 12 H1388 V40" stroke="#718B44" stroke-width="2" fill="none"/>
+        <path d="M12 760 V788 H40" stroke="#718B44" stroke-width="2" fill="none"/>
+        <path d="M1360 788 H1388 V760" stroke="#718B44" stroke-width="2" fill="none"/>
+    </g>
+
+    <!-- FOOTER -->
+    <text x="960" y="990" text-anchor="middle" fill="#C6C4C2" fill-opacity="0.5" font-size="14" class="font-main" letter-spacing="1">PROGRESSIVE WIPE SYSTEM • ITEMS AUTO-UNLOCK BY PHASE • PRESS [ESC] TO CLOSE</text>
+</svg>

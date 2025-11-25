@@ -1,0 +1,80 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&amp;family=JetBrains+Mono:wght@700&amp;display=swap');
+            .font-main { font-family: 'Roboto Condensed', sans-serif; }
+            .font-mono { font-family: 'JetBrains Mono', monospace; }
+            
+            @keyframes pulseGlow {
+                0% { filter: drop-shadow(0 0 5px #FF4444); }
+                50% { filter: drop-shadow(0 0 20px #FF4444); }
+                100% { filter: drop-shadow(0 0 5px #FF4444); }
+            }
+            .pulse-anim { animation: pulseGlow 2s infinite; }
+        </style>
+
+        <!-- Filters -->
+        <filter id="neon-red">
+            <feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="#FF4444" flood-opacity="0.6"/>
+        </filter>
+        <filter id="neon-green">
+            <feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="#8FAE58" flood-opacity="0.6"/>
+        </filter>
+        <linearGradient id="grad-glass" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#1a1a1a" stop-opacity="0.95"/>
+            <stop offset="1" stop-color="#0a0a0a" stop-opacity="0.98"/>
+        </linearGradient>
+    </defs>
+
+    <!-- Preview BG -->
+    <rect width="1920" height="1080" fill="#050505"/>
+
+    <!-- MAIN HUD CONTAINER -->
+    <g transform="translate(560, 40)">
+        
+        <!-- 1. BASE PLATE (Simple Trapezoid) -->
+        <path d="M0 0 L800 0 L760 90 L40 90 Z" fill="url(#grad-glass)" stroke="#333" stroke-width="1"/>
+        
+        <!-- 2. CENTER: RAID STATUS -->
+        <g transform="translate(400, 45)">
+            <!-- Glowing Circle -->
+            <circle cx="0" cy="-5" r="35" fill="#2A0000" stroke="#FF4444" stroke-width="2" class="pulse-anim"/>
+            
+            <!-- Icon -->
+            <g transform="translate(-12, -20) scale(1.2)">
+                <path d="M0 0 L20 20 M20 0 L0 20" stroke="#FFF" stroke-width="3"/>
+            </g>
+            
+            <text x="0" y="50" fill="#FF4444" text-anchor="middle" font-size="12" font-weight="700" class="font-main" letter-spacing="2">RAID ACTIVE</text>
+        </g>
+
+        <!-- 3. LEFT: ATTACKERS -->
+        <g transform="translate(200, 55)">
+            <text x="0" y="0" fill="#FF4444" text-anchor="end" font-size="48" font-weight="700" class="font-main" filter="url(#neon-red)">[ZERG]</text>
+            
+            <!-- Just the Number Badge -->
+            <g transform="translate(-160, -15)">
+                <rect width="40" height="24" rx="4" fill="#333"/>
+                <text x="20" y="17" fill="#FFF" text-anchor="middle" font-size="16" font-weight="700" class="font-mono">8</text>
+            </g>
+        </g>
+
+        <!-- 4. RIGHT: DEFENDERS -->
+        <g transform="translate(600, 55)">
+            <text x="0" y="0" fill="#8FAE58" text-anchor="start" font-size="48" font-weight="700" class="font-main" filter="url(#neon-green)">[HOME]</text>
+            
+            <!-- Just the Number Badge -->
+            <g transform="translate(120, -15)">
+                <rect width="40" height="24" rx="4" fill="#333"/>
+                <text x="20" y="17" fill="#FFF" text-anchor="middle" font-size="16" font-weight="700" class="font-mono">3</text>
+            </g>
+        </g>
+
+        <!-- 5. TIMER (Clean) -->
+        <g transform="translate(400, 90)">
+            <path d="M-70 0 L-60 30 H60 L70 0 Z" fill="#111" stroke="#333" stroke-width="1" stroke-top="none"/>
+            <text x="0" y="22" fill="#FFF" text-anchor="middle" font-size="24" font-weight="700" class="font-mono" letter-spacing="2">14:59</text>
+        </g>
+
+    </g>
+</svg>

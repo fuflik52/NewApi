@@ -1,0 +1,117 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&amp;family=JetBrains+Mono:wght@700&amp;display=swap');
+            .font-main { font-family: 'Roboto Condensed', sans-serif; }
+            .font-mono { font-family: 'JetBrains Mono', monospace; }
+            .card-hover:hover rect.bg { stroke: #E6C85E; stroke-width: 2; fill-opacity: 0.2; }
+            .card-hover:hover text.price { fill: #E6C85E; }
+            .btn-buy:hover { opacity: 0.9; }
+        </style>
+        <pattern id="tech-grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#FFFFFF" stroke-opacity="0.03" stroke-width="1"/>
+        </pattern>
+        <filter id="drop-shadow"><feDropShadow dx="0" dy="4" stdDeviation="12" flood-color="#000" flood-opacity="0.9"/></filter>
+        <clipPath id="clip-shop"><rect width="1400" height="700"/></clipPath>
+    </defs>
+    <rect width="1920" height="1080" fill="#0f0f0f" fill-opacity="0.95"/>
+    <rect width="1920" height="1080" fill="url(#tech-grid)"/>
+    <g transform="translate(260, 190)">
+        <rect width="1400" height="700" fill="#161616" stroke="#2A2A2A" stroke-width="1" filter="url(#drop-shadow)"/>
+        <g clip-path="url(#clip-shop)">
+            <g transform="translate(1100, 350) rotate(-15) scale(4)" opacity="0.02">
+                <circle cx="0" cy="0" r="50" stroke="#FFFFFF" stroke-width="10" fill="none"/>
+                <rect x="-15" y="-15" width="30" height="30" stroke="#FFFFFF" stroke-width="10"/>
+                <line x1="-50" y1="0" x2="50" y2="0" stroke="#FFFFFF" stroke-width="5"/>
+                <line x1="0" y1="-50" x2="0" y2="50" stroke="#FFFFFF" stroke-width="5"/>
+            </g>
+        </g>
+        <rect width="1400" height="80" fill="#1F1F1F" stroke-bottom="#333"/>
+        <text x="40" y="50" fill="#E6C85E" font-size="32" font-weight="700" class="font-main" letter-spacing="1">RESOURCE MARKET</text>
+        <text x="1360" y="50" fill="#666" font-size="16" font-weight="700" class="font-main" text-anchor="end">EXCHANGE RATE: 1.5x</text>
+        <rect x="0" y="0" width="4" height="80" fill="#E6C85E"/>
+        <g transform="translate(40, 120)">
+            <text x="0" y="0" fill="#666" font-size="12" font-weight="700" class="font-main" letter-spacing="1">YOUR WALLET</text>
+            <g transform="translate(0, 20)">
+                <rect width="280" height="100" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+                <text x="20" y="35" fill="#888" font-size="14" class="font-main">SCRAP</text>
+                <text x="20" y="75" fill="#FFFFFF" font-size="36" font-weight="700" class="font-mono">4,250</text>
+                <circle cx="250" cy="50" r="20" fill="#333"/>
+                <text x="250" y="55" fill="#666" text-anchor="middle" font-size="10" class="font-main">ICON</text>
+            </g>
+            <g transform="translate(0, 140)">
+                <rect width="280" height="100" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+                <text x="20" y="35" fill="#888" font-size="14" class="font-main">ECONOMICS</text>
+                <text x="20" y="75" fill="#8FAE58" font-size="36" font-weight="700" class="font-mono">$12,500</text>
+                <circle cx="250" cy="50" r="20" fill="#333"/>
+                <text x="250" y="55" fill="#666" text-anchor="middle" font-size="10" class="font-main">ICON</text>
+            </g>
+            <g transform="translate(0, 260)">
+                <rect width="280" height="100" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+                <text x="20" y="35" fill="#888" font-size="14" class="font-main">POINTS</text>
+                <text x="20" y="75" fill="#E6C85E" font-size="36" font-weight="700" class="font-mono">150</text>
+                <circle cx="250" cy="50" r="20" fill="#333"/>
+                <text x="250" y="55" fill="#666" text-anchor="middle" font-size="10" class="font-main">ICON</text>
+            </g>
+            <g transform="translate(0, 400)">
+                <rect width="280" height="60" fill="#222" stroke="#333"/>
+                <text x="140" y="35" fill="#AAA" text-anchor="middle" font-size="14" class="font-main">DEPOSIT RESOURCES</text>
+            </g>
+        </g>
+        <line x1="360" y1="120" x2="360" y2="660" stroke="#2A2A2A" stroke-width="1"/>
+        <g transform="translate(400, 120)">
+            <text x="0" y="0" fill="#666" font-size="12" font-weight="700" class="font-main" letter-spacing="1">POPULAR ITEMS</text>
+            <g transform="translate(0, 20)" class="card-hover">
+                <rect class="bg" width="220" height="260" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+                <rect x="10" y="10" width="200" height="140" fill="#161616"/>
+                <text x="110" y="80" fill="#444" text-anchor="middle" font-size="12" class="font-main">WOOD ICON</text>
+                <text x="20" y="180" fill="#DDD" font-size="18" font-weight="700" class="font-main">WOOD (x1000)</text>
+                <text x="20" y="200" fill="#888" font-size="12" class="font-main">Basic Resource</text>
+                <text x="20" y="240" fill="#E6C85E" font-size="20" font-weight="700" class="font-mono price">250 SCRAP</text>
+                <rect x="160" y="220" width="40" height="30" rx="4" fill="#E6C85E" class="btn-buy"/>
+                <path transform="translate(172, 227)" d="M2 8 L6 14 L14 2" stroke="#000" stroke-width="3" fill="none"/>
+            </g>
+            <g transform="translate(240, 20)" class="card-hover">
+                <rect class="bg" width="220" height="260" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+                <rect x="10" y="10" width="200" height="140" fill="#161616"/>
+                <text x="110" y="80" fill="#444" text-anchor="middle" font-size="12" class="font-main">STONE ICON</text>
+                <text x="20" y="180" fill="#DDD" font-size="18" font-weight="700" class="font-main">STONE (x1000)</text>
+                <text x="20" y="200" fill="#888" font-size="12" class="font-main">Construction</text>
+                <text x="20" y="240" fill="#E6C85E" font-size="20" font-weight="700" class="font-mono price">150 SCRAP</text>
+                <rect x="160" y="220" width="40" height="30" rx="4" fill="#E6C85E" class="btn-buy"/>
+                <path transform="translate(172, 227)" d="M2 8 L6 14 L14 2" stroke="#000" stroke-width="3" fill="none"/>
+            </g>
+            <g transform="translate(480, 20)" class="card-hover">
+                <rect class="bg" width="220" height="260" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+                <rect x="10" y="10" width="200" height="140" fill="#161616"/>
+                <text x="110" y="80" fill="#444" text-anchor="middle" font-size="12" class="font-main">SULFUR ICON</text>
+                <text x="20" y="180" fill="#DDD" font-size="18" font-weight="700" class="font-main">SULFUR (x1000)</text>
+                <text x="20" y="200" fill="#888" font-size="12" class="font-main">Explosives</text>
+                <text x="20" y="240" fill="#E6C85E" font-size="20" font-weight="700" class="font-mono price">500 SCRAP</text>
+                <rect x="160" y="220" width="40" height="30" rx="4" fill="#E6C85E" class="btn-buy"/>
+                <path transform="translate(172, 227)" d="M2 8 L6 14 L14 2" stroke="#000" stroke-width="3" fill="none"/>
+            </g>
+            <g transform="translate(720, 20)" class="card-hover">
+                <rect class="bg" width="220" height="260" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+                <rect x="10" y="10" width="200" height="140" fill="#161616"/>
+                <text x="110" y="80" fill="#444" text-anchor="middle" font-size="12" class="font-main">HQM ICON</text>
+                <text x="20" y="180" fill="#DDD" font-size="18" font-weight="700" class="font-main">HQ METAL (x100)</text>
+                <text x="20" y="200" fill="#888" font-size="12" class="font-main">Premium</text>
+                <text x="20" y="240" fill="#E6C85E" font-size="20" font-weight="700" class="font-mono price">800 SCRAP</text>
+                <rect x="160" y="220" width="40" height="30" rx="4" fill="#E6C85E" class="btn-buy"/>
+                <path transform="translate(172, 227)" d="M2 8 L6 14 L14 2" stroke="#000" stroke-width="3" fill="none"/>
+            </g>
+            <g transform="translate(0, 300)" class="card-hover">
+                <rect class="bg" width="220" height="260" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+                <rect x="10" y="10" width="200" height="140" fill="#161616"/>
+                <text x="110" y="80" fill="#444" text-anchor="middle" font-size="12" class="font-main">LGF ICON</text>
+                <text x="20" y="180" fill="#DDD" font-size="18" font-weight="700" class="font-main">LOW GRADE (x500)</text>
+                <text x="20" y="200" fill="#888" font-size="12" class="font-main">Fuel</text>
+                <text x="20" y="240" fill="#E6C85E" font-size="20" font-weight="700" class="font-mono price">100 SCRAP</text>
+                <rect x="160" y="220" width="40" height="30" rx="4" fill="#E6C85E" class="btn-buy"/>
+                <path transform="translate(172, 227)" d="M2 8 L6 14 L14 2" stroke="#000" stroke-width="3" fill="none"/>
+            </g>
+        </g>
+    </g>
+    <text x="960" y="940" text-anchor="middle" fill="#444" font-size="14" class="font-main" letter-spacing="1">PRESS [ESC] TO CLOSE</text>
+</svg>

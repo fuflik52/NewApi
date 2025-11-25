@@ -1,0 +1,76 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&amp;family=JetBrains+Mono:wght@700&amp;display=swap');
+            .font-main { font-family: 'Roboto Condensed', sans-serif; }
+            .font-mono { font-family: 'JetBrains Mono', monospace; }
+            
+            @keyframes pulse-red {
+                0% { filter: drop-shadow(0 0 5px #FF3333); stroke-opacity: 0.8; }
+                50% { filter: drop-shadow(0 0 20px #FF3333); stroke-opacity: 1; }
+                100% { filter: drop-shadow(0 0 5px #FF3333); stroke-opacity: 0.8; }
+            }
+            .alarm-pulse { animation: pulse-red 1.5s infinite ease-in-out; }
+        </style>
+
+        <filter id="glow-text">
+            <feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="#FF3333" flood-opacity="0.8"/>
+        </filter>
+        
+        <pattern id="tech-grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#FFFFFF" stroke-opacity="0.03" stroke-width="1"/>
+        </pattern>
+    </defs>
+
+    <rect width="1920" height="1080" fill="#0f0f0f" fill-opacity="0.95"/>
+    <rect width="1920" height="1080" fill="url(#tech-grid)"/>
+
+    <!-- ГРУППА УВЕДОМЛЕНИЯ -->
+    <g transform="translate(1550, 450)">
+        
+        <!-- Подложка -->
+        <g class="alarm-pulse">
+            <!-- Фон со скошенным углом -->
+            <path d="M0 0 L320 0 L320 140 L50 140 L0 100 Z" fill="#100505" fill-opacity="0.95" stroke="#FF3333" stroke-width="2"/>
+            <!-- Верхняя линия -->
+            <rect x="0" y="0" width="320" height="4" fill="#FF3333"/>
+        </g>
+
+        <!-- Декоративный уголок (левый нижний) -->
+        <path d="M0 100 L50 140 L70 140 L20 100 Z" fill="#FF3333" opacity="0.5"/>
+
+        <!-- ЗАГОЛОВОК -->
+        <g transform="translate(20, 35)">
+            <circle cx="10" cy="10" r="6" fill="#FF3333" class="alarm-pulse"/>
+            <text x="25" y="18" fill="#FF3333" font-size="24" font-weight="700" class="font-main" letter-spacing="2" filter="url(#glow-text)">RAID ALERT</text>
+        </g>
+
+        <!-- ИНФОРМАЦИЯ -->
+        <g transform="translate(20, 75)">
+            
+            <!-- Строка Клана -->
+            <g transform="translate(0, 0)">
+                <!-- Иконка Черепа -->
+                <g transform="translate(5, -5) scale(0.8)">
+                    <path d="M15 0 C7 0 0 7 0 15 C0 20 3 24 7 26 V 30 H 23 V 26 C 27 24 30 20 30 15 C 30 7 23 0 15 0 Z M 7 12 C 8.5 12 10 13.5 10 15 C 10 16.5 8.5 18 7 18 C 5.5 18 4 16.5 4 15 C 4 13.5 5.5 12 7 12 Z M 23 12 C 24.5 12 26 13.5 26 15 C 26 16.5 24.5 18 23 18 C 21.5 18 20 16.5 20 15 C 20 13.5 21.5 12 23 12 Z" fill="#FFFFFF"/>
+                </g>
+                <text x="40" y="15" fill="#FFFFFF" font-size="32" font-weight="700" class="font-main">[ZERG]</text>
+            </g>
+            
+            <!-- Строка Квадрата (Сдвинута правее от декоративного угла) -->
+            <g transform="translate(60, 40)">
+                 <!-- Иконка Прицела/Локации -->
+                 <g transform="translate(0, -5) scale(0.8)">
+                    <circle cx="15" cy="15" r="12" stroke="#888" stroke-width="2" fill="none"/>
+                    <line x1="15" y1="0" x2="15" y2="30" stroke="#888" stroke-width="2"/>
+                    <line x1="0" y1="15" x2="30" y2="15" stroke="#888" stroke-width="2"/>
+                    <circle cx="15" cy="15" r="3" fill="#FF3333"/>
+                 </g>
+                 
+                 <text x="35" y="15" fill="#888" font-size="16" font-weight="700" class="font-main">GRID:</text>
+                 <text x="85" y="15" fill="#FF3333" font-size="24" font-weight="700" class="font-mono">L14</text>
+            </g>
+        </g>
+        
+    </g>
+</svg>

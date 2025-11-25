@@ -1,0 +1,41 @@
+TACTICAL HUD — DESIGN SYSTEM GUIDE
+==================================
+
+1. CORE CONCEPT
+   - Style: Military / Tactical Software.
+   - Vibe: Dark, Precise, High-Contrast accents.
+   - Keywords: "HUD", "Cyberpunk", "Rust", "Dark Mode".
+
+2. COLOR PALETTE
+   - Background: #0f0f0f (95% Opacity) — Almost black, lets game bleed through slightly.
+   - Panels: #161616 (Fill) / #2A2A2A (Stroke) — Dark grey containers.
+   - Accent Green (Success/Ready): #8FAE58
+   - Accent Red (Danger/Blocked): #CD5C5C
+   - Accent Gold (Premium/VIP): #E6C85E
+   - Text Main: #FFFFFF (White) or #DDDDDD (Light Grey)
+   - Text Muted: #666666 (Dark Grey) for labels.
+
+3. TYPOGRAPHY
+   - Headers & Labels: 'Roboto Condensed' (Bold/700) — Compact, readable.
+   - Data & Numbers: 'JetBrains Mono' (Bold/700) — Technical look for timers, prices, stats.
+
+4. VISUAL EFFECTS (The "Secret Sauce")
+   - Tech Grid: A 40x40px grid pattern overlay (stroke opacity 0.03). Adds texture.
+   - Watermarks: Giant vector icons (SVG paths) placed behind content with very low opacity (0.02 - 0.04).
+     Examples: Crosshair, Skull, Trophy, AK-47, Biohazard Symbol.
+   - Stripes: Diagonal stripe pattern for "Blocked" or "Cooldown" states.
+   - Drop Shadows: Deep shadows (dy=4, blur=12) to lift panels off the background.
+
+5. SHAPES
+   - Corners: Generally sharp or slightly rounded (rx="2" or "4").
+   - Decorative Corners: "L" shaped brackets at the corners of main frames.
+   - Strokes: Thin lines (1px).
+
+6. HOW TO USE
+   - Open these .svg files in a browser to preview.
+   - Open in Figma to edit vectors.
+   - Use the code structure (Defs -> Background -> Panel -> Watermark -> Content) for new designs.
+
+
+
+
